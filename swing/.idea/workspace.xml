@@ -3988,6 +3988,32 @@
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="core" type="f1a62948:ProjectNode" />
+                <item name="Source Sets" type="e897c970:GradleViewContributor$SourceSetsNode" />
+                <item name="main" type="396b929e:GradleViewContributor$SourceSetNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="core" type="f1a62948:ProjectNode" />
+                <item name="Source Sets" type="e897c970:GradleViewContributor$SourceSetsNode" />
+                <item name="main" type="396b929e:GradleViewContributor$SourceSetNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="core" type="f1a62948:ProjectNode" />
+                <item name="Source Sets" type="e897c970:GradleViewContributor$SourceSetsNode" />
+                <item name="test" type="396b929e:GradleViewContributor$SourceSetNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="core" type="f1a62948:ProjectNode" />
+                <item name="Source Sets" type="e897c970:GradleViewContributor$SourceSetsNode" />
+                <item name="test" type="396b929e:GradleViewContributor$SourceSetNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="core" type="f1a62948:ProjectNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
               </path>
               <path>
@@ -4133,7 +4159,7 @@
     <session id="-977472249">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="2" />
+          <entry key="project.closed" value="3" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.2" value="1" />
           <entry key="project.open.time.4" value="1" />
@@ -4147,7 +4173,7 @@
           <entry key="gitignore" value="1" />
           <entry key="gradle" value="32" />
           <entry key="gradlew" value="1" />
-          <entry key="java" value="108" />
+          <entry key="java" value="117" />
           <entry key="properties" value="2" />
           <entry key="txt" value="1" />
           <entry key="xml" value="2" />
@@ -4156,7 +4182,7 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Groovy" value="32" />
-          <entry key="JAVA" value="108" />
+          <entry key="JAVA" value="117" />
           <entry key="PLAIN_TEXT" value="7" />
           <entry key="Properties" value="2" />
           <entry key="XML" value="2" />
@@ -4165,14 +4191,14 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="gitignore" value="20" />
-          <entry key="gradle" value="413" />
-          <entry key="java" value="713" />
+          <entry key="gradle" value="414" />
+          <entry key="java" value="826" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Groovy" value="413" />
-          <entry key="JAVA" value="713" />
+          <entry key="Groovy" value="414" />
+          <entry key="JAVA" value="826" />
           <entry key="PLAIN_TEXT" value="20" />
         </counts>
       </usages-collector>
@@ -4222,7 +4248,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/build.gradle">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="185">
+            <state relative-caret-position="432">
               <caret line="31" column="34" selection-start-line="31" selection-start-column="20" selection-end-line="31" selection-end-column="34" />
             </state>
           </provider>
@@ -4239,28 +4265,79 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/net/sf/openrocket/gui/main/BasicFrame.java">
+        <entry file="file://$PROJECT_DIR$/../core/build.gradle">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="197">
-              <caret line="76" column="42" lean-forward="true" selection-start-line="76" selection-start-column="42" selection-end-line="76" selection-end-column="42" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/net/sf/openrocket/gui/dialogs/AboutDialog.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="36" column="46" selection-start-line="36" selection-start-column="46" selection-end-line="36" selection-end-column="46" />
+            <state relative-caret-position="391">
+              <caret line="26" selection-start-line="26" selection-end-line="26" selection-end-column="2" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../core/build.gradle">
+        <entry file="file://$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/l10n/TestClassBasedTranslator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="27" column="33" lean-forward="true" selection-start-line="27" selection-start-column="24" selection-end-line="27" selection-end-column="33" />
+            <state relative-caret-position="238">
+              <caret line="14" selection-start-line="14" selection-end-line="15" selection-end-column="21" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jmock/jmock-junit4/2.9.0/133256fa7060e80de9fda3fa22c97f58c884f770/jmock-junit4-2.9.0-sources.jar!/org/jmock/integration/junit4/JMock.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="173">
+              <caret line="21" column="11" selection-start-line="21" selection-start-column="11" selection-end-line="21" selection-end-column="11" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jmock/jmock-junit4/2.9.0/133256fa7060e80de9fda3fa22c97f58c884f770/jmock-junit4-2.9.0-sources.jar!/org/jmock/integration/junit4/JUnitRuleMockery.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="197">
+              <caret line="39" column="13" selection-start-line="39" selection-start-column="13" selection-end-line="39" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/optimization/rocketoptimization/TestRocketOptimizationFunction.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret column="58" selection-start-column="58" selection-end-column="58" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/l10n/TestExceptionSuppressingTranslator.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="68">
+              <caret line="18" column="21" selection-start-line="17" selection-end-line="18" selection-end-column="21" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/preset/xml/BaseComponentDTOTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-160">
+              <caret line="19" column="3" selection-start-line="19" selection-start-column="3" selection-end-line="19" selection-end-column="3" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../core/src/main/java/net/sf/openrocket/preset/ComponentPresetFactory.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="139">
+              <caret line="100" column="33" selection-start-line="100" selection-start-column="33" selection-end-line="100" selection-end-column="33" />
             </state>
           </provider>
         </entry>
@@ -4277,9 +4354,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>DejaVuSerif</find>
-      <find>ComponentPresetDatabaseLoade</find>
-      <find>scripts</find>
       <find>name</find>
       <find>SerializeMotors</find>
       <find>inputDir</find>
@@ -4307,6 +4381,9 @@
       <find>fifesoft</find>
       <find>/)</find>
       <find>exp4j</find>
+      <find>image</find>
+      <find>\n    \@Ignore</find>
+      <find>.checking(</find>
     </findStrings>
     <replaceStrings>
       <replace>(</replace>
@@ -4710,11 +4787,12 @@
     </option>
     <option name="modificationStamps">
       <map>
+        <entry key="$PROJECT_DIR$/../core" value="6154587081641" />
         <entry key="$PROJECT_DIR$/../core/.gradle" value="0" />
         <entry key="$PROJECT_DIR$/../core/build.gradle" value="3575151392" />
         <entry key="$PROJECT_DIR$/../core/gradle/wrapper/gradle-wrapper.properties" value="2585518924" />
         <entry key="$PROJECT_DIR$/../core/settings.gradle" value="3297196451" />
-        <entry key="$PROJECT_DIR$" value="10771382606975" />
+        <entry key="$PROJECT_DIR$" value="10771391841265" />
         <entry key="$PROJECT_DIR$/.gradle" value="0" />
         <entry key="$PROJECT_DIR$/build.gradle" value="3830165015" />
         <entry key="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" value="2585518924" />
@@ -4993,16 +5071,16 @@
         <option value="$PROJECT_DIR$/src/test/java/util/BaseTestCase.java" />
         <option value="$PROJECT_DIR$/settings.gradle" />
         <option value="$PROJECT_DIR$/src/test/java/gui/configdialog/FinSetConfigTest.java" />
-        <option value="$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/l10n/TestExceptionSuppressingTranslator.java" />
-        <option value="$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/l10n/TestClassBasedTranslator.java" />
-        <option value="$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/optimization/rocketoptimization/TestRocketOptimizationFunction.java" />
         <option value="$PROJECT_DIR$/src/test/java/net/sf/openrocket/IntegrationTest.java" />
         <option value="$PROJECT_DIR$/src/test/java/net/sf/openrocket/ServicesForTesting.java" />
         <option value="$PROJECT_DIR$/src/test/java/net/sf/openrocket/BaseTestCase.java" />
-        <option value="$PROJECT_DIR$/../core/build.gradle" />
         <option value="$PROJECT_DIR$/build.gradle" />
         <option value="$PROJECT_DIR$/src/test/java/net/sf/openrocket/gui/configdialog/FinSetConfigTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/net/sf/openrocket/gui/dialogs/AboutDialog.java" />
+        <option value="$PROJECT_DIR$/../core/build.gradle" />
+        <option value="$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/l10n/TestClassBasedTranslator.java" />
+        <option value="$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/optimization/rocketoptimization/TestRocketOptimizationFunction.java" />
+        <option value="$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/l10n/TestExceptionSuppressingTranslator.java" />
       </list>
     </option>
   </component>
@@ -5035,10 +5113,6 @@
       <pane id="ProjectPane">
         <subPane>
           <expand>
-            <path>
-              <item name="swing" type="b2602c69:ProjectViewProjectNode" />
-              <item name="core" type="462c0819:PsiDirectoryNode" />
-            </path>
             <path>
               <item name="swing" type="b2602c69:ProjectViewProjectNode" />
               <item name="swing" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
@@ -5087,8 +5161,8 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/build.gradle" />
-    <property name="project.structure.last.edited" value="Modules" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../java/openrocket2/build.gradle" />
+    <property name="project.structure.last.edited" value="Problems" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.project.gradle" />
@@ -5126,7 +5200,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.SwingStartup">
+  <component name="RunManager" selected="JUnit.All in swing_test">
     <configuration name="SwingStartup" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="net.sf.openrocket.startup.SwingStartup" />
       <module name="swing_main" />
@@ -5140,41 +5214,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="core [testClasses]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/../core" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="testClasses" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <method v="2" />
-    </configuration>
-    <configuration name="swing [testClasses]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="testClasses" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <method v="2" />
+    <configuration name="All in core_test" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="core_test" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
     <configuration name="All in swing_test" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="swing_test" />
@@ -5184,34 +5230,48 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="FinSetConfigTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="swing_test" />
+    <configuration name="BaseComponentDTOTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="core_test" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="net.sf.openrocket.gui.configdialog.*" />
+          <option name="PATTERN" value="net.sf.openrocket.preset.xml.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="net.sf.openrocket.gui.configdialog" />
-      <option name="MAIN_CLASS_NAME" value="net.sf.openrocket.gui.configdialog.FinSetConfigTest" />
+      <option name="PACKAGE_NAME" value="net.sf.openrocket.preset.xml" />
+      <option name="MAIN_CLASS_NAME" value="net.sf.openrocket.preset.xml.BaseComponentDTOTest" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestClassBasedTranslator" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="core_test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="net.sf.openrocket.l10n.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="net.sf.openrocket.l10n" />
+      <option name="MAIN_CLASS_NAME" value="net.sf.openrocket.l10n.TestClassBasedTranslator" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <list>
-      <item itemvalue="JUnit.FinSetConfigTest" />
-      <item itemvalue="Gradle.core [testClasses]" />
-      <item itemvalue="Gradle.swing [testClasses]" />
-      <item itemvalue="JUnit.All in swing_test" />
+      <item itemvalue="JUnit.BaseComponentDTOTest" />
       <item itemvalue="Application.SwingStartup" />
+      <item itemvalue="JUnit.All in core_test" />
+      <item itemvalue="JUnit.TestClassBasedTranslator" />
+      <item itemvalue="JUnit.All in swing_test" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.SwingStartup" />
         <item itemvalue="JUnit.All in swing_test" />
-        <item itemvalue="Gradle.swing [testClasses]" />
-        <item itemvalue="Gradle.core [testClasses]" />
-        <item itemvalue="JUnit.FinSetConfigTest" />
+        <item itemvalue="JUnit.TestClassBasedTranslator" />
+        <item itemvalue="JUnit.All in core_test" />
+        <item itemvalue="Application.SwingStartup" />
+        <item itemvalue="JUnit.BaseComponentDTOTest" />
       </list>
     </recent_temporary>
   </component>
@@ -5229,42 +5289,41 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="All_in_swing_test_(3) - 2018.10.07 at 13h 42m 12s.xml">
-      <configuration name="All in swing_test (3)" configurationId="JUnit" />
+    <history-entry file="TestClassBasedTranslator_testGetWithClassName - 2018.10.07 at 16h 01m 57s.xml">
+      <configuration name="TestClassBasedTranslator.testGetWithClassName" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="LogLevelBufferLoggerTest - 2018.10.07 at 13h 42m 40s.xml">
-      <configuration name="LogLevelBufferLoggerTest" configurationId="JUnit" />
+    <history-entry file="All_in_core_test_(1) - 2018.10.07 at 16h 02m 45s.xml">
+      <configuration name="All in core_test (1)" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All_in_core_test - 2018.10.07 at 13h 43m 19s.xml">
-      <configuration name="All in core_test" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="All_in_swing_test - 2018.10.07 at 13h 45m 56s.xml">
-      <configuration name="All in swing_test" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="IntegrationTest - 2018.10.07 at 13h 46m 26s.xml">
-      <configuration name="IntegrationTest" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="IntegrationTest - 2018.10.07 at 13h 46m 54s.xml">
-      <configuration name="IntegrationTest" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="IntegrationTest - 2018.10.07 at 13h 47m 19s.xml">
-      <configuration name="IntegrationTest" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="All_in_swing_test_(1) - 2018.10.07 at 13h 47m 50s.xml">
+    <history-entry file="All_in_swing_test_(1) - 2018.10.07 at 16h 21m 08s.xml">
       <configuration name="All in swing_test (1)" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="FinSetConfigTest - 2018.10.07 at 13h 50m 38s.xml">
-      <configuration name="FinSetConfigTest" configurationId="JUnit" />
+    <history-entry file="All_in_core_test_(2) - 2018.10.07 at 16h 21m 53s.xml">
+      <configuration name="All in core_test (2)" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="All_in_swing_test - 2018.10.07 at 13h 56m 49s.xml">
+    <history-entry file="BaseComponentDTOTest - 2018.10.07 at 16h 24m 44s.xml">
+      <configuration name="BaseComponentDTOTest" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="All_in_core_test - 2018.10.07 at 16h 26m 55s.xml">
+      <configuration name="All in core_test" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="TestClassBasedTranslator - 2018.10.07 at 16h 27m 09s.xml">
+      <configuration name="TestClassBasedTranslator" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="TestClassBasedTranslator - 2018.10.07 at 16h 27m 46s.xml">
+      <configuration name="TestClassBasedTranslator" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="TestClassBasedTranslator - 2018.10.07 at 16h 32m 47s.xml">
+      <configuration name="TestClassBasedTranslator" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="All_in_swing_test - 2018.10.07 at 16h 37m 57s.xml">
       <configuration name="All in swing_test" configurationId="JUnit" />
     </history-entry>
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26599148" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.26599148" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="UI Designer" order="3" />
@@ -5272,7 +5331,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.329718" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.329718" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.3991323" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.3991323" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -5285,7 +5344,7 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Palette" order="3" />
-      <window_info anchor="right" id="Gradle" order="4" visible="true" weight="0.20522387" />
+      <window_info anchor="right" id="Gradle" order="4" weight="0.20522387" />
       <window_info anchor="right" id="Palette&#9;" order="5" />
       <window_info anchor="right" id="Maven Projects" order="6" weight="0.32995737" />
     </layout>
@@ -5356,6 +5415,18 @@
           <properties />
           <option name="timeStamp" value="35" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/l10n/TestClassBasedTranslator.java</url>
+          <line>40</line>
+          <properties />
+          <option name="timeStamp" value="36" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/l10n/TestClassBasedTranslator.java</url>
+          <line>48</line>
+          <properties />
+          <option name="timeStamp" value="37" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
     <watches-manager>
@@ -5389,26 +5460,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../../openrocket/core/config/logback-stdout-level-error.xml">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../openrocket/core/src-extra/AirStart.java">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../core/src/main/java/net/sf/openrocket/simulation/extension/impl/AirStartProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../core/src/main/java/net/sf/openrocket/simulation/extension/impl/AirStart.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="15" column="10" selection-start-line="15" selection-start-column="10" selection-end-line="15" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../openrocket/core/src-extra/altimeter/Alt15K.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-153" />
@@ -5511,26 +5562,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/junit/junit/4.12/a6c32b40bf3d76eca54e3c601e5d1470c86fcdfa/junit-4.12-sources.jar!/org/junit/internal/runners/model/ReflectiveCallable.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="13" selection-start-line="13" selection-end-line="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/junit/junit/4.12/a6c32b40bf3d76eca54e3c601e5d1470c86fcdfa/junit-4.12-sources.jar!/org/junit/runners/ParentRunner.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="185">
-          <caret line="328" selection-start-line="328" selection-end-line="328" />
-          <folding>
-            <element signature="e#2922#2923#0" expanded="true" />
-            <element signature="e#2966#2967#0" expanded="true" />
-            <element signature="e#11040#11204#0" expanded="true" />
-            <element signature="e#11203#11204#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/unit/UnitToStringTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="213">
@@ -5586,30 +5617,6 @@
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/l10n/TestExceptionSuppressingTranslator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/l10n/TestClassBasedTranslator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="15" selection-start-line="15" selection-end-line="15" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/optimization/rocketoptimization/TestRocketOptimizationFunction.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="24" selection-start-line="24" selection-end-line="24" />
         </state>
       </provider>
     </entry>
@@ -5738,6 +5745,38 @@
     <entry file="file://$PROJECT_DIR$/../../openrocket/test/src/main/java/test/Audit.java">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/junit/junit/4.12/a6c32b40bf3d76eca54e3c601e5d1470c86fcdfa/junit-4.12-sources.jar!/org/junit/internal/runners/model/ReflectiveCallable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="13" selection-start-line="13" selection-end-line="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/junit/junit/4.12/a6c32b40bf3d76eca54e3c601e5d1470c86fcdfa/junit-4.12-sources.jar!/org/junit/runners/ParentRunner.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="168">
+          <caret line="326" column="16" selection-start-line="326" selection-start-column="16" selection-end-line="326" selection-end-column="16" />
+          <folding>
+            <element signature="e#2922#2923#0" expanded="true" />
+            <element signature="e#2966#2967#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/sf/openrocket/gui/dialogs/AboutDialog.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="26" column="44" selection-start-line="26" selection-start-column="44" selection-end-line="26" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/net/sf/openrocket/gui/main/BasicFrame.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="197">
+          <caret line="76" column="42" selection-start-line="76" selection-start-column="42" selection-end-line="76" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/../core/src/main/resources/l10n/messages_tr.properties">
       <provider editor-type-id="ResourceBundle" />
       <provider selected="true" editor-type-id="text-editor">
@@ -5746,31 +5785,72 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/net/sf/openrocket/gui/main/BasicFrame.java">
+    <entry file="file://$PROJECT_DIR$/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="197">
-          <caret line="76" column="42" lean-forward="true" selection-start-line="76" selection-start-column="42" selection-end-line="76" selection-end-column="42" />
+        <state relative-caret-position="432">
+          <caret line="31" column="34" selection-start-line="31" selection-start-column="20" selection-end-line="31" selection-end-column="34" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build.gradle">
+    <entry file="file://$PROJECT_DIR$/../core/src/main/java/net/sf/openrocket/preset/ComponentPresetFactory.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="185">
-          <caret line="31" column="34" selection-start-line="31" selection-start-column="20" selection-end-line="31" selection-end-column="34" />
+        <state relative-caret-position="139">
+          <caret line="100" column="33" selection-start-line="100" selection-start-column="33" selection-end-line="100" selection-end-column="33" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../core/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="27" column="33" lean-forward="true" selection-start-line="27" selection-start-column="24" selection-end-line="27" selection-end-column="33" />
+        <state relative-caret-position="391">
+          <caret line="26" selection-start-line="26" selection-end-line="26" selection-end-column="2" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/net/sf/openrocket/gui/dialogs/AboutDialog.java">
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jmock/jmock-junit4/2.9.0/133256fa7060e80de9fda3fa22c97f58c884f770/jmock-junit4-2.9.0-sources.jar!/org/jmock/integration/junit4/JUnitRuleMockery.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="36" column="46" selection-start-line="36" selection-start-column="46" selection-end-line="36" selection-end-column="46" />
+        <state relative-caret-position="197">
+          <caret line="39" column="13" selection-start-line="39" selection-start-column="13" selection-end-line="39" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jmock/jmock-junit4/2.9.0/133256fa7060e80de9fda3fa22c97f58c884f770/jmock-junit4-2.9.0-sources.jar!/org/jmock/integration/junit4/JMock.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="173">
+          <caret line="21" column="11" selection-start-line="21" selection-start-column="11" selection-end-line="21" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/l10n/TestClassBasedTranslator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="14" selection-start-line="14" selection-end-line="15" selection-end-column="21" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/optimization/rocketoptimization/TestRocketOptimizationFunction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="58" selection-start-column="58" selection-end-column="58" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/l10n/TestExceptionSuppressingTranslator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="18" column="21" selection-start-line="17" selection-end-line="18" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../core/src/test/java/net/sf/openrocket/preset/xml/BaseComponentDTOTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-160">
+          <caret line="19" column="3" selection-start-line="19" selection-start-column="3" selection-end-line="19" selection-end-column="3" />
         </state>
       </provider>
     </entry>

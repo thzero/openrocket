@@ -13,12 +13,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 
+@RunWith(JMock.class)
 public class TestClassBasedTranslator {
 	Mockery context = new JUnit4Mockery();
 	
 	@Mock
 	Translator translator;
-	
+
 	@Test
 	public void testClassName() {
 		// @formatter:off
@@ -34,7 +35,7 @@ public class TestClassBasedTranslator {
 		cbt = new ClassBasedTranslator(translator, "foobar");
 		assertEquals("foobar", cbt.getClassName());
 	}
-	
+
 	@Test
 	public void testGetWithClassName() {
 		ClassBasedTranslator cbt = new ClassBasedTranslator(translator, 0);
@@ -47,8 +48,8 @@ public class TestClassBasedTranslator {
 		
 		assertEquals("foobar", cbt.get("fake.key1"));
 	}
-	
-	
+
+
 	@Test
 	public void testGetWithoutClassName() {
 		ClassBasedTranslator cbt = new ClassBasedTranslator(translator, 0);
@@ -62,8 +63,8 @@ public class TestClassBasedTranslator {
 		
 		assertEquals("barbaz", cbt.get("fake.key2"));
 	}
-	
-	
+
+
 	@Test
 	public void testMissing() {
 		ClassBasedTranslator cbt = new ClassBasedTranslator(translator, 0);
@@ -81,9 +82,9 @@ public class TestClassBasedTranslator {
 			assertEquals("Neither key 'TestClassBasedTranslator.fake.key3' nor 'fake.key3' could be found", e.getMessage());
 		}
 	}
-	
-	
-	
+
+
+
 	@Test
 	public void testGetWithSubClass() {
 		ClassBasedTranslator cbt = new ClassBasedTranslator(translator, 0);

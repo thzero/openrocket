@@ -16,10 +16,13 @@ import net.sf.openrocket.util.BaseTestCase;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.auto.Mock;
+import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 
+@RunWith(JMock.class)
 public class TestRocketOptimizationFunction extends BaseTestCase {
 	Mockery context = new JUnit4Mockery();
 	
@@ -35,7 +38,7 @@ public class TestRocketOptimizationFunction extends BaseTestCase {
 	SimulationModifier modifier2;
 	@Mock
 	RocketOptimizationListener listener;
-	
+
 	@Test
 	public void testNormalEvaluation() throws InterruptedException, OptimizationException {
 		final Rocket rocket = new Rocket();
@@ -91,8 +94,8 @@ public class TestRocketOptimizationFunction extends BaseTestCase {
 		double value = function.evaluate(point);
 		assertEquals(gvalue, value, 0);
 	}
-	
-	@Test
+
+    @Test
 	public void testNaNValue() throws InterruptedException, OptimizationException {
 		final Rocket rocket = new Rocket();
 		final Simulation simulation = new Simulation(rocket);
@@ -133,9 +136,9 @@ public class TestRocketOptimizationFunction extends BaseTestCase {
 		double value = function.evaluate(new Point(p1, p2));
 		assertEquals(Double.MAX_VALUE, value, 0);
 	}
-	
-	
-	@Test
+
+
+    @Test
 	public void testOutsideDomain() throws InterruptedException, OptimizationException {
 		final Rocket rocket = new Rocket();
 		final Simulation simulation = new Simulation(rocket);
@@ -182,8 +185,8 @@ public class TestRocketOptimizationFunction extends BaseTestCase {
 		double value = function.evaluate(new Point(p1, p2));
 		assertTrue(value > 1e100);
 	}
-	
-	@Test
+
+    @Test
 	public void testOutsideDomain2() throws InterruptedException, OptimizationException {
 		final Rocket rocket = new Rocket();
 		final Simulation simulation = new Simulation(rocket);

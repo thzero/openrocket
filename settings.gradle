@@ -1,0 +1,8 @@
+rootProject.name = 'openrocket'
+
+include ':core'
+include ':swing'
+project(':core').projectDir = new File("../core")
+project(':swing').projectDir = new File("../swing")
+
+

@@ -1,0 +1,53 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.1'
+    }
+}
+
+//plugins {
+//    id 'com.github.johnrengelman.shadow' version '4.0.1'
+//    id 'java'
+//}
+
+//allprojects {
+//    repositories {
+//        jcenter()
+//        mavenCentral()
+//    }
+//}
+//
+//allprojects {
+//    group 'net.sf.openrocket'
+//    version '1.0'
+//}
+//
+//subprojects {
+//    repositories {
+//        mavenCentral()
+//    }
+//}
+
+//group 'net.sf.openrocket'
+//version '1.0'
+//
+//sourceCompatibility = 1.8
+//
+//dependencies {
+////    compile project(':core')
+////    compile project(':swing')
+//
+////    testCompile project (path: ':core', configuration: 'testArtifacts')
+//}
+//
+//jar {
+//    // Keep jar clean:
+////    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/*.MF'
+//
+//    manifest {
+//        attributes 'Main-Class': 'net.sf.openrocket.startup.SwingStartup'
+//    }
+//}
