@@ -3,18 +3,19 @@
  */
 package net.sf.openrocket.file.rocksim.importt;
 
+import java.util.HashMap;
+
+import org.junit.Assert;
+import org.junit.Test;
+
 import net.sf.openrocket.aerodynamics.WarningSet;
 import net.sf.openrocket.file.rocksim.RocksimCommonConstants;
 import net.sf.openrocket.file.rocksim.RocksimDensityType;
 import net.sf.openrocket.file.simplesax.PlainTextHandler;
 import net.sf.openrocket.material.Material;
 import net.sf.openrocket.rocketcomponent.BodyTube;
-import net.sf.openrocket.rocketcomponent.RocketComponent;
 import net.sf.openrocket.rocketcomponent.Streamer;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.util.HashMap;
+import net.sf.openrocket.rocketcomponent.position.AxialMethod;
 
 /**
  * StreamerHandler Tester.
@@ -99,7 +100,7 @@ public class StreamerHandlerTest extends RocksimTestBase {
     }
 
     /**
-     * Method: setRelativePosition(RocketComponent.Position position)
+     * Method: setRelativePosition(AxialMethod position)
      *
      * @throws Exception thrown if something goes awry
      */
@@ -108,8 +109,8 @@ public class StreamerHandlerTest extends RocksimTestBase {
         BodyTube tube = new BodyTube();
         StreamerHandler handler = new StreamerHandler(null, tube, new WarningSet());
         Streamer component = (Streamer) getField(handler, "streamer");
-        handler.setRelativePosition(RocketComponent.Position.ABSOLUTE);
-        Assert.assertEquals(RocketComponent.Position.ABSOLUTE, component.getRelativePosition());
+        handler.setAxialMethod(AxialMethod.ABSOLUTE);
+        Assert.assertEquals(AxialMethod.ABSOLUTE, component.getAxialMethod());
     }
 
     /**
@@ -148,14 +149,14 @@ public class StreamerHandlerTest extends RocksimTestBase {
         handler.closeElement("Xb", attributes, "-10", warnings);
         handler.closeElement("LocationMode", attributes, "1", warnings);
         handler.endHandler("Streamer", attributes, null, warnings);
-        Assert.assertEquals(RocketComponent.Position.ABSOLUTE, component.getRelativePosition());
-        Assert.assertEquals(component.getPositionValue(), -10d/ RocksimCommonConstants.ROCKSIM_TO_OPENROCKET_LENGTH, 0.001);
+        Assert.assertEquals(AxialMethod.ABSOLUTE, component.getAxialMethod());
+        Assert.assertEquals(component.getAxialOffset(), -10d/ RocksimCommonConstants.ROCKSIM_TO_OPENROCKET_LENGTH, 0.001);
 
         handler.closeElement("Xb", attributes, "-10", warnings);
         handler.closeElement("LocationMode", attributes, "2", warnings);
         handler.endHandler("Streamer", attributes, null, warnings);
-        Assert.assertEquals(RocketComponent.Position.BOTTOM, component.getRelativePosition());
-        Assert.assertEquals(component.getPositionValue(), 10d/ RocksimCommonConstants.ROCKSIM_TO_OPENROCKET_LENGTH, 0.001);
+        Assert.assertEquals(AxialMethod.BOTTOM, component.getAxialMethod());
+        Assert.assertEquals(component.getAxialOffset(), 10d/ RocksimCommonConstants.ROCKSIM_TO_OPENROCKET_LENGTH, 0.001);
 
         handler.closeElement("Thickness", attributes, "0.02", warnings);
         Assert.assertEquals(0.01848, handler.computeDensity(RocksimDensityType.ROCKSIM_BULK, 924d), 0.001);

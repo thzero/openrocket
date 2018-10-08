@@ -77,5 +77,6 @@ public class CenteringRing extends RadiusRingComponent {
 	public Type getPresetType() {
 		return ComponentPreset.Type.CENTERING_RING;
 	}
-
+	
+	
 }

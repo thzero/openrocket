@@ -2,7 +2,14 @@ package net.sf.openrocket.rocketcomponent;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import net.sf.openrocket.rocketcomponent.position.AxialMethod;
+import net.sf.openrocket.rocketcomponent.position.AxialPositionable;
+import net.sf.openrocket.util.BugException;
 import net.sf.openrocket.util.Coordinate;
 
 
@@ -15,32 +22,43 @@ import net.sf.openrocket.util.Coordinate;
  * 
  * @author Sampo Niskanen <sampo.niskanen@iki.fi>
  */
-public abstract class ComponentAssembly extends RocketComponent {
-
+public abstract class ComponentAssembly extends RocketComponent implements  AxialPositionable {
+	private static final Logger log = LoggerFactory.getLogger(ComponentAssembly.class);
+	
 	/**
 	 * Sets the position of the components to POSITION_RELATIVE_AFTER.
 	 * (Should have no effect.)
 	 */
 	public ComponentAssembly() {
-		super(RocketComponent.Position.AFTER);
+		super( AxialMethod.AFTER);
 	}
 	
+	@Override
+	public boolean allowsChildren(){
+		return true;
+	}
+	
+	@Override
+	public double getAxialOffset() {
+		return asPositionValue( this.axialMethod );
+	}
+
 	/**
 	 * Null method (ComponentAssembly has no bounds of itself).
 	 */
 	@Override
-	public Collection<Coordinate> getComponentBounds() { 
+	public Collection<Coordinate> getComponentBounds() {
 		return Collections.emptyList();
 	}
-
+	
 	/**
 	 * Null method (ComponentAssembly has no mass of itself).
 	 */
 	@Override
 	public Coordinate getComponentCG() {
-		return Coordinate.NUL;
+		return Coordinate.ZERO;
 	}
-
+	
 	/**
 	 * Null method (ComponentAssembly has no mass of itself).
 	 */
@@ -57,12 +75,33 @@ public abstract class ComponentAssembly extends RocketComponent {
 		return 0;
 	}
 	
+	@Override
+	public boolean getOverrideSubcomponents() {
+		return true;
+	}
+	
 	/**
 	 * Null method (ComponentAssembly has no mass of itself).
 	 */
 	@Override
 	public double getRotationalUnitInertia() {
 		return 0;
+	}
+
+	public double getBoundingRadius(){
+		double outerRadius=0;
+		for( RocketComponent comp : children ){
+			double thisRadius=0;
+			if( comp instanceof BodyTube ){
+				thisRadius = ((BodyTube)comp).getOuterRadius(); 
+			}else if( comp instanceof Transition ){
+				Transition trans = (Transition)comp;
+				thisRadius = Math.max( trans.getForeRadius(), trans.getAftRadius()); 
+			}
+			
+			outerRadius = Math.max( outerRadius, thisRadius);
+		}
+		return outerRadius;
 	}
 	
 	/**
@@ -83,10 +122,38 @@ public abstract class ComponentAssembly extends RocketComponent {
 	}
 
 	@Override
-	public boolean getOverrideSubcomponents() {
-		return true;
+	public boolean isAxisymmetric(){
+		return !(2 == this.getInstanceCount());
 	}
-
+	
+	@Override
+	public void setAxialOffset(final double _pos) {
+		this.updateBounds();
+		super.setAxialOffset(this.axialMethod, _pos);
+		fireComponentChangeEvent(ComponentChangeEvent.BOTH_CHANGE);
+	}
+		
+	@Override
+	public void setAxialMethod( final AxialMethod newMethod ) {
+		if (null == this.parent) {
+			throw new NullPointerException(" a Stage requires a parent before any positioning! ");
+		}
+		if ((this instanceof ParallelStage ) || ( this instanceof PodSet )){
+			if (AxialMethod.AFTER == newMethod) {
+				log.warn("Stages (or Pods) cannot be relative to other stages via AFTER! Ignoring.");
+				super.setAxialMethod(AxialMethod.TOP);
+			} else {
+				super.setAxialMethod(newMethod);
+			}
+		}else if( this.getClass().equals( AxialStage.class)){
+			// Centerline stages must be set via AFTER-- regardless of what was requested:
+			super.setAxialMethod(AxialMethod.AFTER);
+		}else{
+			throw new BugException("Unrecognized subclass of Component Assembly.  Please update this method.");
+		}
+		fireComponentChangeEvent(ComponentChangeEvent.AERODYNAMIC_CHANGE);
+	}
+	
 	@Override
 	public void setOverrideSubcomponents(boolean override) {
 		// No-op
@@ -96,5 +163,43 @@ public abstract class ComponentAssembly extends RocketComponent {
 	public boolean isOverrideSubcomponentsEnabled() {
 		return false;
 	}
+	
+	@Override
+	protected void update() {
+		this.updateBounds();
+		if (this.isAfter()){
+			this.setAfter();
+		} else {
+			super.update();
+		}
+		
+		this.updateChildSequence();
+		
+		return;
+	}
+	
+	
+	@Override
+	public void updateBounds() {
+		// currently only updates the length 
+		this.length = 0;
+		Iterator<RocketComponent> childIterator = this.getChildren().iterator();
+		while (childIterator.hasNext()) {
+			RocketComponent curChild = childIterator.next();
+			if(curChild.isAfter()){
+				this.length += curChild.getLength();
+			}
+		}
+		
+	}
+	
+	protected void updateChildSequence() {
+		for( RocketComponent curChild : this.children ) {
+			if(AxialMethod.AFTER == curChild.getAxialMethod()){
+				curChild.setAfter();
+			}
+		}
+	}
+	
 	
 }

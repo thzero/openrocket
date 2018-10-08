@@ -43,6 +43,7 @@ import net.sf.openrocket.rocketcomponent.InnerTube;
 import net.sf.openrocket.rocketcomponent.MotorMount;
 import net.sf.openrocket.rocketcomponent.RingComponent;
 import net.sf.openrocket.rocketcomponent.RocketComponent;
+import net.sf.openrocket.rocketcomponent.position.AxialMethod;
 import net.sf.openrocket.startup.Application;
 import net.sf.openrocket.unit.UnitGroup;
 import net.sf.openrocket.util.BugException;
@@ -51,6 +52,7 @@ import net.sf.openrocket.util.StateChangeListener;
 
 
 public class InnerTubeConfig extends RocketComponentConfig {
+	private static final long serialVersionUID = 7900041420864324470L;
 	private static final Translator trans = Application.getTranslator();
 
 
@@ -95,11 +97,7 @@ public class InnerTubeConfig extends RocketComponentConfig {
 		panel.add(spin, "growx");
 
 		panel.add(new UnitSelector(m), "growx");
-		if (od == null)
-			panel.add(new BasicSlider(m.getSliderModel(0, 0.04, 0.2)), "w 100lp, wrap");
-		else
-			panel.add(new BasicSlider(m.getSliderModel(new DoubleModel(0), od)),
-					"w 100lp, wrap");
+		panel.add(new BasicSlider(m.getSliderModel(new DoubleModel(0), od)), "w 100lp, wrap");
 
 		if (m.isAutomaticAvailable()) {
 			JCheckBox check = new JCheckBox(m.getAutomaticAction());
@@ -142,21 +140,14 @@ public class InnerTubeConfig extends RocketComponentConfig {
 		//// Position relative to:
 		panel.add(new JLabel(trans.get("ringcompcfg.Positionrelativeto")));
 
-		JComboBox combo = new JComboBox(
-				new EnumModel<RocketComponent.Position>(component, "RelativePosition",
-						new RocketComponent.Position[] {
-						RocketComponent.Position.TOP,
-						RocketComponent.Position.MIDDLE,
-						RocketComponent.Position.BOTTOM,
-						RocketComponent.Position.ABSOLUTE
-				}));
+		JComboBox<?> combo = new JComboBox<AxialMethod>( new EnumModel<AxialMethod>(component, "AxialMethod", AxialMethod.axialOffsetMethods ));
 		panel.add(combo, "spanx 3, growx, wrap");
 
 		//// plus
 		panel.add(new JLabel(trans.get("ringcompcfg.plus")), "right");
 
 		//// PositionValue
-		m = new DoubleModel(component, "PositionValue", UnitGroup.UNITS_LENGTH);
+		m = new DoubleModel(component, "AxialOffset", UnitGroup.UNITS_LENGTH);
 		spin = new JSpinner(m.getSpinnerModel());
 		spin.setEditor(new SpinnerEditor(spin));
 		panel.add(spin, "growx");
@@ -343,13 +334,14 @@ public class InnerTubeConfig extends RocketComponentConfig {
 						}
 
 						InnerTube tube = (InnerTube) component;
-						if (tube.getClusterCount() <= 1)
+						if (tube.getInstanceCount() <= 1)
 							return;
 
 						document.addUndoPosition("Split cluster");
 
-						Coordinate[] coords = { Coordinate.NUL };
-						coords = component.shiftCoordinates(coords);
+						Coordinate[] coords = new Coordinate[]{Coordinate.ZERO };
+						// coords = component.shiftCoordinates( coords); // old version
+						coords = component.getComponentLocations();
 						parent.removeChild(index);
 						for (int i = 0; i < coords.length; i++) {
 							InnerTube copy = InnerTube.makeIndividualClusterComponent(coords[i], component.getName() + " #" + (i + 1), component);
@@ -388,6 +380,10 @@ public class InnerTubeConfig extends RocketComponentConfig {
 
 
 class ClusterSelectionPanel extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1804786106133398810L;
 	private static final int BUTTON_SIZE = 50;
 	private static final int MOTOR_DIAMETER = 10;
 
@@ -416,6 +412,10 @@ class ClusterSelectionPanel extends JPanel {
 
 	private class ClusterButton extends JPanel implements StateChangeListener, MouseListener,
 	Resettable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 3626386642481889629L;
 		private Clusterable component;
 		private ClusterConfiguration config;
 

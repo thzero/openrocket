@@ -13,6 +13,20 @@ import java.io.InputStream;
 
 import javax.swing.Action;
 
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.Provider;
+import com.google.inject.util.Modules;
+
 import net.sf.openrocket.aerodynamics.AerodynamicCalculator;
 import net.sf.openrocket.aerodynamics.BarrowmanCalculator;
 import net.sf.openrocket.aerodynamics.FlightConditions;
@@ -28,14 +42,14 @@ import net.sf.openrocket.file.motor.GeneralMotorLoader;
 import net.sf.openrocket.gui.main.UndoRedoAction;
 import net.sf.openrocket.l10n.DebugTranslator;
 import net.sf.openrocket.l10n.Translator;
-import net.sf.openrocket.masscalc.BasicMassCalculator;
 import net.sf.openrocket.masscalc.MassCalculator;
-import net.sf.openrocket.masscalc.MassCalculator.MassCalcType;
-import net.sf.openrocket.motor.Motor;
+import net.sf.openrocket.masscalc.RigidBody;
 import net.sf.openrocket.motor.ThrustCurveMotor;
 import net.sf.openrocket.plugin.PluginModule;
-import net.sf.openrocket.rocketcomponent.Configuration;
 import net.sf.openrocket.rocketcomponent.EngineBlock;
+import net.sf.openrocket.rocketcomponent.FlightConfiguration;
+import net.sf.openrocket.rocketcomponent.FlightConfigurationId;
+import net.sf.openrocket.rocketcomponent.InnerTube;
 import net.sf.openrocket.rocketcomponent.MassComponent;
 import net.sf.openrocket.rocketcomponent.NoseCone;
 import net.sf.openrocket.rocketcomponent.RocketComponent;
@@ -45,22 +59,11 @@ import net.sf.openrocket.startup.Application;
 import net.sf.openrocket.util.Coordinate;
 import net.sf.openrocket.utils.CoreServicesModule;
 
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JUnit4Mockery;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.google.inject.Provider;
-import com.google.inject.util.Modules;
-
 /**
  * This class contains various integration tests that simulate user actions that
  * might be performed.
  */
+@RunWith(JMock.class)
 public class IntegrationTest {
 	Mockery context = new JUnit4Mockery();
 	
@@ -68,8 +71,7 @@ public class IntegrationTest {
 	private Action undoAction, redoAction;
 	
 	private AerodynamicCalculator aeroCalc = new BarrowmanCalculator();
-	private MassCalculator massCalc = new BasicMassCalculator();
-	private Configuration config;
+	private FlightConfiguration config;
 	private FlightConditions conditions;
 	private String massComponentID = null;
 	
@@ -110,13 +112,17 @@ public class IntegrationTest {
 		
 		undoAction = UndoRedoAction.newUndoAction(document);
 		redoAction = UndoRedoAction.newRedoAction(document);
-		config = document.getSimulation(0).getConfiguration();
+        FlightConfigurationId fcid = document.getSimulation(0).getFlightConfigurationId();
+		config = document.getRocket().getFlightConfiguration(fcid);
 		conditions = new FlightConditions(config);
 		
 		// Test undo state
 		checkUndoState(null, null);
 		
+		InnerTube mmt = (InnerTube)config.getRocket().getChild(0).getChild(1).getChild(2);
+		 
 		// Compute cg+cp + altitude
+	    //   double cgx, double mass, double cpx, double cna)
 		checkCgCp(0.248, 0.0645, 0.320, 12.0);
 		checkAlt(48.2);
 		
@@ -262,8 +268,8 @@ public class IntegrationTest {
 		InputStream is = IntegrationTest.class.getResourceAsStream("/Estes_A8.rse");
 		assertNotNull("Problem in unit test, cannot find Estes_A8.rse", is);
 		try {
-			for (Motor m : loader.load(is, "Estes_A8.rse")) {
-				return (ThrustCurveMotor) m;
+			for (ThrustCurveMotor.Builder m : loader.load(is, "Estes_A8.rse")) {
+				return m.build();
 			}
 			is.close();
 		} catch (IOException e) {
@@ -324,13 +330,12 @@ public class IntegrationTest {
 	}
 	
 	private void checkCgCp(double cgx, double mass, double cpx, double cna) {
-		Coordinate cg, cp;
-		
-		cg = massCalc.getCG(config, MassCalcType.LAUNCH_MASS);
+		final RigidBody launchData = MassCalculator.calculateLaunch(config);
+		final Coordinate cg = launchData.getCenterOfMass();
 		assertEquals(cgx, cg.x, 0.001);
 		assertEquals(mass, cg.weight, 0.0005);
 		
-		cp = aeroCalc.getWorstCP(config, conditions, null);
+		final Coordinate cp = aeroCalc.getWorstCP(config, conditions, null);
 		assertEquals(cpx, cp.x, 0.001);
 		assertEquals(cna, cp.weight, 0.1);
 	}

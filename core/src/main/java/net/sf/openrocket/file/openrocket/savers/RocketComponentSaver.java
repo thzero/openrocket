@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import net.sf.openrocket.appearance.Appearance;
 import net.sf.openrocket.appearance.Decal;
@@ -11,14 +12,20 @@ import net.sf.openrocket.appearance.Decal.EdgeMode;
 import net.sf.openrocket.l10n.Translator;
 import net.sf.openrocket.material.Material;
 import net.sf.openrocket.motor.Motor;
+import net.sf.openrocket.motor.MotorConfiguration;
 import net.sf.openrocket.motor.ThrustCurveMotor;
 import net.sf.openrocket.preset.ComponentPreset;
+import net.sf.openrocket.rocketcomponent.Clusterable;
 import net.sf.openrocket.rocketcomponent.ComponentAssembly;
-import net.sf.openrocket.rocketcomponent.IgnitionConfiguration;
-import net.sf.openrocket.rocketcomponent.MotorConfiguration;
+import net.sf.openrocket.rocketcomponent.FlightConfigurationId;
+import net.sf.openrocket.rocketcomponent.Instanceable;
+import net.sf.openrocket.rocketcomponent.LineInstanceable;
 import net.sf.openrocket.rocketcomponent.MotorMount;
 import net.sf.openrocket.rocketcomponent.Rocket;
 import net.sf.openrocket.rocketcomponent.RocketComponent;
+import net.sf.openrocket.rocketcomponent.position.AnglePositionable;
+import net.sf.openrocket.rocketcomponent.position.AxialMethod;
+import net.sf.openrocket.rocketcomponent.position.RadiusPositionable;
 import net.sf.openrocket.startup.Application;
 import net.sf.openrocket.util.BugException;
 import net.sf.openrocket.util.Color;
@@ -78,14 +85,42 @@ public class RocketComponentSaver {
 			}
 		}
 		
-		
-		// Save position unless "AFTER"
-		if (c.getRelativePosition() != RocketComponent.Position.AFTER) {
-			// The type names are currently equivalent to the enum names except for case.
-			String type = c.getRelativePosition().name().toLowerCase(Locale.ENGLISH);
-			elements.add("<position type=\"" + type + "\">" + c.getPositionValue() + "</position>");
+		if ( c instanceof Instanceable) {
+			int instanceCount = c.getInstanceCount();
+			
+			if( c instanceof Clusterable ){
+				; // no-op.  Instance counts are set via named cluster configurations
+			}else if( 1 < instanceCount ) {
+				emitInteger( elements, "instancecount", c.getInstanceCount() );
+			}
+			
+			if( c instanceof LineInstanceable ){
+				LineInstanceable line = (LineInstanceable)c;
+				emitDouble( elements, "instanceseparation", line.getInstanceSeparation());
+			}
+			if( c instanceof RadiusPositionable ){
+				final RadiusPositionable radPos = (RadiusPositionable)c;
+				// The type names are currently equivalent to the enum names except for case.
+				final String radiusMethod = radPos.getRadiusMethod().name().toLowerCase(Locale.ENGLISH);
+				final double radiusOffset = radPos.getRadiusOffset();
+				elements.add("<radiusoffset method=\"" + radiusMethod + "\">" + radiusOffset + "</radiusoffset>");
+			}
+			if( c instanceof AnglePositionable ) { 
+				final AnglePositionable anglePos= (AnglePositionable)c; 
+				// The type names are currently equivalent to the enum names except for case.
+				final String angleMethod = anglePos.getAngleMethod().name().toLowerCase(Locale.ENGLISH);
+				final double angleOffset = anglePos.getAngleOffset()*180.0/Math.PI ;
+				elements.add("<angleoffset method=\"" + angleMethod + "\">" + angleOffset + "</angleoffset>");
+				
+			}
 		}
 		
+		// Save position unless "AFTER"
+		if (c.getAxialMethod() != AxialMethod.AFTER) {
+			// The type names are currently equivalent to the enum names except for case.
+			String axialMethod = c.getAxialMethod().name().toLowerCase(Locale.ENGLISH);
+			elements.add("<axialoffset method=\"" + axialMethod + "\">" + c.getAxialOffset() + "</axialoffset>");
+		}
 		
 		// Overrides
 		boolean overridden = false;
@@ -95,6 +130,10 @@ public class RocketComponentSaver {
 		}
 		if (c.isCGOverridden()) {
 			elements.add("<overridecg>" + c.getOverrideCGX() + "</overridecg>");
+			overridden = true;
+		}
+		if (c.isCDOverridden()) {
+			elements.add("<overridecd>" + c.getOverrideCD() + "</overridecd>");
 			overridden = true;
 		}
 		if (overridden) {
@@ -144,26 +183,34 @@ public class RocketComponentSaver {
 	protected final List<String> motorMountParams(MotorMount mount) {
 		if (!mount.isMotorMount())
 			return Collections.emptyList();
-		String[] motorConfigIDs = ((RocketComponent) mount).getRocket().getFlightConfigurationIDs();
+		
+		Rocket rkt = ((RocketComponent) mount).getRocket();
+		//FlightConfigurationID[] motorConfigIDs = ((RocketComponent) mount).getRocket().getFlightConfigurationIDs();
+		//ParameterSet<FlightConfiguration> configs = ((RocketComponent) mount).getRocket().getConfigurationSet();
+		
 		List<String> elements = new ArrayList<String>();
+		
+		MotorConfiguration defaultInstance = mount.getDefaultMotorConfig();
 		
 		elements.add("<motormount>");
 		
 		// NOTE:  Default config must be BEFORE overridden config for proper backward compatibility later on
 		elements.add("  <ignitionevent>"
-				+ mount.getIgnitionConfiguration().getDefault().getIgnitionEvent().name().toLowerCase(Locale.ENGLISH).replace("_", "")
+				+ defaultInstance.getIgnitionEvent().name().toLowerCase(Locale.ENGLISH).replace("_", "")
 				+ "</ignitionevent>");
-		elements.add("  <ignitiondelay>" + mount.getIgnitionConfiguration().getDefault().getIgnitionDelay() + "</ignitiondelay>");
+		elements.add("  <ignitiondelay>" + defaultInstance.getIgnitionDelay() + "</ignitiondelay>");
 		elements.add("  <overhang>" + mount.getMotorOverhang() + "</overhang>");
 		
-		for (String id : motorConfigIDs) {
-			MotorConfiguration motorConfig = mount.getMotorConfiguration().get(id);
-			Motor motor = motorConfig.getMotor();
-			// Nothing is stored if no motor loaded
-			if (motor == null)
-				continue;
+		for( FlightConfigurationId fcid : rkt.getIds()){
 			
-			elements.add("  <motor configid=\"" + id + "\">");
+			MotorConfiguration motorInstance = mount.getMotorConfig(fcid);
+			// Nothing is stored if no motor loaded
+			if( motorInstance.isEmpty()){
+				continue;
+			}
+			Motor motor = motorInstance.getMotor();
+			
+			elements.add("  <motor configid=\"" + fcid.key + "\">");
 			if (motor.getMotorType() != Motor.Type.UNKNOWN) {
 				elements.add("    <type>" + motor.getMotorType().name().toLowerCase(Locale.ENGLISH) + "</type>");
 			}
@@ -178,19 +225,19 @@ public class RocketComponentSaver {
 			elements.add("    <length>" + motor.getLength() + "</length>");
 			
 			// Motor delay
-			if (motorConfig.getEjectionDelay() == Motor.PLUGGED) {
+			if (motorInstance.getEjectionDelay() == Motor.PLUGGED_DELAY) {
 				elements.add("    <delay>none</delay>");
 			} else {
-				elements.add("    <delay>" + motorConfig.getEjectionDelay() + "</delay>");
+				elements.add("    <delay>" + motorInstance.getEjectionDelay() + "</delay>");
 			}
 			
 			elements.add("  </motor>");
 			
-			if (!mount.getIgnitionConfiguration().isDefault(id)) {
-				IgnitionConfiguration ignition = mount.getIgnitionConfiguration().get(id);
-				elements.add("  <ignitionconfiguration configid=\"" + id + "\">");
-				elements.add("    <ignitionevent>" + ignition.getIgnitionEvent().name().toLowerCase(Locale.ENGLISH).replace("_", "") + "</ignitionevent>");
-				elements.add("    <ignitiondelay>" + ignition.getIgnitionDelay() + "</ignitiondelay>");
+			// i.e. if this has overridden parameters....
+			if( ! motorInstance.equals( defaultInstance)){
+				elements.add("  <ignitionconfiguration configid=\"" + fcid + "\">");
+				elements.add("    <ignitionevent>" + motorInstance.getIgnitionEvent().name().toLowerCase(Locale.ENGLISH).replace("_", "") + "</ignitionevent>");
+				elements.add("    <ignitiondelay>" + motorInstance.getIgnitionDelay() + "</ignitiondelay>");
 				elements.add("  </ignitionconfiguration>");
 				
 			}
@@ -204,9 +251,37 @@ public class RocketComponentSaver {
 	private final static void emitColor(String elementName, List<String> elements, Color color) {
 		if (color != null) {
 			elements.add("<" + elementName + " red=\"" + color.getRed() + "\" green=\"" + color.getGreen()
-					+ "\" blue=\"" + color.getBlue() + "\"/>");
+					+ "\" blue=\"" + color.getBlue() + "\" alpha=\"" + color.getAlpha() + "\"/>");
 		}
 		
 	}
+	
+    protected static void emitDouble( final List<String> elements, final String enclosingTag, final double value){
+   		appendElement( elements, enclosingTag, enclosingTag, Double.toString( value ));
+    }
+
+    protected static void emitInteger( final List<String> elements, final String enclosingTag, final int value){
+   		appendElement( elements, enclosingTag, enclosingTag, Integer.toString( value ) );
+    }
+
+    protected static void emitString( final List<String> elements, final String enclosingTag, final String value){
+   		appendElement( elements, enclosingTag, enclosingTag, value );
+    }
+
+    protected static String generateOpenTag( final Map<String,String> attrs, final String enclosingTag ){
+       StringBuffer buf = new StringBuffer();
+       if( null == attrs ) {
+    	   return enclosingTag;
+       }
+       
+       for (Map.Entry<String, String> entry : attrs.entrySet()) {
+           buf.append(String.format(" %s=\"%s\"", entry.getKey(), entry.getValue() ));
+       }
+       return buf.toString();
+    }
+
+    protected static void appendElement( final List<String> elements, final String openTag, final String closeTag, final String elementValue ){
+    	elements.add("<"+openTag+">" + elementValue + "</"+closeTag+">");    	
+    }
 	
 }

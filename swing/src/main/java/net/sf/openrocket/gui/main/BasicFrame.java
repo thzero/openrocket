@@ -113,7 +113,10 @@ import net.sf.openrocket.util.StateChangeListener;
 import net.sf.openrocket.util.TestRockets;
 import net.sf.openrocket.utils.ComponentPresetEditor;
 
+
 public class BasicFrame extends JFrame {
+	private static final long serialVersionUID = 948877655223365313L;
+
 	private static final Logger log = LoggerFactory.getLogger(BasicFrame.class);
 
 	private static final GeneralRocketSaver ROCKET_SAVER = new GeneralRocketSaver();
@@ -169,7 +172,7 @@ public class BasicFrame extends JFrame {
 
 		this.document = document;
 		this.rocket = document.getRocket();
-		this.rocket.getDefaultConfiguration().setAllStages();
+		this.rocket.getSelectedConfiguration().setAllStages();
 
 		// Create the component tree selection model that will be used
 		componentSelectionModel = new DefaultTreeSelectionModel();
@@ -681,30 +684,33 @@ public class BasicFrame extends JFrame {
 		menu.getAccessibleContext().setAccessibleDescription(trans.get("main.menu.analyze.desc"));
 		menubar.add(menu);
 
-		//// Component analysis
-		item = new JMenuItem(trans.get("main.menu.analyze.componentAnalysis"), KeyEvent.VK_C);
-		//// Analyze the rocket components separately
-		item.getAccessibleContext().setAccessibleDescription(trans.get("main.menu.analyze.componentAnalysis.desc"));
-		item.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				log.info(Markers.USER_MARKER, "Component analysis selected");
-				ComponentAnalysisDialog.showDialog(rocketpanel);
-			}
-		});
-		menu.add(item);
 
-		//// Optimize
-		item = new JMenuItem(trans.get("main.menu.analyze.optimization"), KeyEvent.VK_O);
-		item.getAccessibleContext().setAccessibleDescription(trans.get("main.menu.analyze.optimization.desc"));
-		item.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				log.info(Markers.USER_MARKER, "Rocket optimization selected");
-				new GeneralOptimizationDialog(document, BasicFrame.this).setVisible(true);
-			}
-		});
-		menu.add(item);
+//      TODO: reimplement this
+//		//// Component analysis
+//		item = new JMenuItem(trans.get("main.menu.analyze.componentAnalysis"), KeyEvent.VK_C);
+//		//// Analyze the rocket components separately
+//		item.getAccessibleContext().setAccessibleDescription(trans.get("main.menu.analyze.componentAnalysis.desc"));
+//		item.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				log.info(Markers.USER_MARKER, "Component analysis selected");
+//				ComponentAnalysisDialog.showDialog(rocketpanel);
+//			}
+//		});
+//		menu.add(item);
+
+// TODO: reimplement this dialog
+//		//// Optimize
+//		item = new JMenuItem(trans.get("main.menu.analyze.optimization"), KeyEvent.VK_O);
+//		item.getAccessibleContext().setAccessibleDescription(trans.get("main.menu.analyze.optimization.desc"));
+//		item.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				log.info(Markers.USER_MARKER, "Rocket optimization selected");
+//				new GeneralOptimizationDialog(document, BasicFrame.this).setVisible(true);
+//			}
+//		});
+//		menu.add(item);
 
 		//// Custom expressions
 		item = new JMenuItem(trans.get("main.menu.analyze.customExpressions"), KeyEvent.VK_E);
@@ -776,8 +782,9 @@ public class BasicFrame extends JFrame {
 		menu.add(item);
 
 		//// Debug log
-		item = new JMenuItem(trans.get("main.menu.help.debugLog"));
-		item.setIcon(Icons.HELP_DEBUG_LOG);
+		item = new JMenuItem(trans.get("main.menu.help.debugLog"), KeyEvent.VK_D);
+		item.setIcon(Icons.HELP_DEBUG_LOG); 
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, SHORTCUT_KEY));
 		item.getAccessibleContext().setAccessibleDescription(trans.get("main.menu.help.debugLog.desc"));
 		item.addActionListener(new ActionListener() {
 			@Override

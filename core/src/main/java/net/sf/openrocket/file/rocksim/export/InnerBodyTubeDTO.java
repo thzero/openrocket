@@ -62,7 +62,7 @@ public class InnerBodyTubeDTO extends BodyTubeDTO implements AttachableParts {
 				//Only if the inner tube is NOT a cluster, then create the corresponding Rocksim DTO and add it
 				//to the list of attached parts.  If it is a cluster, then it is handled specially outside of this
 				//loop.
-				if (innerTube.getClusterCount() == 1) {
+				if (innerTube.getInstanceCount() == 1) {
 					attachedParts.add(new InnerBodyTubeDTO(innerTube, this));
 				}
 			} else if (rocketComponents instanceof BodyTube) {
@@ -104,8 +104,13 @@ public class InnerBodyTubeDTO extends BodyTubeDTO implements AttachableParts {
 	 */
 	private void handleCluster(InnerTube it, AttachableParts p) {
 		
-		Coordinate[] coords = { Coordinate.NUL };
-		coords = it.shiftCoordinates(coords);
+		// old version - Oct, 19 2015
+		//Coordinate[] coords = { Coordinate.NUL };
+		//coords = it.shiftCoordinates(coords);
+				
+		// new version
+		Coordinate[] coords = it.getLocations();
+
 		for (int x = 0; x < coords.length; x++) {
 			InnerTube partialClone = InnerTube.makeIndividualClusterComponent(coords[x], it.getName() + " #" + (x + 1), it);
 			p.addAttachedPart(new InnerBodyTubeDTO(partialClone, p));

@@ -12,20 +12,15 @@ import net.miginfocom.swing.MigLayout;
 import net.sf.openrocket.gui.util.GUIUtil;
 import net.sf.openrocket.rocketcomponent.Rocket;
 
-public abstract class MotorMountConfigurationPanel extends JPanel {
-
-	
-	private final Rocket rocket;
-	private final Component parent;
+@SuppressWarnings("serial")
+public class MotorMountConfigurationPanel extends JPanel {
 	
 	public MotorMountConfigurationPanel( Component parent, Rocket rocket ) {
 		super(new MigLayout("") );
 		
-		this.parent = parent;
-		this.rocket = rocket;
-		
-		//// Motor Mount selection 
-		JTable table = new JTable(new MotorMountTableModel(this, rocket));
+		//// Motor Mount selection
+		MotorMountTableModel model = new MotorMountTableModel( rocket);
+		JTable table = new JTable( model );
 		table.setTableHeader(null);
 		table.setShowVerticalLines(false);
 		table.setRowSelectionAllowed(false);
@@ -43,6 +38,4 @@ public abstract class MotorMountConfigurationPanel extends JPanel {
 		this.add(scroll, "w 200lp, h 150lp, grow");
 
 	}
-
-	public abstract void onDataChanged();
 }

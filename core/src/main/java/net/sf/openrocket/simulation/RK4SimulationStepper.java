@@ -10,6 +10,7 @@ import net.sf.openrocket.aerodynamics.AerodynamicForces;
 import net.sf.openrocket.aerodynamics.FlightConditions;
 import net.sf.openrocket.aerodynamics.WarningSet;
 import net.sf.openrocket.l10n.Translator;
+import net.sf.openrocket.masscalc.RigidBody;
 import net.sf.openrocket.models.atmosphere.AtmosphericConditions;
 import net.sf.openrocket.simulation.exception.SimulationCalculationException;
 import net.sf.openrocket.simulation.exception.SimulationException;
@@ -110,7 +111,7 @@ public class RK4SimulationStepper extends AbstractSimulationStepper {
 		/*
 		 * Compute the initial thrust estimate.  This is used for the first time step computation.
 		 */
-		store.thrustForce = calculateThrust(status, store.timestep, status.getPreviousAcceleration(),
+		store.thrustForce = calculateAverageThrust(status, store.timestep, status.getPreviousAcceleration(),
 				status.getPreviousAtmosphericConditions(), false);
 		
 
@@ -179,8 +180,9 @@ public class RK4SimulationStepper extends AbstractSimulationStepper {
 		 * diminished by it affecting only 1/6th of the total, so it's an acceptable error.
 		 */
 		double thrustEstimate = store.thrustForce;
-		store.thrustForce = calculateThrust(status, store.timestep, store.longitudinalAcceleration,
+		store.thrustForce = calculateAverageThrust(status, store.timestep, store.longitudinalAcceleration,
 				store.atmosphericConditions, true);
+		log.trace("Thrust = " + store.thrustForce);
 		double thrustDiff = Math.abs(store.thrustForce - thrustEstimate);
 		// Log if difference over 1%, recompute if over 10%
 		if (thrustDiff > 0.01 * thrustEstimate) {
@@ -244,16 +246,12 @@ public class RK4SimulationStepper extends AbstractSimulationStepper {
 		
 
 		//// Sum all together,  y(n+1) = y(n) + h*(k1 + 2*k2 + 2*k3 + k4)/6
-		
-
-
 		Coordinate deltaV, deltaP, deltaR, deltaO;
 		deltaV = k2.a.add(k3.a).multiply(2).add(k1.a).add(k4.a).multiply(store.timestep / 6);
 		deltaP = k2.v.add(k3.v).multiply(2).add(k1.v).add(k4.v).multiply(store.timestep / 6);
 		deltaR = k2.ra.add(k3.ra).multiply(2).add(k1.ra).add(k4.ra).multiply(store.timestep / 6);
 		deltaO = k2.rv.add(k3.rv).multiply(2).add(k1.rv).add(k4.rv).multiply(store.timestep / 6);
 		
-
 
 		status.setRocketVelocity(status.getRocketVelocity().add(deltaV));
 		status.setRocketPosition(status.getRocketPosition().add(deltaP));
@@ -264,6 +262,10 @@ public class RK4SimulationStepper extends AbstractSimulationStepper {
 		w = status.getSimulationConditions().getGeodeticComputation().addCoordinate(w, status.getRocketPosition());
 		status.setRocketWorldPosition(w);
 		
+		if (!(0 <= store.timestep)) {
+			// Also catches NaN
+			throw new IllegalArgumentException("Stepping backwards in time, timestep=" +store.timestep);
+		}
 		status.setSimulationTime(status.getSimulationTime() + store.timestep);
 		
 		status.setPreviousTimeStep(store.timestep);
@@ -325,8 +327,10 @@ public class RK4SimulationStepper extends AbstractSimulationStepper {
 		calculateForces(status, store);
 		
 		// Calculate mass data
-		store.massData = calculateMassData(status);
+		RigidBody structureMassData = calculateStructureMass(status);
 		
+		store.motorMass = calculateMotorMass(status);
+		store.rocketMass = structureMassData.add( store.motorMass );
 
 		// Calculate the forces from the aerodynamic coefficients
 		
@@ -343,9 +347,9 @@ public class RK4SimulationStepper extends AbstractSimulationStepper {
 		
 		double forceZ = store.thrustForce - store.dragForce;
 		
-		store.linearAcceleration = new Coordinate(-fN / store.massData.getCG().weight,
-					-fSide / store.massData.getCG().weight,
-					forceZ / store.massData.getCG().weight);
+		store.linearAcceleration = new Coordinate(-fN / store.rocketMass.getMass(),
+					-fSide / store.rocketMass.getMass(),
+					forceZ / store.rocketMass.getMass());
 		
 		store.linearAcceleration = store.thetaRotation.rotateZ(store.linearAcceleration);
 		
@@ -374,8 +378,8 @@ public class RK4SimulationStepper extends AbstractSimulationStepper {
 		} else {
 			
 			// Shift moments to CG
-			double Cm = store.forces.getCm() - store.forces.getCN() * store.massData.getCG().x / refLength;
-			double Cyaw = store.forces.getCyaw() - store.forces.getCside() * store.massData.getCG().x / refLength;
+			double Cm = store.forces.getCm() - store.forces.getCN() * store.rocketMass.getCM().x / refLength;
+			double Cyaw = store.forces.getCyaw() - store.forces.getCside() * store.rocketMass.getCM().x / refLength;
 			
 			// Compute moments
 			double momX = -Cyaw * dynP * refArea * refLength;
@@ -383,9 +387,9 @@ public class RK4SimulationStepper extends AbstractSimulationStepper {
 			double momZ = store.forces.getCroll() * dynP * refArea * refLength;
 			
 			// Compute acceleration in rocket coordinates
-			store.angularAcceleration = new Coordinate(momX / store.massData.getLongitudinalInertia(),
-						momY / store.massData.getLongitudinalInertia(),
-						momZ / store.massData.getRotationalInertia());
+			store.angularAcceleration = new Coordinate(momX / store.rocketMass.getLongitudinalInertia(),
+						momY / store.rocketMass.getLongitudinalInertia(),
+						momZ / store.rocketMass.getRotationalInertia());
 			
 			store.rollAcceleration = store.angularAcceleration.z;
 			// TODO: LOW: This should be hypot, but does it matter?
@@ -593,24 +597,30 @@ public class RK4SimulationStepper extends AbstractSimulationStepper {
 			data.setValue(FlightDataType.TYPE_MACH_NUMBER, store.flightConditions.getMach());
 		}
 		
-		if (store.massData != null) {
-			data.setValue(FlightDataType.TYPE_CG_LOCATION, store.massData.getCG().x);
+		if (store.rocketMass != null) {
+			data.setValue(FlightDataType.TYPE_CG_LOCATION, store.rocketMass.getCM().x);
 		}
 		if (status.isLaunchRodCleared()) {
 			// Don't include CP and stability with huge launch AOA
 			if (store.forces != null) {
 				data.setValue(FlightDataType.TYPE_CP_LOCATION, store.forces.getCP().x);
 			}
-			if (store.forces != null && store.flightConditions != null && store.massData != null) {
+			if (store.forces != null && store.flightConditions != null && store.rocketMass != null) {
 				data.setValue(FlightDataType.TYPE_STABILITY,
-						(store.forces.getCP().x - store.massData.getCG().x) / store.flightConditions.getRefLength());
+						(store.forces.getCP().x - store.rocketMass.getCM().x) / store.flightConditions.getRefLength());
 			}
 		}
-		if (store.massData != null) {
-			data.setValue(FlightDataType.TYPE_MASS, store.massData.getCG().weight);
-			data.setValue(FlightDataType.TYPE_PROPELLANT_MASS, store.massData.getPropellantMass());
-			data.setValue(FlightDataType.TYPE_LONGITUDINAL_INERTIA, store.massData.getLongitudinalInertia());
-			data.setValue(FlightDataType.TYPE_ROTATIONAL_INERTIA, store.massData.getRotationalInertia());
+
+		if( null != store.motorMass ){
+			data.setValue(FlightDataType.TYPE_PROPELLANT_MASS, store.motorMass.getMass());
+			//data.setValue(FlightDataType.TYPE_PROPELLANT_LONGITUDINAL_INERTIA, store.propellantMassData.getLongitudinalInertia());
+			//data.setValue(FlightDataType.TYPE_PROPELLANT_ROTATIONAL_INERTIA, store.propellantMassData.getRotationalInertia());
+		}
+		if (store.rocketMass != null) {
+			// N.B.: These refer to total mass
+			data.setValue(FlightDataType.TYPE_MASS, store.rocketMass.getMass());
+			data.setValue(FlightDataType.TYPE_LONGITUDINAL_INERTIA, store.rocketMass.getLongitudinalInertia());
+			data.setValue(FlightDataType.TYPE_ROTATIONAL_INERTIA, store.rocketMass.getRotationalInertia());
 		}
 		
 		data.setValue(FlightDataType.TYPE_THRUST_FORCE, store.thrustForce);
@@ -618,11 +628,11 @@ public class RK4SimulationStepper extends AbstractSimulationStepper {
 		data.setValue(FlightDataType.TYPE_GRAVITY, store.gravity);
 		
 		if (status.isLaunchRodCleared() && store.forces != null) {
-			if (store.massData != null && store.flightConditions != null) {
+			if (store.rocketMass != null && store.flightConditions != null) {
 				data.setValue(FlightDataType.TYPE_PITCH_MOMENT_COEFF,
-						store.forces.getCm() - store.forces.getCN() * store.massData.getCG().x / store.flightConditions.getRefLength());
+						store.forces.getCm() - store.forces.getCN() * store.rocketMass.getCM().x / store.flightConditions.getRefLength());
 				data.setValue(FlightDataType.TYPE_YAW_MOMENT_COEFF,
-						store.forces.getCyaw() - store.forces.getCside() * store.massData.getCG().x / store.flightConditions.getRefLength());
+						store.forces.getCyaw() - store.forces.getCside() * store.rocketMass.getCM().x / store.flightConditions.getRefLength());
 			}
 			data.setValue(FlightDataType.TYPE_NORMAL_FORCE_COEFF, store.forces.getCN());
 			data.setValue(FlightDataType.TYPE_SIDE_FORCE_COEFF, store.forces.getCside());
@@ -705,7 +715,9 @@ public class RK4SimulationStepper extends AbstractSimulationStepper {
 		
 		public double longitudinalAcceleration = Double.NaN;
 		
-		public MassData massData;
+		public RigidBody rocketMass;
+		
+		public RigidBody motorMass;
 		
 		public Coordinate coriolisAcceleration;
 		

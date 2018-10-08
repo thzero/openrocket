@@ -2,9 +2,9 @@ package net.sf.openrocket.simulation.listeners;
 
 import net.sf.openrocket.aerodynamics.AerodynamicForces;
 import net.sf.openrocket.aerodynamics.FlightConditions;
+import net.sf.openrocket.masscalc.RigidBody;
 import net.sf.openrocket.models.atmosphere.AtmosphericConditions;
 import net.sf.openrocket.simulation.AccelerationData;
-import net.sf.openrocket.simulation.MassData;
 import net.sf.openrocket.simulation.SimulationStatus;
 import net.sf.openrocket.simulation.exception.SimulationException;
 import net.sf.openrocket.util.Coordinate;
@@ -55,9 +55,9 @@ public interface SimulationComputationListener extends SimulationListener {
 	public AerodynamicForces postAerodynamicCalculation(SimulationStatus status, AerodynamicForces forces)
 			throws SimulationException;
 	
-	public MassData preMassCalculation(SimulationStatus status) throws SimulationException;
+	public RigidBody preMassCalculation(SimulationStatus status) throws SimulationException;
 	
-	public MassData postMassCalculation(SimulationStatus status, MassData massData) throws SimulationException;
+	public RigidBody postMassCalculation(SimulationStatus status, RigidBody massData) throws SimulationException;
 	
 	
 	public double preSimpleThrustCalculation(SimulationStatus status) throws SimulationException;

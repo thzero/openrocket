@@ -16,6 +16,8 @@ import net.sf.openrocket.gui.dialogs.flightconfiguration.RenameConfigDialog;
 import net.sf.openrocket.gui.main.BasicFrame;
 import net.sf.openrocket.l10n.Translator;
 import net.sf.openrocket.rocketcomponent.FlightConfigurableComponent;
+import net.sf.openrocket.rocketcomponent.FlightConfiguration;
+import net.sf.openrocket.rocketcomponent.FlightConfigurationId;
 import net.sf.openrocket.rocketcomponent.RecoveryDevice;
 import net.sf.openrocket.rocketcomponent.Rocket;
 import net.sf.openrocket.rocketcomponent.RocketComponent;
@@ -24,12 +26,8 @@ import net.sf.openrocket.rocketvisitors.ListMotorMounts;
 import net.sf.openrocket.startup.Application;
 import net.sf.openrocket.util.StateChangeListener;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+@SuppressWarnings("serial")
 public class FlightConfigurationPanel extends JPanel implements StateChangeListener {
-	
-	private static final Logger log = LoggerFactory.getLogger(FlightConfigurationPanel.class);
 	private static final Translator trans = Application.getTranslator();
 	
 	private final OpenRocketDocument document;
@@ -56,6 +54,7 @@ public class FlightConfigurationPanel extends JPanel implements StateChangeListe
 		
 		this.document = doc;
 		this.rocket = doc.getRocket();
+		this.rocket.addChangeListener(this);
 		
 		//JPanel panel = new JPanel(new MigLayout("fill","[grow][][][][][grow]"));
 		
@@ -65,6 +64,7 @@ public class FlightConfigurationPanel extends JPanel implements StateChangeListe
 		//// Motor tabs
 		motorConfigurationPanel = new MotorConfigurationPanel(this, rocket);
 		tabs.add(trans.get("edtmotorconfdlg.lbl.Motortab"), motorConfigurationPanel);
+		
 		//// Recovery tab
 		recoveryConfigurationPanel = new RecoveryConfigurationPanel(this, rocket);
 		tabs.add(trans.get("edtmotorconfdlg.lbl.Recoverytab"), recoveryConfigurationPanel);
@@ -77,7 +77,7 @@ public class FlightConfigurationPanel extends JPanel implements StateChangeListe
 		newConfButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				addConfiguration();
+				addOrCopyConfiguration(false);
 				configurationChanged();
 			}
 			
@@ -109,7 +109,7 @@ public class FlightConfigurationPanel extends JPanel implements StateChangeListe
 		copyConfButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				copyConfiguration();
+				addOrCopyConfiguration(true);
 				configurationChanged();
 			}
 		});
@@ -118,88 +118,85 @@ public class FlightConfigurationPanel extends JPanel implements StateChangeListe
 		updateButtonState();
 
 		this.add(tabs, "spanx, grow, wrap rel");
+	}
 
-		
-		this.rocket.getDefaultConfiguration().addChangeListener(this);
-	}
-	
-	private void addConfiguration() {
-		String newId = rocket.newFlightConfigurationID();
-		rocket.getDefaultConfiguration().setFlightConfigurationID(newId);
-		
-		// Create a new simulation for this configuration.
-		createSimulationForNewConfiguration();
-		
-		configurationChanged();
-	}
-	
-	private void copyConfiguration() {
-		String currentId = rocket.getDefaultConfiguration().getFlightConfigurationID();
-		
-		// currentID is the currently selected configuration.
-		String newConfigId = rocket.newFlightConfigurationID();
-		String oldName = rocket.getFlightConfigurationName(currentId);
-		
-		for (RocketComponent c : rocket) {
-			if (c instanceof FlightConfigurableComponent) {
-				((FlightConfigurableComponent) c).cloneFlightConfiguration(currentId, newConfigId);
+	/**
+	 * either create or copy configuration
+	 * set new configuration as current
+	 * create simulation for new configuration
+	 */
+	private void addOrCopyConfiguration(boolean copy) {
+		FlightConfiguration newConfig;
+		FlightConfigurationId newId;
+
+		// create or copy configuration
+		if (copy) {
+			FlightConfigurationId oldId = this.motorConfigurationPanel.getSelectedConfigurationId();
+			FlightConfiguration oldConfig = rocket.getFlightConfiguration(oldId);
+
+			newConfig = oldConfig.copy(null);
+			newId = newConfig.getId();
+
+			for (RocketComponent c : rocket) {
+				if (c instanceof FlightConfigurableComponent) {
+					((FlightConfigurableComponent) c).copyFlightConfiguration(oldId, newId);
+				}
 			}
+		} else {
+			newConfig = new FlightConfiguration(rocket, null);
+			newId = newConfig.getId();
 		}
-		rocket.setFlightConfigurationName(currentId, oldName);
-		rocket.getDefaultConfiguration().setFlightConfigurationID(newConfigId);
+
+		// associate configuration with Id and select it
+		rocket.setFlightConfiguration(newId, newConfig);
+		rocket.setSelectedConfiguration(newId);
+
+		// create simulation for configuration
+		Simulation newSim = new Simulation(rocket);
 		
-		// Create a new simulation for this configuration.
-		createSimulationForNewConfiguration();
-		
-		configurationChanged();
+		OpenRocketDocument doc = BasicFrame.findDocument(rocket);
+        if (doc != null) {
+            newSim.setName(doc.getNextSimulationName());
+            doc.addSimulation(newSim);
+        }
 	}
 	
 	private void renameConfiguration() {
-		new RenameConfigDialog(SwingUtilities.getWindowAncestor(this), rocket).setVisible(true);
+		FlightConfigurationId currentId = this.motorConfigurationPanel.getSelectedConfigurationId();
+		new RenameConfigDialog(SwingUtilities.getWindowAncestor(this), rocket, currentId).setVisible(true);
 	}
 	
 	private void removeConfiguration() {
-		String currentId = rocket.getDefaultConfiguration().getFlightConfigurationID();
+		FlightConfigurationId currentId = this.motorConfigurationPanel.getSelectedConfigurationId();
 		if (currentId == null)
 			return;
 		document.removeFlightConfigurationAndSimulations(currentId);
 		configurationChanged();
 	}
 	
-	/**
-	 * prereq - assumes that the new configuration has been set as the default configuration.
-	 */
-	private void createSimulationForNewConfiguration() {
-		Simulation newSim = new Simulation(rocket);
-		OpenRocketDocument doc = BasicFrame.findDocument(rocket);
-		newSim.setName(doc.getNextSimulationName());
-		doc.addSimulation(newSim);
-	}
-	
 	private void configurationChanged() {
 		motorConfigurationPanel.fireTableDataChanged();
 		recoveryConfigurationPanel.fireTableDataChanged();
 		separationConfigurationPanel.fireTableDataChanged();
-		updateButtonState();
 	}
 	
 	private void updateButtonState() {
-		String currentId = rocket.getDefaultConfiguration().getFlightConfigurationID();
+		FlightConfigurationId currentId = rocket.getSelectedConfiguration().getFlightConfigurationID();
 		// Enable the remove/rename/copy buttons only when a configuration is selected.
-		removeConfButton.setEnabled(currentId != null);
-		renameConfButton.setEnabled(currentId != null);
-		copyConfButton.setEnabled(currentId != null);
+		removeConfButton.setEnabled(currentId.isValid());
+		renameConfButton.setEnabled(currentId.isValid());
+		copyConfButton.setEnabled(currentId.isValid());
 		
 		// Count the number of motor mounts
 		int motorMountCount = rocket.accept(new ListMotorMounts()).size();
 		
 		// Count the number of recovery devices
-		int recoveryDeviceCount = rocket.accept(new ListComponents<RecoveryDevice>(RecoveryDevice.class)).size();
+		int recoveryDeviceCount = rocket.accept(new ListComponents<>(RecoveryDevice.class)).size();
 		
 		// Count the number of stages
 		int stageCount = rocket.getStageCount();
 		
-		// Enable the new configuration button only when a motor mount is defined.
+        // Enable the new configuration button only when a motor mount is defined.
 		newConfButton.setEnabled(motorMountCount > 0);
 		
 		// Only enable the recovery tab if there is a motor mount and there is a recovery device

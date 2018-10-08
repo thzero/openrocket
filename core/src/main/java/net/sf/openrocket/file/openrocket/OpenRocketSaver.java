@@ -10,21 +10,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.sf.openrocket.aerodynamics.Warning;
 import net.sf.openrocket.document.OpenRocketDocument;
 import net.sf.openrocket.document.Simulation;
 import net.sf.openrocket.document.StorageOptions;
 import net.sf.openrocket.file.RocketSaver;
-import net.sf.openrocket.rocketcomponent.DeploymentConfiguration.DeployEvent;
-import net.sf.openrocket.rocketcomponent.FinSet;
-import net.sf.openrocket.rocketcomponent.FlightConfigurableComponent;
-import net.sf.openrocket.rocketcomponent.MotorMount;
-import net.sf.openrocket.rocketcomponent.RecoveryDevice;
 import net.sf.openrocket.rocketcomponent.Rocket;
 import net.sf.openrocket.rocketcomponent.RocketComponent;
-import net.sf.openrocket.rocketcomponent.Stage;
-import net.sf.openrocket.rocketcomponent.TubeCoupler;
-import net.sf.openrocket.rocketcomponent.TubeFinSet;
 import net.sf.openrocket.simulation.FlightData;
 import net.sf.openrocket.simulation.FlightDataBranch;
 import net.sf.openrocket.simulation.FlightDataType;
@@ -35,12 +30,8 @@ import net.sf.openrocket.simulation.extension.SimulationExtension;
 import net.sf.openrocket.util.BugException;
 import net.sf.openrocket.util.BuildProperties;
 import net.sf.openrocket.util.Config;
-import net.sf.openrocket.util.MathUtil;
 import net.sf.openrocket.util.Reflection;
 import net.sf.openrocket.util.TextUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class OpenRocketSaver extends RocketSaver {
 	private static final Logger log = LoggerFactory.getLogger(OpenRocketSaver.class);
@@ -222,180 +213,65 @@ public class OpenRocketSaver extends RocketSaver {
 		/*
 		 * NOTE:  Remember to update the supported versions in DocumentConfig as well!
 		 * 
-		 * File version 1.7 is required for:
-		 *  - simulation extensions
-		 *  - saving tube fins.
-		 * 
-		 * File version 1.6 is required for:
-		 *  - saving files using appearances and textures, flight configurations.
+		 * File version 1.8 is required for:
+		 *  - new-style positioning
+		 *  - external/parallel booster stages
+		 *  - external pods
+		 *  - Rail Buttons
 		 *  
-		 * File version 1.5 is requires for:
-		 *  - saving designs using ComponentPrests
-		 *  - recovery device deployment on lower stage separation
-		 *  - custom expressions
-		 *  
-		 * File version 1.4 is required for:
-		 *  - saving simulation data
-		 *  - saving motor data
-		 * 
-		 * File version 1.1 is required for:
-		 *  - fin tabs
-		 *  - components attached to tube coupler
-		 * 
-		 * Otherwise use version 1.0.
+		 * Otherwise use version 1.8.
 		 */
 		
 		/////////////////
-		// Version 1.7 // 
+		// Version 1.8 // 
 		/////////////////
-		for (Simulation sim : document.getSimulations()) {
-			if (!sim.getSimulationExtensions().isEmpty()) {
-				return FILE_VERSION_DIVISOR + 7;
-			}
-		}
+		// for any new-style positioning:  'axialoffset', 'angleoffset', 'radiusoffset' tags
+		// these tags are used for any RocketComponent child classes positioning... so... ALL the classes.
+		return FILE_VERSION_DIVISOR + 8;
 		
-		// Search the rocket for any TubeFinSet objects (version 1.7)
-		for (RocketComponent c : document.getRocket()) {
-			if (c instanceof TubeFinSet) {
-				return FILE_VERSION_DIVISOR + 7;
-			}
-		}
-		
-		
-		/////////////////
-		// Version 1.6 // 
-		/////////////////
-		
-		// Search the rocket for any Appearances or non-motor flight configurations (version 1.6)
-		for (RocketComponent c : document.getRocket()) {
-			if (c.getAppearance() != null) {
-				return FILE_VERSION_DIVISOR + 6;
-			}
-			if (c instanceof FlightConfigurableComponent) {
-				if (c instanceof MotorMount) {
-					MotorMount mmt = (MotorMount) c;
-					if (mmt.getIgnitionConfiguration().size() > 0) {
-						return FILE_VERSION_DIVISOR + 6;
-					}
-				}
-				if (c instanceof RecoveryDevice) {
-					RecoveryDevice recovery = (RecoveryDevice) c;
-					if (recovery.getDeploymentConfiguration().size() > 0) {
-						return FILE_VERSION_DIVISOR + 6;
-					}
-				}
-				if (c instanceof Stage) {
-					Stage stage = (Stage) c;
-					if (stage.getStageSeparationConfiguration().size() > 0) {
-						return FILE_VERSION_DIVISOR + 6;
-					}
-				}
-			}
-		}
-		
-		/////////////////
-		// Version 1.5 // 
-		/////////////////
-		
-		// Search the rocket for any ComponentPresets (version 1.5)
-		for (RocketComponent c : document.getRocket()) {
-			if (c.getPresetComponent() != null) {
-				return FILE_VERSION_DIVISOR + 5;
-			}
-		}
-		
-		// Search for recovery device deployment type LOWER_STAGE_SEPARATION (version 1.5)
-		for (RocketComponent c : document.getRocket()) {
-			if (c instanceof RecoveryDevice) {
-				if (((RecoveryDevice) c).getDeploymentConfiguration().getDefault().getDeployEvent() == DeployEvent.LOWER_STAGE_SEPARATION) {
-					return FILE_VERSION_DIVISOR + 5;
-				}
-			}
-		}
-		
-		// Check for custom expressions (version 1.5)
-		if (!document.getCustomExpressions().isEmpty()) {
-			return FILE_VERSION_DIVISOR + 5;
-		}
-		
-		/////////////////
-		// Version 1.4 // 
-		/////////////////
-		
-		// Check if design has simulations defined (version 1.4)
-		if (document.getSimulationCount() > 0) {
-			return FILE_VERSION_DIVISOR + 4;
-		}
-		
-		// Check for motor definitions (version 1.4)
-		for (RocketComponent c : document.getRocket()) {
-			if (!(c instanceof MotorMount))
-				continue;
-			
-			MotorMount mount = (MotorMount) c;
-			for (String id : document.getRocket().getFlightConfigurationIDs()) {
-				if (mount.getMotor(id) != null) {
-					return FILE_VERSION_DIVISOR + 4;
-				}
-			}
-		}
-		
-		/////////////////
-		// Version 1.3 // 
-		/////////////////
-		
-		// no version 1.3 file type exists
-		
-		/////////////////
-		// Version 1.2 // 
-		/////////////////
-		
-		// no version 1.2 file type exists
-		
-		/////////////////
-		// Version 1.1 // 
-		/////////////////
-		
-		// Check for fin tabs or tube coupler children (version 1.1)
-		for (RocketComponent c : document.getRocket()) {
-			// Check for fin tabs
-			if (c instanceof FinSet) {
-				FinSet fin = (FinSet) c;
-				if (!MathUtil.equals(fin.getTabHeight(), 0) &&
-						!MathUtil.equals(fin.getTabLength(), 0)) {
-					return FILE_VERSION_DIVISOR + 1;
-				}
-			}
-			
-			// Check for components attached to tube coupler
-			if (c instanceof TubeCoupler) {
-				if (c.getChildCount() > 0) {
-					return FILE_VERSION_DIVISOR + 1;
-				}
-			}
-		}
-		
-		/////////////////
-		// Version 1.0 // 
-		/////////////////
-		
-		// Default (version 1.0)
-		return FILE_VERSION_DIVISOR + 0;
 	}
 	
 	
+	/**
+	 * Finds a getElements method somewhere in the *saver class hiearchy corresponding to the given component. 
+	 */
+	private static Reflection.Method findGetElementsMethod(RocketComponent component) {
+		String currentclassname;
+		Class<?> currentclass;
+		String saverclassname;
+		Class<?> saverClass;
+		
+		Reflection.Method mtr = null; // method-to-return
+		
+		currentclass = component.getClass();
+		while ((currentclass != null) && (currentclass != Object.class)) {
+			currentclassname = currentclass.getSimpleName();
+			saverclassname = METHOD_PACKAGE + "." + currentclassname + METHOD_SUFFIX;
+			
+			try {
+				saverClass = Class.forName(saverclassname);
+				
+				// if class exists
+				java.lang.reflect.Method m = saverClass.getMethod("getElements", RocketComponent.class);
+				mtr = new Reflection.Method(m);
+				
+				return mtr;
+			} catch (Exception ignore) {
+			}
+			
+			currentclass = currentclass.getSuperclass();
+		}
+		
+		// if( null == mtr ){
+		throw new BugException("Unable to find saving class for component " +
+				METHOD_PACKAGE + "." + component.getClass().getSimpleName() + " ... " + METHOD_SUFFIX);
+	}
 	
 	@SuppressWarnings("unchecked")
 	private void saveComponent(RocketComponent component) throws IOException {
-		
 		log.debug("Saving component " + component.getComponentName());
 		
-		Reflection.Method m = Reflection.findMethod(METHOD_PACKAGE, component, METHOD_SUFFIX,
-				"getElements", RocketComponent.class);
-		if (m == null) {
-			throw new BugException("Unable to find saving class for component " +
-					component.getComponentName());
-		}
+		Reflection.Method m = findGetElementsMethod(component);
 		
 		// Get the strings to save
 		List<String> list = (List<String>) m.invokeStatic(component);
@@ -454,7 +330,7 @@ public class OpenRocketSaver extends RocketSaver {
 		writeln("<conditions>");
 		indent++;
 		
-		writeElement("configid", cond.getMotorConfigurationID());
+		writeElement("configid", simulation.getId().key);
 		writeElement("launchrodlength", cond.getLaunchRodLength());
 		writeElement("launchrodangle", cond.getLaunchRodAngle() * 180.0 / Math.PI);
 		writeElement("launchroddirection", cond.getLaunchRodDirection() * 360.0 / (2.0 * Math.PI));

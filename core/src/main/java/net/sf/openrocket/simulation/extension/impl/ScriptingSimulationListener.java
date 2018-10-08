@@ -6,16 +6,19 @@ import java.util.Set;
 import javax.script.Invocable;
 import javax.script.ScriptException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.sf.openrocket.aerodynamics.AerodynamicForces;
 import net.sf.openrocket.aerodynamics.FlightConditions;
+import net.sf.openrocket.masscalc.RigidBody;
 import net.sf.openrocket.models.atmosphere.AtmosphericConditions;
-import net.sf.openrocket.motor.MotorId;
-import net.sf.openrocket.motor.MotorInstance;
+import net.sf.openrocket.motor.MotorConfigurationId;
 import net.sf.openrocket.rocketcomponent.MotorMount;
 import net.sf.openrocket.rocketcomponent.RecoveryDevice;
 import net.sf.openrocket.simulation.AccelerationData;
 import net.sf.openrocket.simulation.FlightEvent;
-import net.sf.openrocket.simulation.MassData;
+import net.sf.openrocket.simulation.MotorClusterState;
 import net.sf.openrocket.simulation.SimulationStatus;
 import net.sf.openrocket.simulation.exception.SimulationException;
 import net.sf.openrocket.simulation.exception.SimulationListenerException;
@@ -24,9 +27,6 @@ import net.sf.openrocket.simulation.listeners.SimulationEventListener;
 import net.sf.openrocket.simulation.listeners.SimulationListener;
 import net.sf.openrocket.util.BugException;
 import net.sf.openrocket.util.Coordinate;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ScriptingSimulationListener implements SimulationListener, SimulationComputationListener, SimulationEventListener, Cloneable {
 	
@@ -105,7 +105,7 @@ public class ScriptingSimulationListener implements SimulationListener, Simulati
 	}
 	
 	@Override
-	public boolean motorIgnition(SimulationStatus status, MotorId motorId, MotorMount mount, MotorInstance instance) throws SimulationException {
+	public boolean motorIgnition(SimulationStatus status, MotorConfigurationId motorId, MotorMount mount, MotorClusterState instance) throws SimulationException {
 		return invoke(Boolean.class, true, "motorIgnition", status, motorId, mount, instance);
 	}
 	
@@ -144,8 +144,8 @@ public class ScriptingSimulationListener implements SimulationListener, Simulati
 	}
 	
 	@Override
-	public MassData preMassCalculation(SimulationStatus status) throws SimulationException {
-		return invoke(MassData.class, null, "preMassCalculation", status);
+	public RigidBody preMassCalculation(SimulationStatus status) throws SimulationException {
+		return invoke(RigidBody.class, null, "preMassCalculation", status);
 	}
 	
 	@Override
@@ -184,8 +184,8 @@ public class ScriptingSimulationListener implements SimulationListener, Simulati
 	}
 	
 	@Override
-	public MassData postMassCalculation(SimulationStatus status, MassData massData) throws SimulationException {
-		return invoke(MassData.class, null, "postMassCalculation", status, massData);
+	public RigidBody postMassCalculation(SimulationStatus status, RigidBody RigidBody) throws SimulationException {
+		return invoke(RigidBody.class, null, "postMassCalculation", status, RigidBody);
 	}
 	
 	@Override

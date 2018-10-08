@@ -2,14 +2,14 @@ package net.sf.openrocket.simulation.listeners;
 
 import net.sf.openrocket.aerodynamics.AerodynamicForces;
 import net.sf.openrocket.aerodynamics.FlightConditions;
+import net.sf.openrocket.masscalc.RigidBody;
 import net.sf.openrocket.models.atmosphere.AtmosphericConditions;
-import net.sf.openrocket.motor.MotorId;
-import net.sf.openrocket.motor.MotorInstance;
+import net.sf.openrocket.motor.MotorConfigurationId;
 import net.sf.openrocket.rocketcomponent.MotorMount;
 import net.sf.openrocket.rocketcomponent.RecoveryDevice;
 import net.sf.openrocket.simulation.AccelerationData;
 import net.sf.openrocket.simulation.FlightEvent;
-import net.sf.openrocket.simulation.MassData;
+import net.sf.openrocket.simulation.MotorClusterState;
 import net.sf.openrocket.simulation.SimulationStatus;
 import net.sf.openrocket.simulation.exception.SimulationException;
 import net.sf.openrocket.util.BugException;
@@ -72,7 +72,7 @@ public class AbstractSimulationListener implements SimulationListener, Simulatio
 	}
 	
 	@Override
-	public boolean motorIgnition(SimulationStatus status, MotorId motorId, MotorMount mount, MotorInstance instance) throws SimulationException {
+	public boolean motorIgnition(SimulationStatus status, MotorConfigurationId motorId, MotorMount mount, MotorClusterState instance) throws SimulationException {
 		return true;
 	}
 	
@@ -111,7 +111,7 @@ public class AbstractSimulationListener implements SimulationListener, Simulatio
 	}
 	
 	@Override
-	public MassData preMassCalculation(SimulationStatus status) throws SimulationException {
+	public RigidBody preMassCalculation(SimulationStatus status) throws SimulationException {
 		return null;
 	}
 	
@@ -151,7 +151,7 @@ public class AbstractSimulationListener implements SimulationListener, Simulatio
 	}
 	
 	@Override
-	public MassData postMassCalculation(SimulationStatus status, MassData massData) throws SimulationException {
+	public RigidBody postMassCalculation(SimulationStatus status, RigidBody RigidBody) throws SimulationException {
 		return null;
 	}
 	

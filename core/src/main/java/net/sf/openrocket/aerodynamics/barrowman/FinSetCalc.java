@@ -5,9 +5,6 @@ import static net.sf.openrocket.util.MathUtil.pow2;
 
 import java.util.Arrays;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import net.sf.openrocket.aerodynamics.AerodynamicForces;
 import net.sf.openrocket.aerodynamics.FlightConditions;
 import net.sf.openrocket.aerodynamics.Warning;
@@ -22,9 +19,6 @@ import net.sf.openrocket.util.PolyInterpolator;
 
 
 public class FinSetCalc extends RocketComponentCalc {
-	
-	/** logger for debugging*/
-	private final static Logger logger = LoggerFactory.getLogger(FinSetCalc.class);
 	
 	/** considers the stall angle as 20 degrees*/
 	private static final double STALL_ANGLE = (20 * Math.PI / 180);
@@ -83,8 +77,8 @@ public class FinSetCalc extends RocketComponentCalc {
 	}
 	
 	/*
-	 * Calculates the non-axial forces produced by the fins (normal and side forces,
-	 * pitch, yaw and roll moments, CP position, CNa).
+	 * Calculates the non-axial forces produced by each set of fins.
+	 * (normal and side forces, pitch, yaw and roll moments, CP position, CNa).
 	 */
 	@Override
 	public void calculateNonaxialForces(FlightConditions conditions,
@@ -113,9 +107,7 @@ public class FinSetCalc extends RocketComponentCalc {
 		
 		// One fin without interference (both sub- and supersonic):
 		double cna1 = calculateFinCNa1(conditions);
-		
-		//		logger.debug("Component cna1 = {}", cna1);
-		
+			
 		// Multiple fins with fin-fin interference
 		double cna;
 		double theta = conditions.getTheta();
@@ -168,56 +160,7 @@ public class FinSetCalc extends RocketComponentCalc {
 			warnings.add(Warning.PARALLEL_FINS);
 			break;
 		}
-		
-		/*
-		 * Used in 0.9.5 and earlier.  Takes into account rotation angle for three
-		 * and four fins, does not take into account interference from other fin sets.
-		 * 
-		switch (fins) {
-		case 1:
-		case 2:
-			// from geometry
-			double mul = 0;
-			for (int i=0; i < fins; i++) {
-				mul += MathUtil.pow2(Math.sin(theta - angle));
-				angle += 2 * Math.PI / fins;
-			}
-			cna = cna1*mul;
-			break;
-			
-		case 3:
-			// multiplier 1.5, sinusoidal reduction of 15%
-			cna = cna1 * 1.5 * (1 - 0.15*pow2(Math.cos(1.5 * (theta-angle))));
-			break;
-			
-		case 4:
-			// multiplier 2.0, sinusoidal reduction of 6%
-			cna = cna1 * 2.0 * (1 - 0.06*pow2(Math.sin(2 * (theta-angle))));
-			break;
-			
-		case 5:
-			cna = 2.37 * cna1;
-			break;
-			
-		case 6:
-			cna = 2.74 * cna1;
-			break;
-			
-		case 7:
-			cna = 2.99 * cna1;
-			break;
-			
-		case 8:
-			cna = 3.24 * cna1;
-			break;
-			
-		default:
-			// Assume N/2 * 3/4 efficiency for more fins
-			cna = cna1 * fins * 3.0/8.0;
-			break;
-		}
-		*/
-		
+				
 		// Body-fin interference effect
 		double r = bodyRadius;
 		double tau = r / (span + r);
@@ -404,7 +347,7 @@ public class FinSetCalc extends RocketComponentCalc {
 			double y = i * dy;
 			
 			macLength += length * length;
-			logger.debug("macLength = {}, length = {}, i = {}", macLength, length, i);
+			//logger.debug("macLength = {}, length = {}, i = {}", macLength, length, i);
 			macSpan += y * length;
 			macLead += chordLead[i] * length;
 			area += length;
@@ -420,7 +363,7 @@ public class FinSetCalc extends RocketComponentCalc {
 		}
 		
 		macLength *= dy;
-		logger.debug("macLength = {}", macLength);
+		//logger.debug("macLength = {}", macLength);
 		macSpan *= dy;
 		macLead *= dy;
 		area *= dy;

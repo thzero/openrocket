@@ -22,12 +22,11 @@ public abstract class RingComponent extends StructuralComponent implements Coaxi
 	protected boolean innerRadiusAutomatic = false;
 	
 
-	private double radialDirection = 0;
-	private double radialPosition = 0;
+	protected double radialDirection = 0;
+	protected double radialPosition = 0;
 	
 	private double shiftY = 0;
 	private double shiftZ = 0;
-	
 	
 
 	@Override
@@ -163,29 +162,6 @@ public abstract class RingComponent extends StructuralComponent implements Coaxi
 		fireComponentChangeEvent(ComponentChangeEvent.MASS_CHANGE);
 	}
 	
-	
-	/**
-	 * Return the number of times the component is multiplied.
-	 */
-	public int getClusterCount() {
-		if (this instanceof Clusterable)
-			return ((Clusterable) this).getClusterConfiguration().getClusterCount();
-		return 1;
-	}
-	
-	
-	/**
-	 * Shift the coordinates according to the radial position and direction.
-	 */
-	@Override
-	public Coordinate[] shiftCoordinates(Coordinate[] array) {
-		for (int i = 0; i < array.length; i++) {
-			array[i] = array[i].add(0, shiftY, shiftZ);
-		}
-		return array;
-	}
-	
-	
 	@Override
 	public Collection<Coordinate> getComponentBounds() {
 		List<Coordinate> bounds = new ArrayList<Coordinate>();
@@ -194,17 +170,29 @@ public abstract class RingComponent extends StructuralComponent implements Coaxi
 		return bounds;
 	}
 	
-	
-
 	@Override
 	public Coordinate getComponentCG() {
-		return new Coordinate(length / 2, 0, 0, getComponentMass());
+		Coordinate cg = Coordinate.ZERO;
+		final int instanceCount = getInstanceCount();
+		final double instanceMass =  ringMass(getOuterRadius(), getInnerRadius(), getLength(), getMaterial().getDensity());
+
+		if (1 == instanceCount ) {
+			cg = new Coordinate( length/2, 0, 0, instanceMass );
+		}else{
+			Coordinate offsets[] = getInstanceOffsets();
+			for( Coordinate c : offsets) {
+				c = c.setWeight( instanceMass );
+				cg = cg.average(c); 
+			}
+			cg = cg.add( length/2, 0, 0);
+		}
+		return cg;
 	}
 	
 	@Override
 	public double getComponentMass() {
 		return ringMass(getOuterRadius(), getInnerRadius(), getLength(),
-				getMaterial().getDensity()) * getClusterCount();
+				getMaterial().getDensity()) * getInstanceCount();
 	}
 	
 	

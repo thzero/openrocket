@@ -29,10 +29,13 @@ import net.sf.openrocket.rocketcomponent.DeploymentConfiguration;
 import net.sf.openrocket.rocketcomponent.DeploymentConfiguration.DeployEvent;
 import net.sf.openrocket.rocketcomponent.Parachute;
 import net.sf.openrocket.rocketcomponent.RocketComponent;
+import net.sf.openrocket.rocketcomponent.position.AxialMethod;
 import net.sf.openrocket.startup.Application;
 import net.sf.openrocket.unit.UnitGroup;
 
 public class ParachuteConfig extends RecoveryDeviceConfig {
+	
+	private static final long serialVersionUID = 6108892447949958115L;
 	private static final Translator trans = Application.getTranslator();
 	
 	public ParachuteConfig(OpenRocketDocument d, final RocketComponent component) {
@@ -87,10 +90,10 @@ public class ParachuteConfig extends RecoveryDeviceConfig {
 		//// Material:
 		panel.add(new JLabel(trans.get("ParachuteCfg.lbl.Material")));
 		
-		JComboBox<?> combo = new JComboBox(new MaterialModel(panel, component,
+		JComboBox<Material> surfaceMaterialCombo = new JComboBox<Material>(new MaterialModel(panel, component,
 				Material.Type.SURFACE));
-		combo.setToolTipText(trans.get("ParachuteCfg.combo.MaterialModel"));
-		panel.add(combo, "spanx 3, growx, wrap 30lp");
+		surfaceMaterialCombo.setToolTipText(trans.get("ParachuteCfg.combo.MaterialModel"));
+		panel.add( surfaceMaterialCombo, "spanx 3, growx, wrap 30lp");
 		
 		
 		
@@ -120,9 +123,9 @@ public class ParachuteConfig extends RecoveryDeviceConfig {
 		//// Material:
 		panel.add(new JLabel(trans.get("ParachuteCfg.lbl.Material")));
 		
-		combo = new JComboBox(new MaterialModel(panel, component, Material.Type.LINE,
+		JComboBox<Material> shroudMaterialCombo = new JComboBox<Material>(new MaterialModel(panel, component, Material.Type.LINE,
 				"LineMaterial"));
-		panel.add(combo, "spanx 3, growx, wrap");
+		panel.add( shroudMaterialCombo, "spanx 3, growx, wrap");
 		
 		
 		
@@ -136,20 +139,14 @@ public class ParachuteConfig extends RecoveryDeviceConfig {
 		//// Position relative to:
 		panel.add(new JLabel(trans.get("ParachuteCfg.lbl.Posrelativeto")));
 		
-		combo = new JComboBox(
-				new EnumModel<RocketComponent.Position>(component, "RelativePosition",
-						new RocketComponent.Position[] {
-								RocketComponent.Position.TOP,
-								RocketComponent.Position.MIDDLE,
-								RocketComponent.Position.BOTTOM,
-								RocketComponent.Position.ABSOLUTE
-						}));
-		panel.add(combo, "spanx, growx, wrap");
+		final EnumModel<AxialMethod> methodModel = new EnumModel<AxialMethod>(component, "AxialMethod", AxialMethod.axialOffsetMethods );
+        JComboBox<AxialMethod> positionCombo = new JComboBox<AxialMethod>( methodModel );
+		panel.add( positionCombo, "spanx, growx, wrap");
 		
 		//// plus
 		panel.add(new JLabel(trans.get("ParachuteCfg.lbl.plus")), "right");
 		
-		m = new DoubleModel(component, "PositionValue", UnitGroup.UNITS_LENGTH);
+		m = new DoubleModel(component, "AxialOffset", UnitGroup.UNITS_LENGTH);
 		spin = new JSpinner(m.getSpinnerModel());
 		spin.setEditor(new SpinnerEditor(spin));
 		panel.add(spin, "growx");
@@ -194,15 +191,15 @@ public class ParachuteConfig extends RecoveryDeviceConfig {
 		//// Deploys at:
 		panel.add(new JLabel(trans.get("ParachuteCfg.lbl.Deploysat") + " " + CommonStrings.dagger), "");
 		
-		DeploymentConfiguration deploymentConfig = parachute.getDeploymentConfiguration().getDefault();
+		DeploymentConfiguration deploymentConfig = parachute.getDeploymentConfigurations().getDefault();
 		// this issues a warning because EnumModel ipmlements ComboBoxModel without a parameter...
 		ComboBoxModel<DeploymentConfiguration.DeployEvent> deployOptionsModel = new EnumModel<DeploymentConfiguration.DeployEvent>(deploymentConfig, "DeployEvent");
-		combo = new JComboBox<DeploymentConfiguration.DeployEvent>( deployOptionsModel );
+		JComboBox<DeploymentConfiguration.DeployEvent> eventCombo = new JComboBox<DeploymentConfiguration.DeployEvent>( deployOptionsModel );
 		if( (component.getStageNumber() + 1 ) == d.getRocket().getStageCount() ){
 			//	This is the bottom stage:  Restrict deployment options.
-			combo.removeItem( DeployEvent.LOWER_STAGE_SEPARATION );
+			eventCombo.removeItem( DeployEvent.LOWER_STAGE_SEPARATION );
 		}
-		panel.add(combo, "spanx 3, growx, wrap");
+		panel.add(eventCombo, "spanx 3, growx, wrap");
 		
 		// ... and delay
 		//// plus

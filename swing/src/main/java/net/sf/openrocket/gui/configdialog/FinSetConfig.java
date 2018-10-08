@@ -35,6 +35,7 @@ import net.sf.openrocket.rocketcomponent.FinSet;
 import net.sf.openrocket.rocketcomponent.FreeformFinSet;
 import net.sf.openrocket.rocketcomponent.InnerTube;
 import net.sf.openrocket.rocketcomponent.RocketComponent;
+import net.sf.openrocket.rocketcomponent.position.AxialMethod;
 import net.sf.openrocket.startup.Application;
 import net.sf.openrocket.unit.UnitGroup;
 
@@ -42,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+@SuppressWarnings("serial")
 public abstract class FinSetConfig extends RocketComponentConfig {
 	private static final Logger log = LoggerFactory.getLogger(FinSetConfig.class);
 	private static final Translator trans = Application.getTranslator();
@@ -133,7 +135,7 @@ public abstract class FinSetConfig extends RocketComponentConfig {
 		
 	}
 	
-	public JPanel finTabPanel() {
+	private JPanel finTabPanel() {
 		JPanel panel = new JPanel(
 				new MigLayout("align 50% 20%, fillx, gap rel unrel, ins 20lp 10% 20lp 10%",
 						"[150lp::][65lp::][30lp::][200lp::]", ""));
@@ -177,21 +179,20 @@ public abstract class FinSetConfig extends RocketComponentConfig {
 				"w 100lp, growx 5, wrap");
 		
 
-		////  Tab length
 		//// Tab height:
 		label = new JLabel(trans.get("FinSetConfig.lbl.Tabheight"));
-		//// The spanwise height of the fin tab.
+		//// The span-wise height of the fin tab.
 		label.setToolTipText(trans.get("FinSetConfig.ttip.Tabheight"));
 		panel.add(label, "gapleft para");
 		
-		final DoubleModel mth = new DoubleModel(component, "TabHeight", UnitGroup.UNITS_LENGTH, 0);
-		
-		spin = new JSpinner(mth.getSpinnerModel());
+		final DoubleModel tabHeightModel = new DoubleModel(component, "TabHeight", UnitGroup.UNITS_LENGTH, 0);
+		component.addChangeListener( tabHeightModel );
+		spin = new JSpinner(tabHeightModel.getSpinnerModel());
 		spin.setEditor(new SpinnerEditor(spin));
 		panel.add(spin, "growx");
 		
-		panel.add(new UnitSelector(mth), "growx");
-		panel.add(new BasicSlider(mth.getSliderModel(DoubleModel.ZERO, length2)),
+		panel.add(new UnitSelector(tabHeightModel), "growx");
+		panel.add(new BasicSlider(tabHeightModel.getSliderModel(DoubleModel.ZERO, length2)),
 				"w 100lp, growx 5, wrap");
 		
 		////  Tab position:
@@ -201,7 +202,7 @@ public abstract class FinSetConfig extends RocketComponentConfig {
 		panel.add(label, "gapleft para");
 		
 		final DoubleModel mts = new DoubleModel(component, "TabShift", UnitGroup.UNITS_LENGTH);
-		
+		component.addChangeListener( mts);
 		spin = new JSpinner(mts.getSpinnerModel());
 		spin.setEditor(new SpinnerEditor(spin));
 		panel.add(spin, "growx");
@@ -209,16 +210,16 @@ public abstract class FinSetConfig extends RocketComponentConfig {
 		panel.add(new UnitSelector(mts), "growx");
 		panel.add(new BasicSlider(mts.getSliderModel(length_2, length2)), "w 100lp, growx 5, wrap");
 		
-
 		//// relative to
 		label = new JLabel(trans.get("FinSetConfig.lbl.relativeto"));
 		panel.add(label, "right, gapright unrel");
 		
-		final EnumModel<FinSet.TabRelativePosition> em =
-				new EnumModel<FinSet.TabRelativePosition>(component, "TabRelativePosition");
+
+		final EnumModel<AxialMethod> em = new EnumModel<>(component, "TabRelativePosition");
 		
-		panel.add(new JComboBox(em), "spanx 3, growx, wrap para");
+		JComboBox<AxialMethod> enumCombo = new JComboBox<>(em);
 		
+		panel.add( enumCombo, "spanx 3, growx, wrap para");
 
 		// Calculate fin tab height, length, and position
 		autoCalc = new JButton(trans.get("FinSetConfig.but.AutoCalc"));
@@ -233,7 +234,7 @@ public abstract class FinSetConfig extends RocketComponentConfig {
 					try {
 						document.startUndo("Compute fin tabs");
 						
-						List<CenteringRing> rings = new ArrayList<CenteringRing>();
+						List<CenteringRing> rings = new ArrayList<>();
                         //Do deep recursive iteration
                         Iterator<RocketComponent> iter = parent.iterator(false);
                         while (iter.hasNext()) {
@@ -244,8 +245,8 @@ public abstract class FinSetConfig extends RocketComponentConfig {
 									double depth = ((Coaxial) parent).getOuterRadius() - it.getOuterRadius();
 									//Set fin tab depth
 									if (depth >= 0.0d) {
-										mth.setValue(depth);
-										mth.setCurrentUnit(UnitGroup.UNITS_LENGTH.getDefaultUnit());
+										tabHeightModel.setValue(depth);
+										tabHeightModel.setCurrentUnit(UnitGroup.UNITS_LENGTH.getDefaultUnit());
 									}
 								}
 							} else if (rocketComponent instanceof CenteringRing) {
@@ -254,9 +255,9 @@ public abstract class FinSetConfig extends RocketComponentConfig {
 						}
 						//Figure out position and length of the fin tab
 						if (!rings.isEmpty()) {
-							FinSet.TabRelativePosition temp = (FinSet.TabRelativePosition) em.getSelectedItem();
-							em.setSelectedItem(FinSet.TabRelativePosition.FRONT);
-							double len = computeFinTabLength(rings, component.asPositionValue(RocketComponent.Position.TOP, parent),
+						    AxialMethod temp = (AxialMethod) em.getSelectedItem();
+							em.setSelectedItem(AxialMethod.TOP);
+							double len = computeFinTabLength(rings, component.asPositionValue(AxialMethod.TOP),
 										component.getLength(), mts, parent);
 							mtl.setValue(len);
 							//Be nice to the user and set the tab relative position enum back the way they had it.
@@ -305,8 +306,8 @@ public abstract class FinSetConfig extends RocketComponentConfig {
 			Collections.sort(rings, new Comparator<CenteringRing>() {
 				@Override
 				public int compare(CenteringRing centeringRing, CenteringRing centeringRing1) {
-					return (int) (1000d * (centeringRing.asPositionValue(RocketComponent.Position.TOP, relativeTo) -
-							centeringRing1.asPositionValue(RocketComponent.Position.TOP, relativeTo)));
+					return (int) (1000d * (centeringRing.asPositionValue(AxialMethod.TOP) -
+							centeringRing1.asPositionValue(AxialMethod.TOP)));
 						}
 			});
 			
@@ -315,7 +316,7 @@ public abstract class FinSetConfig extends RocketComponentConfig {
 				//Handle centering rings that overlap or are adjacent by synthetically merging them into one virtual ring.
 				if (!positionsFromTop.isEmpty() &&
 						positionsFromTop.get(positionsFromTop.size() - 1).bottomSidePositionFromTop() >=
-                                centeringRing.asPositionValue(RocketComponent.Position.TOP, relativeTo)) {
+                                centeringRing.asPositionValue(AxialMethod.TOP)) {
 					SortableRing adjacent = positionsFromTop.get(positionsFromTop.size() - 1);
 					adjacent.merge(centeringRing, relativeTo);
 				} else {
@@ -440,7 +441,7 @@ public abstract class FinSetConfig extends RocketComponentConfig {
 		 */
 		SortableRing(CenteringRing r, RocketComponent relativeTo) {
 			thickness = r.getLength();
-			positionFromTop = r.asPositionValue(RocketComponent.Position.TOP, relativeTo);
+			positionFromTop = r.asPositionValue(AxialMethod.TOP);
 		}
 		
 		/**
@@ -449,7 +450,7 @@ public abstract class FinSetConfig extends RocketComponentConfig {
 		 * @param adjacent the adjacent ring
 		 */
 		public void merge(CenteringRing adjacent, RocketComponent relativeTo) {
-			double v = adjacent.asPositionValue(RocketComponent.Position.TOP, relativeTo);
+			double v = adjacent.asPositionValue(AxialMethod.TOP);
 			if (positionFromTop < v) {
 				thickness = (v + adjacent.getLength()) - positionFromTop;
 			} else {
@@ -506,10 +507,11 @@ public abstract class FinSetConfig extends RocketComponentConfig {
 	    label.setToolTipText(trans.get("RocketCompCfg.lbl.ttip.componentmaterialaffects"));
 	    filletPanel.add(label, "spanx 4, wrap rel");
 		
-	    JComboBox combo = new JComboBox(new MaterialModel(filletPanel, component, Material.Type.BULK, "FilletMaterial"));
+	    JComboBox<Material> materialCombo = new JComboBox<Material>(new MaterialModel(filletPanel, component, Material.Type.BULK, "FilletMaterial"));
+
 	    //// The component material affects the weight of the component.
-	    combo.setToolTipText(trans.get("RocketCompCfg.combo.ttip.componentmaterialaffects"));
-	    filletPanel.add(combo, "spanx 4, growx, wrap paragraph");
+	    materialCombo.setToolTipText(trans.get("RocketCompCfg.combo.ttip.componentmaterialaffects"));
+	    filletPanel.add( materialCombo, "spanx 4, growx, wrap paragraph");
 	    filletPanel.setToolTipText(tip);
 	    return filletPanel;
 	}

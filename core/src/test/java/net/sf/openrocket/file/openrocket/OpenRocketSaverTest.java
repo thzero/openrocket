@@ -25,12 +25,14 @@ import net.sf.openrocket.file.RocketLoadException;
 import net.sf.openrocket.file.motor.GeneralMotorLoader;
 import net.sf.openrocket.l10n.DebugTranslator;
 import net.sf.openrocket.l10n.Translator;
+import net.sf.openrocket.motor.Manufacturer;
 import net.sf.openrocket.motor.Motor;
 import net.sf.openrocket.motor.ThrustCurveMotor;
 import net.sf.openrocket.plugin.PluginModule;
 import net.sf.openrocket.simulation.extension.impl.ScriptingExtension;
 import net.sf.openrocket.simulation.extension.impl.ScriptingUtil;
 import net.sf.openrocket.startup.Application;
+import net.sf.openrocket.util.Coordinate;
 import net.sf.openrocket.util.TestRockets;
 
 import org.junit.After;
@@ -47,7 +49,7 @@ import com.google.inject.util.Modules;
 public class OpenRocketSaverTest {
 	
 	private OpenRocketSaver saver = new OpenRocketSaver();
-	private static final String TMP_DIR = "./tmp/";
+	private static final File TMP_DIR = new File("./tmp/");
 	
 	public static final String SIMULATION_EXTENSION_SCRIPT = "// Test <  &\n// >\n// <![CDATA[";
 	
@@ -70,23 +72,19 @@ public class OpenRocketSaverTest {
 		injector = Guice.createInjector(Modules.override(applicationModule).with(dbOverrides), pluginModule);
 		Application.setInjector(injector);
 		
-		File tmpDir = new File("./tmp");
-		if (!tmpDir.exists()) {
-			boolean success = tmpDir.mkdirs();
+		if( !(TMP_DIR.exists() && TMP_DIR.isDirectory()) ){
+			boolean success = TMP_DIR.mkdirs();
 			if (!success) {
 				fail("Unable to create core/tmp dir needed for tests.");
 			}
 		}
 	}
 	
-	
 	@After
 	public void deleteRocketFilesFromTemp() {
 		final String fileNameMatchStr = String.format("%s_.*\\.ork", this.getClass().getName());
 		
-		File directory = new File(TMP_DIR);
-		
-		File[] toBeDeleted = directory.listFiles(new FileFilter() {
+		File[] toBeDeleted = TMP_DIR.listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File theFile) {
 				if (theFile.isFile()) {
@@ -129,6 +127,7 @@ public class OpenRocketSaverTest {
 		rocketDocs.add(TestRockets.makeTestRocket_v106_withRecoveryDeviceDeploymentConfig());
 		rocketDocs.add(TestRockets.makeTestRocket_v106_withStageSeparationConfig());
 		rocketDocs.add(TestRockets.makeTestRocket_v107_withSimulationExtension(SIMULATION_EXTENSION_SCRIPT));
+        rocketDocs.add(TestRockets.makeTestRocket_v108_withBoosters());
 		rocketDocs.add(TestRockets.makeTestRocket_for_estimateFileSize());
 		
 		StorageOptions options = new StorageOptions();
@@ -191,117 +190,13 @@ public class OpenRocketSaverTest {
 	
 	
 	////////////////////////////////
-	// Tests for File Version 1.0 // 
-	////////////////////////////////
-	
-	@Test
-	public void testFileVersion100() {
-		OpenRocketDocument rocketDoc = TestRockets.makeTestRocket_v100();
-		assertEquals(100, getCalculatedFileVersion(rocketDoc));
-	}
-	
-	////////////////////////////////
-	// Tests for File Version 1.1 // 
-	////////////////////////////////
-	
-	@Test
-	public void testFileVersion101_withFinTabs() {
-		OpenRocketDocument rocketDoc = TestRockets.makeTestRocket_v101_withFinTabs();
-		assertEquals(101, getCalculatedFileVersion(rocketDoc));
-	}
-	
-	@Test
-	public void testFileVersion101_withTubeCouplerChild() {
-		OpenRocketDocument rocketDoc = TestRockets.makeTestRocket_v101_withTubeCouplerChild();
-		assertEquals(101, getCalculatedFileVersion(rocketDoc));
-	}
-	
-	////////////////////////////////
-	// Tests for File Version 1.2 // 
-	////////////////////////////////
-	
-	// no version 1.2 file type exists
-	
-	////////////////////////////////
-	// Tests for File Version 1.3 // 
-	////////////////////////////////
-	
-	// no version 1.3 file type exists
-	
-	////////////////////////////////
-	// Tests for File Version 1.4 // 
-	////////////////////////////////
-	
-	@Test
-	public void testFileVersion104_withSimulationData() {
-		OpenRocketDocument rocketDoc = TestRockets.makeTestRocket_v104_withSimulationData();
-		assertEquals(104, getCalculatedFileVersion(rocketDoc));
-	}
-	
-	@Test
-	public void testFileVersion104_withMotor() {
-		OpenRocketDocument rocketDoc = TestRockets.makeTestRocket_v104_withMotor();
-		assertEquals(104, getCalculatedFileVersion(rocketDoc));
-	}
-	
-	////////////////////////////////
-	// Tests for File Version 1.5 // 
-	////////////////////////////////
-	
-	@Test
-	public void testFileVersion105_withComponentPresets() {
-		OpenRocketDocument rocketDoc = TestRockets.makeTestRocket_v105_withComponentPreset();
-		assertEquals(105, getCalculatedFileVersion(rocketDoc));
-	}
-	
-	@Test
-	public void testFileVersion105_withCustomExpressions() {
-		OpenRocketDocument rocketDoc = TestRockets.makeTestRocket_v105_withCustomExpression();
-		assertEquals(105, getCalculatedFileVersion(rocketDoc));
-	}
-	
-	@Test
-	public void testFileVersion105_withLowerStageRecoveryDevice() {
-		OpenRocketDocument rocketDoc = TestRockets.makeTestRocket_v105_withLowerStageRecoveryDevice();
-		assertEquals(105, getCalculatedFileVersion(rocketDoc));
-	}
-	
-	////////////////////////////////
-	// Tests for File Version 1.6 // 
-	////////////////////////////////
-	
-	@Test
-	public void testFileVersion106_withAppearance() {
-		OpenRocketDocument rocketDoc = TestRockets.makeTestRocket_v106_withAppearance();
-		assertEquals(106, getCalculatedFileVersion(rocketDoc));
-	}
-	
-	@Test
-	public void testFileVersion106_withMotorMountIgnitionConfig() {
-		OpenRocketDocument rocketDoc = TestRockets.makeTestRocket_v106_withMotorMountIgnitionConfig();
-		assertEquals(106, getCalculatedFileVersion(rocketDoc));
-	}
-	
-	@Test
-	public void testFileVersion106_withRecoveryDeviceDeploymentConfig() {
-		OpenRocketDocument rocketDoc = TestRockets.makeTestRocket_v106_withRecoveryDeviceDeploymentConfig();
-		assertEquals(106, getCalculatedFileVersion(rocketDoc));
-	}
-	
-	@Test
-	public void testFileVersion106_withStageDeploymentConfig() {
-		OpenRocketDocument rocketDoc = TestRockets.makeTestRocket_v106_withStageSeparationConfig();
-		assertEquals(106, getCalculatedFileVersion(rocketDoc));
-	}
-	
-	////////////////////////////////
 	// Tests for File Version 1.7 // 
 	////////////////////////////////
 	
 	@Test
-	public void testFileVersion107_withSimulationExtension() {
+	public void testFileVersion108_withSimulationExtension() {
 		OpenRocketDocument rocketDoc = TestRockets.makeTestRocket_v107_withSimulationExtension(SIMULATION_EXTENSION_SCRIPT);
-		assertEquals(107, getCalculatedFileVersion(rocketDoc));
+		assertEquals(108, getCalculatedFileVersion(rocketDoc));
 	}
 	
 	
@@ -327,25 +222,24 @@ public class OpenRocketSaverTest {
 	}
 	
 	private File saveRocket(OpenRocketDocument rocketDoc, StorageOptions options) {
-		String fileName = String.format(TMP_DIR + "%s_%s.ork", this.getClass().getName(), rocketDoc.getRocket().getName());
-		File file = new File(fileName);
-		
+		File file = null;
 		OutputStream out = null;
 		try {
+			file = File.createTempFile( TMP_DIR.getName(), ".ork");
 			out = new FileOutputStream(file);
 			this.saver.save(out, rocketDoc, options);
 		} catch (FileNotFoundException e) {
-			fail("FileNotFound saving file " + fileName + ": " + e.getMessage());
+			fail("FileNotFound saving temp file in: " + TMP_DIR.getName() + ": " + e.getMessage());
 		} catch (IOException e) {
-			fail("IOException saving file " + fileName + ": " + e.getMessage());
-		}
-		
-		try {
-			if (out != null) {
-				out.close();
+			fail("IOException saving temp file in: " + TMP_DIR.getName() + ": " + e.getMessage());
+		}finally {
+			try {
+				if (out != null) {
+					out.close();
+				}
+			} catch (IOException e) {
+				fail("Unable to close output stream for temp file in " + TMP_DIR.getName() + ": " + e.getMessage());
 			}
-		} catch (IOException e) {
-			fail("Unable to close output stream for file " + fileName + ": " + e.getMessage());
 		}
 		
 		return file;
@@ -357,8 +251,8 @@ public class OpenRocketSaverTest {
 		InputStream is = OpenRocketSaverTest.class.getResourceAsStream("/Estes_A8.rse");
 		assertNotNull("Problem in unit test, cannot find Estes_A8.rse", is);
 		try {
-			for (Motor m : loader.load(is, "Estes_A8.rse")) {
-				return (ThrustCurveMotor) m;
+			for (ThrustCurveMotor.Builder m : loader.load(is, "Estes_A8.rse")) {
+				return m.build();
 			}
 			is.close();
 		} catch (IOException e) {
@@ -384,8 +278,21 @@ public class OpenRocketSaverTest {
 		
 		public MotorDbProvider() {
 			db.addMotor(readMotor());
-			
-			assertEquals(1, db.getMotorSets().size());
+			db.addMotor( new ThrustCurveMotor.Builder()
+					.setManufacturer(Manufacturer.getManufacturer("A"))
+					.setDesignation("F12X")
+					.setDescription("Desc")
+					.setMotorType(Motor.Type.UNKNOWN)
+					.setStandardDelays(new double[] {})
+					.setDiameter(0.024)
+					.setLength(0.07)
+					.setTimePoints(new double[] { 0, 1, 2 })
+					.setThrustPoints(new double[] { 0, 1, 0 })
+					.setCGPoints(new Coordinate[] { Coordinate.NUL, Coordinate.NUL, Coordinate.NUL })
+					.setDigest("digestA")
+					.build());
+
+			assertEquals(2, db.getMotorSets().size());
 		}
 		
 		@Override

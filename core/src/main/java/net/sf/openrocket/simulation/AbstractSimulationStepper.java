@@ -1,12 +1,10 @@
 package net.sf.openrocket.simulation;
 
+import java.util.Collection;
+
 import net.sf.openrocket.masscalc.MassCalculator;
+import net.sf.openrocket.masscalc.RigidBody;
 import net.sf.openrocket.models.atmosphere.AtmosphericConditions;
-import net.sf.openrocket.motor.MotorId;
-import net.sf.openrocket.motor.MotorInstance;
-import net.sf.openrocket.motor.MotorInstanceConfiguration;
-import net.sf.openrocket.rocketcomponent.Configuration;
-import net.sf.openrocket.rocketcomponent.RocketComponent;
 import net.sf.openrocket.simulation.exception.SimulationException;
 import net.sf.openrocket.simulation.listeners.SimulationListenerHelper;
 import net.sf.openrocket.util.BugException;
@@ -45,7 +43,7 @@ public abstract class AbstractSimulationStepper implements SimulationStepper {
 	}
 	
 	
-
+	
 	/**
 	 * Compute the wind to use, allowing listeners to override.
 	 * 
@@ -75,7 +73,7 @@ public abstract class AbstractSimulationStepper implements SimulationStepper {
 	}
 	
 	
-
+	
 	/**
 	 * Compute the gravity to use, allowing listeners to override.
 	 * 
@@ -104,7 +102,7 @@ public abstract class AbstractSimulationStepper implements SimulationStepper {
 	}
 	
 	
-
+	
 	/**
 	 * Compute the mass data to use, allowing listeners to override.
 	 * 
@@ -112,39 +110,50 @@ public abstract class AbstractSimulationStepper implements SimulationStepper {
 	 * @return			the mass data to use
 	 * @throws SimulationException	if a listener throws SimulationException
 	 */
-	protected MassData calculateMassData(SimulationStatus status) throws SimulationException {
-		MassData mass;
-		Coordinate cg;
-		double longitudinalInertia, rotationalInertia, propellantMass;
+	protected RigidBody calculateStructureMass(SimulationStatus status) throws SimulationException {
+		RigidBody structureMass;
 		
 		// Call pre-listener
-		mass = SimulationListenerHelper.firePreMassCalculation(status);
-		if (mass != null) {
-			return mass;
+		structureMass = SimulationListenerHelper.firePreMassCalculation(status);
+		if (structureMass != null) {
+			return structureMass;
 		}
 		
-		MassCalculator calc = status.getSimulationConditions().getMassCalculator();
-		cg = calc.getCG(status.getConfiguration(), status.getMotorConfiguration());
-		longitudinalInertia = calc.getLongitudinalInertia(status.getConfiguration(), status.getMotorConfiguration());
-		rotationalInertia = calc.getRotationalInertia(status.getConfiguration(), status.getMotorConfiguration());
-		propellantMass = calc.getPropellantMass(status.getConfiguration(), status.getMotorConfiguration());
-		mass = new MassData(cg, longitudinalInertia, rotationalInertia, propellantMass);
-		
+		structureMass = MassCalculator.calculateStructure( status.getConfiguration() );  
+						
 		// Call post-listener
-		mass = SimulationListenerHelper.firePostMassCalculation(status, mass);
+		structureMass = SimulationListenerHelper.firePostMassCalculation(status, structureMass);
 		
-		checkNaN(mass.getCG());
-		checkNaN(mass.getLongitudinalInertia());
-		checkNaN(mass.getRotationalInertia());
-		checkNaN(mass.getPropellantMass());
+		checkNaN(structureMass.getCenterOfMass());
+		checkNaN(structureMass.getLongitudinalInertia());
+		checkNaN(structureMass.getRotationalInertia());
 		
-		return mass;
+		return structureMass;
+	}
+	
+	protected RigidBody calculateMotorMass(SimulationStatus status) throws SimulationException {
+		RigidBody motorMass;
+		
+		// Call pre-listener
+		motorMass = SimulationListenerHelper.firePreMassCalculation(status);
+		if (motorMass != null) {
+			return motorMass;
+		}
+		
+		motorMass = MassCalculator.calculateMotor( status );  
+
+				
+		// Call post-listener
+		motorMass = SimulationListenerHelper.firePostMassCalculation(status, motorMass);
+		
+		checkNaN(motorMass.getCenterOfMass());
+		checkNaN(motorMass.getLongitudinalInertia());
+		checkNaN(motorMass.getRotationalInertia());
+		
+		return motorMass;
 	}
 	
 	
-
-
-
 	/**
 	 * Calculate the average thrust produced by the motors in the current configuration, allowing
 	 * listeners to override.  The average is taken between <code>status.time</code> and 
@@ -159,7 +168,7 @@ public abstract class AbstractSimulationStepper implements SimulationStepper {
 	 * @param stepMotors				whether to step the motors forward or work on a clone object
 	 * @return							the average thrust during the time step.
 	 */
-	protected double calculateThrust(SimulationStatus status, double timestep,
+	protected double calculateAverageThrust(SimulationStatus status, double timestep,
 			double acceleration, AtmosphericConditions atmosphericConditions,
 			boolean stepMotors) throws SimulationException {
 		double thrust;
@@ -170,20 +179,12 @@ public abstract class AbstractSimulationStepper implements SimulationStepper {
 			return thrust;
 		}
 		
-		Configuration configuration = status.getConfiguration();
-		
-		// Iterate over the motors and calculate combined thrust
-		MotorInstanceConfiguration mic = status.getMotorConfiguration();
-		if (!stepMotors) {
-			mic = mic.clone();
-		}
-		mic.step(status.getSimulationTime() + timestep, acceleration, atmosphericConditions);
 		thrust = 0;
-		for (MotorId id : mic.getMotorIDs()) {
-			if (configuration.isComponentActive((RocketComponent) mic.getMotorMount(id))) {
-				MotorInstance motor = mic.getMotorInstance(id);
-				thrust += motor.getThrust();
-			}
+		final double currentTime = status.getSimulationTime() + timestep;
+		Collection<MotorClusterState> activeMotorList = status.getMotors();
+		for (MotorClusterState currentMotorState : activeMotorList ) {
+			thrust += currentMotorState.getAverageThrust( status.getSimulationTime(), currentTime );
+			//thrust += currentMotorState.getThrust( currentTime );
 		}
 		
 		// Post-listeners

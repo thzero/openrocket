@@ -1,6 +1,8 @@
 package net.sf.openrocket.gui.configdialog;
 
 
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -29,6 +31,7 @@ import net.sf.openrocket.gui.SpinnerEditor;
 import net.sf.openrocket.gui.adaptors.BooleanModel;
 import net.sf.openrocket.gui.adaptors.DoubleModel;
 import net.sf.openrocket.gui.adaptors.EnumModel;
+import net.sf.openrocket.gui.adaptors.IntegerModel;
 import net.sf.openrocket.gui.adaptors.MaterialModel;
 import net.sf.openrocket.gui.adaptors.PresetModel;
 import net.sf.openrocket.gui.components.BasicSlider;
@@ -42,14 +45,17 @@ import net.sf.openrocket.preset.ComponentPreset;
 import net.sf.openrocket.rocketcomponent.ComponentAssembly;
 import net.sf.openrocket.rocketcomponent.ExternalComponent;
 import net.sf.openrocket.rocketcomponent.ExternalComponent.Finish;
+import net.sf.openrocket.rocketcomponent.Instanceable;
 import net.sf.openrocket.rocketcomponent.NoseCone;
 import net.sf.openrocket.rocketcomponent.RocketComponent;
+import net.sf.openrocket.rocketcomponent.position.AxialMethod;
 import net.sf.openrocket.startup.Application;
 import net.sf.openrocket.unit.UnitGroup;
 import net.sf.openrocket.util.Invalidatable;
 
 public class RocketComponentConfig extends JPanel {
-	
+	private static final long serialVersionUID = -2925484062132243982L;
+
 	private static final Translator trans = Application.getTranslator();
 	
 	protected final OpenRocketDocument document;
@@ -58,7 +64,7 @@ public class RocketComponentConfig extends JPanel {
 	
 	private final List<Invalidatable> invalidatables = new ArrayList<Invalidatable>();
 	
-	private JComboBox presetComboBox;
+	private JComboBox<?> presetComboBox;
 	private PresetModel presetModel;
 	
 	protected final JTextField componentNameField;
@@ -71,7 +77,7 @@ public class RocketComponentConfig extends JPanel {
 	
 	
 	public RocketComponentConfig(OpenRocketDocument document, RocketComponent component) {
-		setLayout(new MigLayout("fill", "[min,align right]:10[fill, grow]"));
+		setLayout(new MigLayout("fill, gap 5!, ins panel", "[]:5[]", "[growprio 10]10![fill, grow, growprio 500]10![growprio 10]"));
 		this.document = document;
 		this.component = component;
 		
@@ -79,7 +85,7 @@ public class RocketComponentConfig extends JPanel {
 		JLabel label = new JLabel(trans.get("RocketCompCfg.lbl.Componentname"));
 		//// The component name.
 		label.setToolTipText(trans.get("RocketCompCfg.ttip.Thecomponentname"));
-		this.add(label, "spanx, split");
+		this.add(label, "spanx, height 50!, split");
 		
 		componentNameField = new JTextField(15);
 		textFieldListener = new TextFieldListener();
@@ -100,7 +106,7 @@ public class RocketComponentConfig extends JPanel {
 		
 		
 		tabbedPane = new JTabbedPane();
-		this.add(tabbedPane, "newline, span, growx, growy 1, wrap");
+		this.add(tabbedPane, "newline, span, growx, growy 100, wrap");
 		
 		//// Override and Mass and CG override options
 		tabbedPane.addTab(trans.get("RocketCompCfg.tab.Override"), null, overrideTab(),
@@ -126,7 +132,7 @@ public class RocketComponentConfig extends JPanel {
 			this.remove(buttonPanel);
 		}
 		
-		buttonPanel = new JPanel(new MigLayout("fill, ins 0"));
+		buttonPanel = new JPanel(new MigLayout("fillx, ins 0"));
 		
 		//// Mass:
 		infoLabel = new StyledLabel(" ", -1);
@@ -148,7 +154,7 @@ public class RocketComponentConfig extends JPanel {
 		
 		updateFields();
 		
-		this.add(buttonPanel, "spanx, growx");
+		this.add(buttonPanel, "newline, spanx, growx, height 50!");
 	}
 	
 	
@@ -220,10 +226,10 @@ public class RocketComponentConfig extends JPanel {
 		label.setToolTipText(trans.get("RocketCompCfg.lbl.ttip.componentmaterialaffects"));
 		subPanel.add(label, "spanx 4, wrap rel");
 		
-		JComboBox combo = new JComboBox(new MaterialModel(subPanel, component, type, partName));
+		JComboBox<Material> materialCombo = new JComboBox<Material>(new MaterialModel(subPanel, component, type, partName));
 		//// The component material affects the weight of the component.
-		combo.setToolTipText(trans.get("RocketCompCfg.combo.ttip.componentmaterialaffects"));
-		subPanel.add(combo, "spanx 4, growx, wrap paragraph");
+		materialCombo.setToolTipText(trans.get("RocketCompCfg.combo.ttip.componentmaterialaffects"));
+		subPanel.add(materialCombo, "spanx 4, growx, wrap paragraph");
 		
 		
 		if (component instanceof ExternalComponent) {
@@ -235,9 +241,10 @@ public class RocketComponentConfig extends JPanel {
 			label.setToolTipText(tip);
 			subPanel.add(label, "spanx 4, wmin 220lp, wrap rel");
 			
-			combo = new JComboBox(new EnumModel<ExternalComponent.Finish>(component, "Finish"));
-			combo.setToolTipText(tip);
-			subPanel.add(combo, "spanx 4, growx, split");
+			JComboBox<ExternalComponent.Finish> finishCombo = new JComboBox<ExternalComponent.Finish>(
+					new EnumModel<ExternalComponent.Finish>(component, "Finish"));
+			finishCombo.setToolTipText(tip);
+			subPanel.add( finishCombo, "spanx 4, growx, split");
 			
 			//// Set for all
 			JButton button = new JButton(trans.get("RocketCompCfg.but.Setforall"));
@@ -268,6 +275,27 @@ public class RocketComponentConfig extends JPanel {
 		return subPanel;
 	}
 	
+	protected JPanel instanceablePanel( Instanceable inst ){
+		JPanel panel = new JPanel( new MigLayout("fill"));
+		{ // Instance Count
+			panel.add(new JLabel(trans.get("RocketCompCfg.lbl.InstanceCount")));
+			IntegerModel countModel = new IntegerModel(component, "InstanceCount", 1);
+			JSpinner countSpinner = new JSpinner( countModel.getSpinnerModel());
+			countSpinner.setEditor(new SpinnerEditor(countSpinner));
+			panel.add(countSpinner, "w 100lp, wrap rel");
+		}
+		
+		{ // Instance separation
+			panel.add(new JLabel(trans.get("RocketCompCfg.lbl.InstanceSeparation")));
+			DoubleModel separationModel = new DoubleModel(component, "InstanceSeparation", UnitGroup.UNITS_LENGTH);
+			JSpinner separationSpinner = new JSpinner( separationModel.getSpinnerModel());
+			separationSpinner.setEditor(new SpinnerEditor(separationSpinner));
+			panel.add(separationSpinner, "growx");
+			panel.add(new UnitSelector(separationModel), "growx");
+			panel.add(new BasicSlider(separationModel.getSliderModel(0, 0.001, 0.02)), "w 100lp, wrap para");
+		}
+		return panel;
+	}
 	
 	private JPanel overrideTab() {
 		JPanel panel = new JPanel(new MigLayout("align 50% 20%, fillx, gap rel unrel",
@@ -303,7 +331,9 @@ public class RocketComponentConfig extends JPanel {
 		bm.addEnableComponent(bs);
 		panel.add(bs, "growx 5, w 100lp, wrap");
 		
-		
+	
+		//OVERRIDES CG ----------------------------------
+	
 		////  CG override
 		bm = new BooleanModel(component, "CGOverridden");
 		check = new JCheckBox(bm);
@@ -320,7 +350,7 @@ public class RocketComponentConfig extends JPanel {
 			Iterator<RocketComponent> iterator = component.iterator(false);
 			while (iterator.hasNext()) {
 				RocketComponent c = iterator.next();
-				if (c.getRelativePosition() == RocketComponent.Position.AFTER)
+				if (c.getAxialMethod() == AxialMethod.AFTER)
 					l += c.getLength();
 			}
 			length = new DoubleModel(l);
@@ -341,6 +371,37 @@ public class RocketComponentConfig extends JPanel {
 		bm.addEnableComponent(bs);
 		panel.add(bs, "growx 5, w 100lp, wrap 35lp");
 		
+
+		//END OVERRIDES CG ---------------------------------------------------
+
+
+                //BEGIN OVERRIDES CD ---------------------------------------------------
+
+
+		bm = new BooleanModel(component, "CDOverridden");
+		check = new JCheckBox(bm);
+		//// Override mass:
+		check.setText("Set coefficient of drag:");
+		panel.add(check, "growx 1, gapright 20lp");
+		
+		m = new DoubleModel(component, "OverrideCD", UnitGroup.UNITS_NONE, 0);
+		
+		spin = new JSpinner(m.getSpinnerModel());
+
+		spin.setEditor(new SpinnerEditor(spin));
+		bm.addEnableComponent(spin, true);
+		panel.add(spin, "growx 1");
+		
+		
+		bs = new BasicSlider(m.getSliderModel(0, 0.01, 1.0));
+		bm.addEnableComponent(bs);
+		panel.add(bs, "growx 5, w 100lp, wrap");
+
+
+		//END OVERRIDES CP --------------------------------------------------
+
+
+
 		
 		// Override subcomponents checkbox
 		bm = new BooleanModel(component, "OverrideSubcomponents");
@@ -569,4 +630,13 @@ public class RocketComponentConfig extends JPanel {
 		
 	}
 	
+
+	protected static void setDeepEnabled(Component component, boolean enabled) {
+		component.setEnabled(enabled);
+		if (component instanceof Container) {
+			for (Component c : ((Container) component).getComponents()) {
+				setDeepEnabled(c, enabled);
+			}
+		}
+	}
 }

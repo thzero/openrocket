@@ -33,6 +33,7 @@ import net.sf.openrocket.l10n.Translator;
 import net.sf.openrocket.logging.Markers;
 import net.sf.openrocket.rocketcomponent.BodyComponent;
 import net.sf.openrocket.rocketcomponent.BodyTube;
+import net.sf.openrocket.rocketcomponent.ComponentChangeEvent;
 import net.sf.openrocket.rocketcomponent.EllipticalFinSet;
 import net.sf.openrocket.rocketcomponent.FinSet;
 import net.sf.openrocket.rocketcomponent.FreeformFinSet;
@@ -66,7 +67,7 @@ import net.sf.openrocket.util.Reflection.Method;
  * @author Sampo Niskanen <sampo.niskanen@iki.fi>
  */
 public class ScaleDialog extends JDialog {
-	
+	private static final long serialVersionUID = -8558418577377862794L;
 	private static final Logger log = LoggerFactory.getLogger(ScaleDialog.class);
 	private static final Translator trans = Application.getTranslator();
 	
@@ -82,7 +83,7 @@ public class ScaleDialog extends JDialog {
 		List<Scaler> list;
 		
 		// RocketComponent
-		addScaler(RocketComponent.class, "PositionValue");
+		addScaler(RocketComponent.class, "AxialOffset");
 		SCALERS.get(RocketComponent.class).add(new OverrideScaler());
 		
 		// BodyComponent
@@ -204,7 +205,7 @@ public class ScaleDialog extends JDialog {
 	private final RocketComponent selection;
 	private final boolean onlySelection;
 	
-	private JComboBox selectionOption;
+	private JComboBox<String> selectionOption;
 	private JCheckBox scaleMassValues;
 	
 	private boolean changing = false;
@@ -330,7 +331,7 @@ public class ScaleDialog extends JDialog {
 		label.setToolTipText(tip);
 		panel.add(label, "span, split, gapright unrel");
 		
-		selectionOption = new JComboBox(options.toArray());
+		selectionOption = new JComboBox<String>(options.toArray(new String[0]));
 		selectionOption.setEditable(false);
 		selectionOption.setToolTipText(tip);
 		panel.add(selectionOption, "growx, wrap para*2");
@@ -400,18 +401,22 @@ public class ScaleDialog extends JDialog {
 		panel.add(scaleMassValues, "span, wrap para*3");
 		
 		
-		// Buttons
-		
+		// Scale / Accept Buttons
 		JButton scale = new JButton(trans.get("button.scale"));
 		scale.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				doScale();
+
+				ScaleDialog.this.document.getRocket().fireComponentChangeEvent( ComponentChangeEvent.AEROMASS_CHANGE);
+
 				ScaleDialog.this.setVisible(false);
 			}
 		});
+
 		panel.add(scale, "span, split, right, gap para");
-		
+
+		// Cancel Button
 		JButton cancel = new JButton(trans.get("button.cancel"));
 		cancel.addActionListener(new ActionListener() {
 			@Override
@@ -589,6 +594,8 @@ public class ScaleDialog extends JDialog {
 				mass = mass * MathUtil.pow3(multiplier);
 				component.setOverrideMass(mass);
 			}
+
+			//TODO: Fix overridden pressure!
 		}
 		
 	}

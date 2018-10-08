@@ -7,24 +7,30 @@ import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.GLUquadric;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.sf.openrocket.gui.figure3d.geometry.Geometry.Surface;
 import net.sf.openrocket.motor.Motor;
+import net.sf.openrocket.rocketcomponent.AxialStage;
 import net.sf.openrocket.rocketcomponent.BodyTube;
 import net.sf.openrocket.rocketcomponent.FinSet;
 import net.sf.openrocket.rocketcomponent.LaunchLug;
 import net.sf.openrocket.rocketcomponent.MassObject;
+import net.sf.openrocket.rocketcomponent.ParallelStage;
+import net.sf.openrocket.rocketcomponent.PodSet;
+import net.sf.openrocket.rocketcomponent.RailButton;
 import net.sf.openrocket.rocketcomponent.RingComponent;
 import net.sf.openrocket.rocketcomponent.RocketComponent;
 import net.sf.openrocket.rocketcomponent.Transition;
 import net.sf.openrocket.rocketcomponent.Transition.Shape;
 import net.sf.openrocket.rocketcomponent.TubeFinSet;
 import net.sf.openrocket.util.Coordinate;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.sf.openrocket.util.Transformation;
 
 /*
  * @author Bill Kuker <bkuker@billkuker.com>
+ * @author Daniel Williams <equipoise@gmail.com>
  */
 public class ComponentRenderer {
 	@SuppressWarnings("unused")
@@ -51,65 +57,73 @@ public class ComponentRenderer {
 
 	}
 
-	public Geometry getGeometry(final RocketComponent c, final Surface which) {
-		return new Geometry() {
+	public Geometry getComponentGeometry(final RocketComponent comp) {
+	    return getComponentGeometry(comp, Transformation.IDENTITY); 
+	}
+        
+	public Geometry getComponentGeometry(final RocketComponent comp, final Transformation transform ) {
+	    return new Geometry(comp, transform) {
 			@Override
-			public void render(GL2 gl) {
+			public void render(GL2 gl, final Surface which) {
+			    gl.glPushMatrix();
+
+			    gl.glMultMatrixd( transform.getGLMatrix() );
+			    
 				if (which == Surface.ALL) {
-					renderGeometry(gl, c, Surface.INSIDE);
-					renderGeometry(gl, c, Surface.EDGES);
-					renderGeometry(gl, c, Surface.OUTSIDE);
+					renderInstance(gl, comp, Surface.INSIDE);
+					renderInstance(gl, comp, Surface.EDGES);
+					renderInstance(gl, comp, Surface.OUTSIDE);
 				} else {
-					renderGeometry(gl, c, which);
+					renderInstance(gl, comp, which);
 				}
+				gl.glPopMatrix();
 			}
 		};
 	}
 
-	public Geometry getGeometry(final Motor motor, Surface which) {
-		return new Geometry() {
+	public Geometry getMotorGeometry(final Motor motor) {
+		return new Geometry(motor, Transformation.IDENTITY) {
 			@Override
-			public void render(GL2 gl) {
+			public void render(GL2 gl, final Surface which) {
 				renderMotor(gl, motor);
 			}
 		};
 	}
 
-	protected void renderGeometry(GL2 gl, RocketComponent c, Surface which) {
+	protected void renderInstance(GL2 gl, RocketComponent c, Surface which) {
 		if (glu == null)
 			throw new IllegalStateException(this + " Not Initialized");
 
 		glu.gluQuadricNormals(q, GLU.GLU_SMOOTH);
 
-		Coordinate[] oo = c.toAbsolute(new Coordinate(0, 0, 0));
-
-		for (Coordinate o : oo) {
-			gl.glPushMatrix();
-
-			gl.glTranslated(o.x, o.y, o.z);
-
-			if (c instanceof BodyTube) {
-				renderTube(gl, (BodyTube) c, which);
-			} else if (c instanceof LaunchLug) {
-				renderLug(gl, (LaunchLug) c, which);
-			} else if (c instanceof RingComponent) {
-				if (which == Surface.OUTSIDE)
-					renderRing(gl, (RingComponent) c);
-			} else if (c instanceof Transition) {
-				renderTransition(gl, (Transition) c, which);
-			} else if (c instanceof MassObject) {
-				if (which == Surface.OUTSIDE)
-					renderMassObject(gl, (MassObject) c);
-			} else if (c instanceof FinSet) {
-				if (which == Surface.OUTSIDE)
-					fr.renderFinSet(gl, (FinSet) c);
-			} else if (c instanceof TubeFinSet) {
-				renderTubeFins( gl, (TubeFinSet) c, which);
-			} else {
-				renderOther(gl, c);
+		if (c instanceof BodyTube) {
+			renderTube(gl, (BodyTube) c, which);
+		} else if (c instanceof LaunchLug) {
+			renderLug(gl, (LaunchLug) c, which);
+		} else if ( c instanceof RailButton ){
+			renderRailButton(gl, (RailButton) c, which);
+		} else if (c instanceof RingComponent) {
+			if (which == Surface.OUTSIDE)
+				renderRing(gl, (RingComponent) c);
+		} else if (c instanceof Transition) {
+			renderTransition(gl, (Transition) c, which);
+		} else if (c instanceof MassObject) {
+			if (which == Surface.OUTSIDE)
+				renderMassObject(gl, (MassObject) c);
+		} else if (c instanceof FinSet) {
+		    FinSet fins = (FinSet) c;
+			if (which == Surface.OUTSIDE) {
+			    fr.renderFinSet(gl, fins);
 			}
-			gl.glPopMatrix();
+		} else if (c instanceof TubeFinSet) {
+			renderTubeFins( gl, (TubeFinSet) c, which);
+		} else if ( c instanceof AxialStage ) {
+		} else if ( c instanceof ParallelStage ) {
+		} else if ( c instanceof PodSet ) {
+		} else {
+			renderOther(gl, c);
 		}
+	
 
 	}
 
@@ -268,7 +282,38 @@ public class ComponentRenderer {
 	private void renderLug(GL2 gl, LaunchLug t, Surface which) {
 		renderTube(gl, which, t.getOuterRadius(), t.getInnerRadius(), t.getLength());
 	}
+	
+	private void renderRailButton(GL2 gl, RailButton r, Surface which) {
+		if ( which == Surface.OUTSIDE ){
+			//renderOther(gl, r);
+			final double or = r.getOuterDiameter() / 2.0;
+			final double ir = r.getInnerDiameter() / 2.0;
+			gl.glRotated(r.getAngleOffset()*180/Math.PI -90 , 1, 0, 0);
+			
+			//Inner Diameter
+			glu.gluCylinder(q, ir, ir, r.getTotalHeight(), LOD, 1);
+			
+			//Bottom Disc
+			glu.gluCylinder(q, or, or, r.getBaseHeight(), LOD, 1);
+			glu.gluQuadricOrientation(q, GLU.GLU_INSIDE);
+			glu.gluDisk(q, 0, or, LOD, 2);
+			glu.gluQuadricOrientation(q, GLU.GLU_OUTSIDE);
+			gl.glTranslated(0,0,r.getBaseHeight());
+			glu.gluDisk(q, 0, or, LOD, 2);
+			
+			
+			//Upper Disc
+			gl.glTranslated(0,0,r.getTotalHeight() - r.getFlangeHeight() * 2.0);
+			glu.gluCylinder(q, or, or, r.getFlangeHeight(), LOD, 1);
+			glu.gluQuadricOrientation(q, GLU.GLU_INSIDE);
+			glu.gluDisk(q, 0, or, LOD, 2);
+			glu.gluQuadricOrientation(q, GLU.GLU_OUTSIDE);
+			gl.glTranslated(0,0,r.getFlangeHeight());
+			glu.gluDisk(q, 0, or, LOD, 2);
 
+		}
+	}
+	
 	private void renderTubeFins(GL2 gl, TubeFinSet fs, Surface which) {
 		gl.glPushMatrix();
 		gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);

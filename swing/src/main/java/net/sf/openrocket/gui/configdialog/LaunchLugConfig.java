@@ -16,12 +16,13 @@ import net.sf.openrocket.gui.components.UnitSelector;
 import net.sf.openrocket.l10n.Translator;
 import net.sf.openrocket.material.Material;
 import net.sf.openrocket.rocketcomponent.RocketComponent;
+import net.sf.openrocket.rocketcomponent.position.AxialMethod;
 import net.sf.openrocket.startup.Application;
 import net.sf.openrocket.unit.UnitGroup;
 
+@SuppressWarnings("serial")
 public class LaunchLugConfig extends RocketComponentConfig {
 	
-	private MotorConfig motorConfigPane = null;
 	private static final Translator trans = Application.getTranslator();
 	
 	public LaunchLugConfig(OpenRocketDocument d, RocketComponent c) {
@@ -93,16 +94,14 @@ public class LaunchLugConfig extends RocketComponentConfig {
 		////  Radial position:
 		panel.add(new JLabel(trans.get("LaunchLugCfg.lbl.Radialpos")));
 		
-		m = new DoubleModel(component, "RadialDirection", UnitGroup.UNITS_ANGLE);
-		
+		m = new DoubleModel(component, "AngularOffset", UnitGroup.UNITS_ANGLE, -180, 180);
+
 		spin = new JSpinner(m.getSpinnerModel());
 		spin.setEditor(new SpinnerEditor(spin));
 		panel.add(spin, "growx");
 		
 		panel.add(new UnitSelector(m), "growx");
-		panel.add(new BasicSlider(m.getSliderModel(-Math.PI, Math.PI)), "w 100lp, wrap");
-		
-		
+		panel.add(new BasicSlider(m.getSliderModel(-180, 180) ), "w 100lp, wrap");
 		
 		
 		primary.add(panel, "grow, gapright 20lp");
@@ -111,22 +110,15 @@ public class LaunchLugConfig extends RocketComponentConfig {
 		
 		
 		//// Position relative to:
-		panel.add(new JLabel(trans.get("LaunchLugCfg.lbl.Posrelativeto")));
-		
-		JComboBox combo = new JComboBox(
-				new EnumModel<RocketComponent.Position>(component, "RelativePosition",
-						new RocketComponent.Position[] {
-								RocketComponent.Position.TOP,
-								RocketComponent.Position.MIDDLE,
-								RocketComponent.Position.BOTTOM,
-								RocketComponent.Position.ABSOLUTE
-						}));
-		panel.add(combo, "spanx, growx, wrap");
+		panel.add(new JLabel(trans.get("LaunchLugCfg.lbl.Posrelativeto")));		
+		EnumModel<AxialMethod> positionModel = new EnumModel<AxialMethod>(component, "AxialMethod", AxialMethod.axialOffsetMethods );
+		JComboBox<AxialMethod> positionCombo = new JComboBox<AxialMethod>( positionModel );
+		panel.add( positionCombo, "spanx, growx, wrap");
 		
 		//// plus
 		panel.add(new JLabel(trans.get("LaunchLugCfg.lbl.plus")), "right");
 		
-		m = new DoubleModel(component, "PositionValue", UnitGroup.UNITS_LENGTH);
+		m = new DoubleModel(component, "AxialOffset", UnitGroup.UNITS_LENGTH);
 		spin = new JSpinner(m.getSpinnerModel());
 		spin.setEditor(new SpinnerEditor(spin));
 		panel.add(spin, "growx");

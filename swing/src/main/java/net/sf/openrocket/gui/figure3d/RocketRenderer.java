@@ -2,7 +2,8 @@ package net.sf.openrocket.gui.figure3d;
 
 import java.awt.Point;
 import java.nio.ByteBuffer;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Set;
 import java.util.Vector;
 
@@ -12,20 +13,24 @@ import com.jogamp.opengl.GL2GL3;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.fixedfunc.GLLightingFunc;
 
-import net.sf.openrocket.gui.figure3d.geometry.ComponentRenderer;
-import net.sf.openrocket.gui.figure3d.geometry.DisplayListComponentRenderer;
-import net.sf.openrocket.gui.figure3d.geometry.Geometry.Surface;
-import net.sf.openrocket.motor.Motor;
-import net.sf.openrocket.rocketcomponent.Configuration;
-import net.sf.openrocket.rocketcomponent.MotorMount;
-import net.sf.openrocket.rocketcomponent.RocketComponent;
-import net.sf.openrocket.util.Coordinate;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sf.openrocket.gui.figure3d.geometry.ComponentRenderer;
+import net.sf.openrocket.gui.figure3d.geometry.DisplayListComponentRenderer;
+import net.sf.openrocket.gui.figure3d.geometry.Geometry;
+import net.sf.openrocket.gui.figure3d.geometry.Geometry.Surface;
+import net.sf.openrocket.motor.Motor;
+import net.sf.openrocket.motor.MotorConfiguration;
+import net.sf.openrocket.rocketcomponent.FlightConfiguration;
+import net.sf.openrocket.rocketcomponent.MotorMount;
+import net.sf.openrocket.rocketcomponent.RocketComponent;
+import net.sf.openrocket.util.Coordinate;
+import net.sf.openrocket.util.Transformation;
+
 /*
  * @author Bill Kuker <bkuker@billkuker.com>
+ * @author Daniel Williams <equipoise@gmail.com>
  */
 public abstract class RocketRenderer {
 	protected static final Logger log = LoggerFactory.getLogger(RocketRenderer.class);
@@ -46,15 +51,13 @@ public abstract class RocketRenderer {
 		cr.updateFigure(drawable);
 	}
 	
-	public abstract void renderComponent(GL2 gl, RocketComponent c, float alpha);
-	
-	public abstract boolean isDrawn(RocketComponent c);
-	
+	public abstract void renderComponent(GL2 gl, Geometry geom, float alpha);
+    
 	public abstract boolean isDrawnTransparent(RocketComponent c);
 	
 	public abstract void flushTextureCache(GLAutoDrawable drawable);
 	
-	public RocketComponent pick(GLAutoDrawable drawable, Configuration configuration, Point p,
+	public RocketComponent pick(GLAutoDrawable drawable, FlightConfiguration configuration, Point p,
 			Set<RocketComponent> ignore) {
 		final GL2 gl = drawable.getGL().getGL2();
 		gl.glEnable(GL.GL_DEPTH_TEST);
@@ -62,7 +65,7 @@ public abstract class RocketRenderer {
 		// Store a vector of pickable parts.
 		final Vector<RocketComponent> pickParts = new Vector<RocketComponent>();
 		
-		for (RocketComponent c : configuration) {
+		for (RocketComponent c : configuration.getActiveComponents()) {
 			if (ignore != null && ignore.contains(c))
 				continue;
 			
@@ -75,9 +78,9 @@ public abstract class RocketRenderer {
 			pickParts.add(c);
 			
 			if (isDrawnTransparent(c)) {
-				cr.getGeometry(c, Surface.INSIDE).render(gl);
+			    cr.getComponentGeometry(c).render(gl, Surface.INSIDE);
 			} else {
-				cr.getGeometry(c, Surface.ALL).render(gl);
+			    cr.getComponentGeometry(c).render(gl, Surface.ALL);
 			}
 		}
 		
@@ -99,11 +102,14 @@ public abstract class RocketRenderer {
 		return pickParts.get(pickIndex);
 	}
 	
-	public void render(GLAutoDrawable drawable, Configuration configuration, Set<RocketComponent> selection) {
+	public void render(GLAutoDrawable drawable, FlightConfiguration configuration, Set<RocketComponent> selection) {
 		
 		if (cr == null)
 			throw new IllegalStateException(this + " Not Initialized");
 		
+
+        Collection<Geometry> geometry = getTreeGeometry( configuration);
+        
 		GL2 gl = drawable.getGL().getGL2();
 		
 		gl.glEnable(GL.GL_DEPTH_TEST); // enables depth testing
@@ -116,19 +122,20 @@ public abstract class RocketRenderer {
 			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_SPECULAR, colorBlack, 0);
 			gl.glLineWidth(5.0f);
 			
-			for (RocketComponent c : configuration) {
-				if (selection.contains(c)) {
+			for (Geometry geom : geometry) {
+			    RocketComponent rc = geom.getComponent();
+				if (selection.contains( rc)) {
 					// Draw as lines, set Z to nearest
 					gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2GL3.GL_LINE);
 					gl.glDepthRange(0, 0);
-					cr.getGeometry(c, Surface.ALL).render(gl);
+					geom.render(gl, Surface.ALL);
 					
 					// Draw polygons, always passing depth test,
 					// setting Z to farthest
 					gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2GL3.GL_FILL);
 					gl.glDepthRange(1, 1);
 					gl.glDepthFunc(GL.GL_ALWAYS);
-					cr.getGeometry(c, Surface.ALL).render(gl);
+					geom.render(gl, Surface.ALL);
 					gl.glDepthFunc(GL.GL_LESS);
 					gl.glDepthRange(0, 1);
 				}
@@ -139,54 +146,124 @@ public abstract class RocketRenderer {
 		
 		gl.glEnable(GL.GL_CULL_FACE);
 		gl.glCullFace(GL.GL_BACK);
+		gl.glEnable( GL.GL_BLEND );
+
+		// needs to be rendered before the components
+        renderMotors(gl, configuration);
+
+		// render all components
+		renderTree( gl, geometry );
 		
-		// Draw all inner components
-		for (RocketComponent c : configuration) {
-			if (isDrawn(c)) {
-				if (!isDrawnTransparent(c)) {
-					renderComponent(gl, c, 1.0f);
-				}
-			}
-		}
-		
-		renderMotors(gl, configuration);
-		
-		// Draw T&T front faces blended, without depth test
-		gl.glEnable(GL.GL_BLEND);
-		for (RocketComponent c : configuration) {
-			if (isDrawn(c)) {
-				if (isDrawnTransparent(c)) {
-					renderComponent(gl, c, 0.2f);
-				}
-			}
-		}
-		gl.glDisable(GL.GL_BLEND);
-		
+		gl.glDisable( GL.GL_BLEND );
 	}
 	
-	private void renderMotors(GL2 gl, Configuration configuration) {
-		String motorID = configuration.getFlightConfigurationID();
-		Iterator<MotorMount> iterator = configuration.motorIterator();
-		while (iterator.hasNext()) {
-			MotorMount mount = iterator.next();
-			Motor motor = mount.getMotorConfiguration().get(motorID).getMotor();
-			double length = motor.getLength();
+	private Collection<Geometry> getTreeGeometry( FlightConfiguration config){
+	    System.err.println(String.format("==== Building tree geometry ===="));
+	    return getTreeGeometry("", new ArrayList<Geometry>(), config, config.getRocket(), Transformation.IDENTITY);
+	}
+	
+	private Collection<Geometry> getTreeGeometry(String indent, Collection<Geometry> treeGeometry, FlightConfiguration config, RocketComponent comp, final Transformation parentTransform){
+	    final int instanceCount = comp.getInstanceCount();
+        double[] instanceAngles = comp.getInstanceAngles();
+        Coordinate[] instanceLocations = comp.getInstanceLocations();
+
+        if( instanceLocations.length != instanceAngles.length ){
+            throw new ArrayIndexOutOfBoundsException(String.format("lengths of location array (%d) and angle arrays (%d) differs! (in: %s) ", instanceLocations.length, instanceAngles.length, comp.getName()));
+        }
+
+        // iterate over the aggregated instances for the whole tree.
+        for( int instanceNumber = 0; instanceNumber < instanceCount; ++instanceNumber) {
+            Coordinate currentLocation = instanceLocations[instanceNumber];
+            final double currentAngle = instanceAngles[instanceNumber];
+            
+//            System.err.println( String.format("%s[ %s ]", indent, comp.getName()));
+//            System.err.println( String.format("%s  :: %12.8g / %12.8g / %12.8g (m) @ %8.4g (rads) ", indent, currentLocation.x, currentLocation.y, currentLocation.z, currentAngle ));
+            
+            Transformation currentTransform = parentTransform
+                    .applyTransformation( Transformation.getTranslationTransform( currentLocation))
+                    .applyTransformation( Transformation.rotate_x( currentAngle ));
+
+            
+            // recurse into inactive trees: allow active stages inside inactive stages
+            for(RocketComponent child: comp.getChildren()) {
+                getTreeGeometry(indent+"   ", treeGeometry, config, child, currentTransform );
+            }
+
+            Geometry geom = cr.getComponentGeometry( comp, currentTransform );
+            geom.active = config.isComponentActive( comp );
+            treeGeometry.add( geom );
+        }
+        return treeGeometry;
+	}
+	
+	private void renderTree( GL2 gl, final Collection<Geometry> geometryList){
+	    //cycle through opaque components first, then transparent to preserve proper depth testing
+	    for(Geometry geom: geometryList ) {
+                if( geom.active ) {
+		    //if not transparent
+                    if( !isDrawnTransparent( (RocketComponent)geom.obj) ){
+                        renderComponent(gl, geom, 1.0f);
+                    }
+                }
+            }
+	    for(Geometry geom: geometryList ) {
+                if( geom.active ) {
+                    if( isDrawnTransparent( (RocketComponent)geom.obj) ){
+                        // Draw T&T front faces blended, without depth test
+                        renderComponent(gl, geom, 0.2f);
+                    }
+                }
+            }
+        }
+	
+	private void renderMotors(GL2 gl, FlightConfiguration configuration) {
+//		FlightConfigurationId motorID = configuration.getFlightConfigurationID();
+//		
+//		for( RocketComponent comp : configuration.getActiveComponents()){
+//			if( comp instanceof MotorMount){
+//			
+//				MotorMount mount = (MotorMount) comp;
+//				Motor motor = mount.getMotorInstance(motorID).getMotor();
+//				if( null == motor )???;
+//				double length = motor.getLength();
+//			
+//				Coordinate[] position = ((RocketComponent) mount).toAbsolute(new Coordinate(((RocketComponent) mount)
+//						.getLength() + mount.getMotorOverhang() - length));
+//			
+//				for (int i = 0; i < position.length; i++) {
+//					gl.glPushMatrix();
+//					gl.glTranslated(position[i].x, position[i].y, position[i].z);
+//					renderMotor(gl, motor);
+//					gl.glPopMatrix();
+//				}
+//			}
+//		}
+		
+		for( MotorConfiguration curMotor : configuration.getActiveMotors()){
+			MotorMount mount = curMotor.getMount();
+			Motor motor = curMotor.getMotor();
 			
+			if( null == motor ){
+				throw new NullPointerException(" null motor from configuration.getActiveMotors...  this is a bug.");
+			}
+			
+			double length = motor.getLength();
+		
 			Coordinate[] position = ((RocketComponent) mount).toAbsolute(new Coordinate(((RocketComponent) mount)
 					.getLength() + mount.getMotorOverhang() - length));
-			
+		
 			for (int i = 0; i < position.length; i++) {
 				gl.glPushMatrix();
 				gl.glTranslated(position[i].x, position[i].y, position[i].z);
 				renderMotor(gl, motor);
 				gl.glPopMatrix();
 			}
+			
 		}
-		
 	}
 	
 	protected void renderMotor(GL2 gl, Motor motor) {
-		cr.getGeometry(motor, Surface.ALL).render(gl);
+		cr.getMotorGeometry(motor).render(gl, Surface.ALL);
 	}
 	
 }

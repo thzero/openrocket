@@ -38,8 +38,7 @@ public class BasicLandingStepper extends AbstractSimulationStepper {
 		// Compute drag force
 		double dynP = (0.5 * atmosphere.getDensity() * airSpeed.length2());
 		double dragForce = totalCD * dynP * refArea;
-		MassData massData = calculateMassData(status);
-		double mass = massData.getCG().weight;
+		double mass = calculateStructureMass(status).getMass();
 		
 
 		// Compute drag acceleration

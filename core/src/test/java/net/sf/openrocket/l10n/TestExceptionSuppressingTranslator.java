@@ -12,7 +12,6 @@ import org.jmock.Mockery;
 import org.jmock.auto.Mock;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -25,7 +24,7 @@ public class TestExceptionSuppressingTranslator {
 	
 	@Mock
 	ExceptionHandler exceptionHandler;
-
+	
 	@Test
 	public void testSuccessful() {
 		Application.setExceptionHandler(exceptionHandler);
@@ -39,7 +38,8 @@ public class TestExceptionSuppressingTranslator {
 		
 		assertEquals("foobar", est.get("fake.key4"));
 	}
-
+	
+	
 	@Test
 	public void testFailure() {
 		Application.setExceptionHandler(exceptionHandler);

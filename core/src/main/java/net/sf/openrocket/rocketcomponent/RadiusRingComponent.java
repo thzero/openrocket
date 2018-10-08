@@ -5,18 +5,19 @@ import net.sf.openrocket.util.Coordinate;
 import net.sf.openrocket.util.MathUtil;
 
 /**
- * An inner component that consists of a hollow cylindrical component.  This can be
- * an inner tube, tube coupler, centering ring, bulkhead etc.
- *
- * The properties include the inner and outer radii, length and radial position.
+ * ???
  *
  * @author Sampo Niskanen <sampo.niskanen@iki.fi>
  */
-public abstract class RadiusRingComponent extends RingComponent implements Coaxial {
+public abstract class RadiusRingComponent extends RingComponent implements Coaxial, LineInstanceable  {
 
 	protected double outerRadius = 0;
 	protected double innerRadius = 0;
 
+	protected int instanceCount = 1;
+	// front-front along the positive rocket axis. i.e. [1,0,0];
+	protected double instanceSeparation = 0; 
+   
 	@Override
 	protected void loadFromPreset(ComponentPreset preset) {
 		super.loadFromPreset(preset);
@@ -36,7 +37,6 @@ public abstract class RadiusRingComponent extends RingComponent implements Coaxi
 	@Override
 	public double getOuterRadius() {
 		if (outerRadiusAutomatic && getParent() instanceof RadialParent) {
-			RocketComponent parent = getParent();
 			double pos1 = this.toRelative(Coordinate.NUL, parent)[0].x;
 			double pos2 = this.toRelative(new Coordinate(getLength()), parent)[0].x;
 			pos1 = MathUtil.clamp(pos1, 0, parent.getLength());
@@ -100,4 +100,42 @@ public abstract class RadiusRingComponent extends RingComponent implements Coaxi
 		setInnerRadius(outer - thickness);
 	}
 
+
+	@Override
+	public double getInstanceSeparation(){
+		return this.instanceSeparation;
+	}
+	
+	@Override
+	public void setInstanceSeparation(final double _separation){
+		this.instanceSeparation = _separation;
+	}
+	
+	@Override
+	public void setInstanceCount( final int newCount ){
+		if( 0 < newCount ){
+			this.instanceCount = newCount;
+		}
+	}
+	
+	@Override
+	public Coordinate[] getInstanceOffsets(){
+		Coordinate[] toReturn = new Coordinate[this.getInstanceCount()];
+		for ( int index=0 ; index < this.getInstanceCount(); index++){
+			toReturn[index] = new Coordinate( index*this.instanceSeparation, 0, 0);
+		}
+		
+		return toReturn;
+	}
+
+	
+	@Override
+	public int getInstanceCount(){
+		return this.instanceCount;
+	}
+	
+	@Override	
+	public String getPatternName(){
+		return (this.getInstanceCount() + "-Line");
+	}
 }

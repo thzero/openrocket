@@ -166,6 +166,11 @@ public class GUIUtil {
 	 */
 	public static void installEscapeCloseOperation(final JDialog dialog) {
 		Action dispatchClosing = new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 9196153713666242274L;
+
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				log.info(Markers.USER_MARKER, "Closing dialog " + dialog);
@@ -367,7 +372,7 @@ public class GUIUtil {
 		
 		
 		for (int col = 0; col < columns; col++) {
-			System.err.println("Setting column " + col + " to width " + widths[col]);
+			//System.err.println("Setting column " + col + " to width " + widths[col]);
 			table.getColumnModel().getColumn(col).setPreferredWidth(Math.min(widths[col], max) * 100);
 		}
 	}
@@ -477,13 +482,13 @@ public class GUIUtil {
 			}
 			
 		} else if (c instanceof JComboBox) {
-			
-			JComboBox combo = (JComboBox) c;
+			@SuppressWarnings("unchecked")
+			JComboBox<Object> combo = (JComboBox<Object>) c;
 			for (ActionListener l : combo.getActionListeners()) {
 				combo.removeActionListener(l);
 			}
-			ComboBoxModel model = combo.getModel();
-			combo.setModel(new DefaultComboBoxModel());
+			ComboBoxModel<?> model = combo.getModel();
+			combo.setModel(new DefaultComboBoxModel<Object>());
 			if (model instanceof Invalidatable) {
 				((Invalidatable) model).invalidate();
 			}
@@ -496,6 +501,8 @@ public class GUIUtil {
 			}
 			Action model = button.getAction();
 			button.setAction(new AbstractAction() {
+				private static final long serialVersionUID = 3499667830135101535L;
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
 				}
@@ -569,6 +576,7 @@ public class GUIUtil {
 	public static class BooleanTableClickListener extends MouseAdapter {
 		
 		private final JTable table;
+		// these are different because the MouseEvent and the model use different indexing (0- vs 1-)
 		private final int clickColumn;
 		private final int booleanColumn;
 		
@@ -589,34 +597,35 @@ public class GUIUtil {
 			if (e.getButton() != MouseEvent.BUTTON1)
 				return;
 			
-			Point p = e.getPoint();
-			int col = table.columnAtPoint(p);
-			if (col < 0)
+			final Point p = e.getPoint();
+			final int tableColumn = table.columnAtPoint(p);
+			if (tableColumn < 0)
 				return;
-			col = table.convertColumnIndexToModel(col);
-			if (col != clickColumn)
+
+			final int modelColumn= table.convertColumnIndexToModel(tableColumn);
+			if (modelColumn != clickColumn)
 				return;
-			
-			int row = table.rowAtPoint(p);
-			if (row < 0)
+
+			final int tableRow = table.rowAtPoint(p);
+			if (tableRow < 0)
 				return;
-			row = table.convertRowIndexToModel(row);
-			if (row < 0)
+
+			final int modelRow = table.convertRowIndexToModel(tableRow);
+			if ( modelRow < 0)
 				return;
-			
+
 			TableModel model = table.getModel();
-			Object value = model.getValueAt(row, booleanColumn);
-			
-			if (!(value instanceof Boolean)) {
-				throw new IllegalStateException("Table value at row=" + row + " col=" +
+			final Object value = model.getValueAt(modelRow, booleanColumn);
+	        if (!(value instanceof Boolean)) {
+				throw new IllegalStateException("Table value at row=" + modelRow + " col=" +
 						booleanColumn + " is not a Boolean, value=" + value);
 			}
 			
-			Boolean b = (Boolean) value;
-			b = !b;
-			model.setValueAt(b, row, booleanColumn);
+			final Boolean oldValue = (Boolean) value;
+			final Boolean newValue = !oldValue;
+			model.setValueAt(newValue, tableRow, booleanColumn);
 			if (model instanceof AbstractTableModel) {
-				((AbstractTableModel) model).fireTableCellUpdated(row, booleanColumn);
+				((AbstractTableModel) model).fireTableCellUpdated(tableRow, booleanColumn);
 			}
 		}
 		

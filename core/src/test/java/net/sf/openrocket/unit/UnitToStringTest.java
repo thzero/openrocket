@@ -57,25 +57,23 @@ public class UnitToStringTest {
 		assertEquals("0.002", Unit.NOUNIT.toString(0.0015)); // round to even
 		assertEquals("0.002", Unit.NOUNIT.toString(0.0016));
 		assertEquals("0.002", Unit.NOUNIT.toString(0.0024));
-		assertEquals("0.003", Unit.NOUNIT.toString(0.0025)); // round to even
+		assertEquals("0.002", Unit.NOUNIT.toString(0.0025)); // round to even
 		assertEquals("0.003", Unit.NOUNIT.toString(0.0026));
 		assertEquals("0.009", Unit.NOUNIT.toString(0.0094));
-
-		assertEquals("0.009", Unit.NOUNIT.toString(0.0095)); // no trailing zeros after rounding
-		assertEquals("0.01", Unit.NOUNIT.toString(0.0096)); // no trailing zeros after rounding
-
+		
+		assertEquals("0.01", Unit.NOUNIT.toString(0.0095)); // no trailing zeros after rounding
+		
 		assertEquals("0.011", Unit.NOUNIT.toString(0.0114));
-		assertEquals("0.011", Unit.NOUNIT.toString(0.0115)); // round to even
+		assertEquals("0.012", Unit.NOUNIT.toString(0.0115)); // round to even
 		assertEquals("0.012", Unit.NOUNIT.toString(0.0119));
 		assertEquals("0.012", Unit.NOUNIT.toString(0.0124));
-		assertEquals("0.013", Unit.NOUNIT.toString(0.0125)); // round to even
+		assertEquals("0.012", Unit.NOUNIT.toString(0.0125)); // round to even
 		assertEquals("0.013", Unit.NOUNIT.toString(0.0129));
 		
 		assertEquals("0.095", Unit.NOUNIT.toString(0.0949)); // boundary check
 		
 		// positive numbers < 100
-		assertEquals("0.009", Unit.NOUNIT.toString(0.0095)); // boundary check
-		assertEquals("0.01", Unit.NOUNIT.toString(0.0096)); // boundary check
+		assertEquals("0.01", Unit.NOUNIT.toString(0.0095)); // boundary check
 		
 		assertEquals("0.111", Unit.NOUNIT.toString(0.1111));
 		assertEquals("0.112", Unit.NOUNIT.toString(0.1115)); // round to even
@@ -205,7 +203,7 @@ public class UnitToStringTest {
 		assertEquals("-0,002", Unit.NOUNIT.toString(-0.0015)); // round to even
 		assertEquals("-0,002", Unit.NOUNIT.toString(-0.0016));
 		assertEquals("-0,002", Unit.NOUNIT.toString(-0.0024));
-		assertEquals("-0,003", Unit.NOUNIT.toString(-0.0025)); // round to even
+		assertEquals("-0,002", Unit.NOUNIT.toString(-0.0025)); // round to even
 		assertEquals("-0,003", Unit.NOUNIT.toString(-0.0026));
 		assertEquals("-0,009", Unit.NOUNIT.toString(-0.0094));
 		
@@ -259,25 +257,23 @@ public class UnitToStringTest {
 		assertEquals("-0.002", Unit.NOUNIT.toString(-0.0015)); // round to even
 		assertEquals("-0.002", Unit.NOUNIT.toString(-0.0016));
 		assertEquals("-0.002", Unit.NOUNIT.toString(-0.0024));
-		assertEquals("-0.003", Unit.NOUNIT.toString(-0.0025)); // round to even
+		assertEquals("-0.002", Unit.NOUNIT.toString(-0.0025)); // round to even
 		assertEquals("-0.003", Unit.NOUNIT.toString(-0.0026));
 		assertEquals("-0.009", Unit.NOUNIT.toString(-0.0094));
 		
-		assertEquals("-0.009", Unit.NOUNIT.toString(-0.0095)); // no trailing zeros after rounding
-		assertEquals("-0.01", Unit.NOUNIT.toString(-0.0096)); // no trailing zeros after rounding
-
+		assertEquals("-0.01", Unit.NOUNIT.toString(-0.0095)); // no trailing zeros after rounding
+		
 		assertEquals("-0.011", Unit.NOUNIT.toString(-0.0114));
-		assertEquals("-0.011", Unit.NOUNIT.toString(-0.0115)); // round to even
+		assertEquals("-0.012", Unit.NOUNIT.toString(-0.0115)); // round to even
 		assertEquals("-0.012", Unit.NOUNIT.toString(-0.0119));
 		assertEquals("-0.012", Unit.NOUNIT.toString(-0.0124));
-		assertEquals("-0.013", Unit.NOUNIT.toString(-0.0125)); // round to even
+		assertEquals("-0.012", Unit.NOUNIT.toString(-0.0125)); // round to even
 		assertEquals("-0.013", Unit.NOUNIT.toString(-0.0129));
 		
 		assertEquals("-0.095", Unit.NOUNIT.toString(-0.0949)); // boundary check
 		
 		// negative numbers < 100 
-		assertEquals("-0.009", Unit.NOUNIT.toString(-0.0095)); // boundary check
-		assertEquals("-0.01", Unit.NOUNIT.toString(-0.0096)); // boundary check
+		assertEquals("-0.01", Unit.NOUNIT.toString(-0.0095)); // boundary check
 		
 		assertEquals("-0.111", Unit.NOUNIT.toString(-0.1111));
 		assertEquals("-0.112", Unit.NOUNIT.toString(-0.1115)); // round to even

@@ -21,6 +21,7 @@ import net.sf.openrocket.startup.Application;
 import net.sf.openrocket.util.BuildProperties;
 import net.sf.openrocket.util.Chars;
 
+@SuppressWarnings("serial")
 public class AboutDialog extends JDialog {
 	
 	public static final String OPENROCKET_URL = "http://openrocket.sourceforge.net/";
@@ -40,26 +41,15 @@ public class AboutDialog extends JDialog {
 			"Stefan Lobas / ERIG e.V. (German)<br>" +
 			"Tripoli Spain (Spanish)<br>" +
 			"Sky Dart Team (Russian)<br>" +
-			"Mauro Biasutti (Italian)<br>" +
-			"Vladimir Beran (Czech)<br>" +
-			"Polish Rocketry Society / \u0141ukasz & Alex kazanski (Polish)<br>" +
-			"Yilun Zhu (Simplified Chinese)<br><br>" +
+			"Mauro Biasutti (Italian)<br><br>" +
+			"Vladimir Beran  (Czech)<br><br>" +
+			"Polish Rocketry Society / \u0141ukasz & Alex kazanski  (Polish)<br><br>" +
 			"<b>OpenRocket utilizes the following libraries:</b><br><br>" +
-            "Apache Commons (https://commons.apache.org)<br/>" +
-            "SL4J (https://www.slf4j.org)<br/>" +
-            "Google Guice (https://github.com/google/guice)<br/>" +
-            "infomas-asl (https://github.com/rmuller/infomas-asl)<br/>" +
-            "Logback (https://logback.qos.ch)<br/>" +
-            "OpenCSV (http://opencsv.sourceforge.net)<br/>" +
-            "JAXB (https://github.com/eclipse-ee4j/jaxb-ri)<br/>" +
-            "Javax.Json (https://javaee.github.io/jsonp)<br/>" +
-            "exp4j (http://projects.congrace.de/exp4j/index.html)<br>" +
-			"MiG Layout (http://www.miglayout.com)<br>" +
-			"JFreeChart (http://www.jfree.org/jfreechart)<br>" +
-			"iText (http://www.itextpdf.com)<br>" +
-			"JOGL (http://jogamp.org/jogl/www)<br/>" +
-            "RSyntaxTextArea (https://github.com/bobbylight/RSyntaxTextArea)<br/>" +
-            "JMock (http://jmock.org/)";
+			"MiG Layout (http://www.miglayout.com/)<br>" +
+			"JFreeChart (http://www.jfree.org/jfreechart/)<br>" +
+			"iText (http://www.itextpdf.com/)<br>" +
+			"exp4j (http://projects.congrace.de/exp4j/index.html)<br>" +
+			"JOGL (http://jogamp.org/jogl/www/)";
 	
 	
 	public AboutDialog(JFrame parent) {
@@ -80,7 +70,7 @@ public class AboutDialog extends JDialog {
 		
 		sub.add(new StyledLabel("OpenRocket", 20), "ax 50%, growy, wrap para");
 		sub.add(new StyledLabel(trans.get("lbl.version").trim() + " " + version, 3), "ax 50%, growy, wrap rel");
-		sub.add(new StyledLabel("Copyright " + Chars.COPY + " 2007-2017 Sampo Niskanen and others"), "ax 50%, growy, wrap para");
+		sub.add(new StyledLabel("Copyright " + Chars.COPY + " 2007-2013 Sampo Niskanen and others"), "ax 50%, growy, wrap para");
 		
 		sub.add(new URLLabel(OPENROCKET_URL), "ax 50%, growy, wrap para");
 		panel.add(sub, "grow");
