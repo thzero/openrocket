@@ -3553,7 +3553,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.core [test]">
+  <component name="RunManager" selected="Gradle.openrocket [test]">
     <configuration name="core [test]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -3572,10 +3572,10 @@
       </ExternalSystemSettings>
       <method v="2" />
     </configuration>
-    <configuration name="swing [assemble]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="openrocket [assemble]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/swing" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="externalSystemIdString" value="GRADLE" />
         <option name="scriptParameters" />
         <option name="taskDescriptions">
@@ -3590,10 +3590,10 @@
       </ExternalSystemSettings>
       <method v="2" />
     </configuration>
-    <configuration name="swing [shadowJar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="openrocket [shadowJar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/swing" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="externalSystemIdString" value="GRADLE" />
         <option name="scriptParameters" />
         <option name="taskDescriptions">
@@ -3608,10 +3608,10 @@
       </ExternalSystemSettings>
       <method v="2" />
     </configuration>
-    <configuration name="swing [testJar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="openrocket [test]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/swing" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="externalSystemIdString" value="GRADLE" />
         <option name="scriptParameters" />
         <option name="taskDescriptions">
@@ -3619,7 +3619,7 @@
         </option>
         <option name="taskNames">
           <list>
-            <option value="testJar" />
+            <option value="test" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -3645,19 +3645,19 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Gradle.swing [assemble]" />
-      <item itemvalue="Gradle.swing [shadowJar]" />
-      <item itemvalue="Gradle.swing [testJar]" />
       <item itemvalue="Gradle.swing [test]" />
       <item itemvalue="Gradle.core [test]" />
+      <item itemvalue="Gradle.openrocket [assemble]" />
+      <item itemvalue="Gradle.openrocket [shadowJar]" />
+      <item itemvalue="Gradle.openrocket [test]" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.openrocket [test]" />
+        <item itemvalue="Gradle.openrocket [shadowJar]" />
+        <item itemvalue="Gradle.openrocket [assemble]" />
         <item itemvalue="Gradle.core [test]" />
         <item itemvalue="Gradle.swing [test]" />
-        <item itemvalue="Gradle.swing [testJar]" />
-        <item itemvalue="Gradle.swing [shadowJar]" />
-        <item itemvalue="Gradle.swing [assemble]" />
       </list>
     </recent_temporary>
   </component>

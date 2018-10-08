@@ -1,6 +1,7 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
 buildscript {
     repositories {
-        mavenCentral()
         jcenter()
     }
     dependencies {
@@ -8,46 +9,38 @@ buildscript {
     }
 }
 
-//plugins {
-//    id 'com.github.johnrengelman.shadow' version '4.0.1'
-//    id 'java'
-//}
+allprojects {
+    apply plugin: 'java'
+    apply plugin: "com.github.johnrengelman.shadow"
 
-//allprojects {
-//    repositories {
-//        jcenter()
-//        mavenCentral()
-//    }
-//}
-//
-//allprojects {
-//    group 'net.sf.openrocket'
-//    version '1.0'
-//}
-//
-//subprojects {
-//    repositories {
-//        mavenCentral()
-//    }
-//}
+    group 'net.sf.openrocket'
+    version '1.0'
 
-//group 'net.sf.openrocket'
-//version '1.0'
-//
-//sourceCompatibility = 1.8
-//
-//dependencies {
-////    compile project(':core')
-////    compile project(':swing')
-//
-////    testCompile project (path: ':core', configuration: 'testArtifacts')
-//}
-//
-//jar {
-//    // Keep jar clean:
-////    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/*.MF'
-//
-//    manifest {
-//        attributes 'Main-Class': 'net.sf.openrocket.startup.SwingStartup'
-//    }
-//}
+    sourceCompatibility = 1.8
+
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+}
+
+dependencies {
+    compile project(':core')
+    compile project(':swing')
+}
+
+jar {
+    // Keep jar clean:
+//    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/*.MF'
+    baseName = 'openrocket'
+    classifier = null
+
+    manifest {
+        attributes 'Main-Class': 'net.sf.openrocket.startup.SwingStartup'
+    }
+}
+
+shadowJar {
+    baseName = 'openrocket'
+    classifier = null
+}
