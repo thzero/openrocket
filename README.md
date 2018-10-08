@@ -1,7 +1,7 @@
 OpenRocket
 ==========
  
-Build Status - [![Build Status](https://travis-ci.org/thzero/openrocket.svg?branch=gradle)](https://travis-ci.org/thzero/openrocket)
+Build Status - [![Build Status](https://travis-ci.org/thzero/openrocket.svg?branch=gradle-unstable)](https://travis-ci.org/thzero/openrocket)
 ------------
 
 Overview
