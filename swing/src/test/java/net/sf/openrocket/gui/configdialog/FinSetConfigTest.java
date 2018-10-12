@@ -8,8 +8,8 @@ import net.sf.openrocket.gui.adaptors.DoubleModel;
 import net.sf.openrocket.rocketcomponent.BodyTube;
 import net.sf.openrocket.rocketcomponent.CenteringRing;
 import net.sf.openrocket.rocketcomponent.RocketComponent;
-
 import net.sf.openrocket.util.BaseTestCase;
+
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -68,7 +68,7 @@ public class FinSetConfigTest extends BaseTestCase {
 
         Double result = (Double)method.invoke(null, rings, 0.47d, 0.01, dm, parent);
         Assert.assertEquals(0.01, result.doubleValue(), 0.0001);
-
+        
     }
 
     /**
@@ -168,7 +168,7 @@ public class FinSetConfigTest extends BaseTestCase {
         Double result = (Double)method.invoke(null, rings, 0.47d, 0.01, dm, parent);
         Assert.assertEquals(0.0059, result.doubleValue(), 0.0001);
     }
-
+    
     /**
      * Test both rings within the root chord.
      */
