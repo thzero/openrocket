@@ -1,7 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4856984f-2420-47e8-9f4d-bb0784a4e1c4" name="Default Changelist" comment="" />
+    <list default="true" id="4856984f-2420-47e8-9f4d-bb0784a4e1c4" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/src/main/java/de/congrace/exp4j/Example.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/de/congrace/exp4j/Example.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/src/main/java/de/congrace/exp4j/PostfixExpression.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/de/congrace/exp4j/PostfixExpression.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/src/main/java/de/congrace/exp4j/Variable.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/de/congrace/exp4j/Variable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/src/main/java/de/congrace/exp4j/VariableSet.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/de/congrace/exp4j/VariableSet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/src/main/java/net/sf/openrocket/simulation/BasicLandingStepper.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/net/sf/openrocket/simulation/BasicLandingStepper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/src/main/java/net/sf/openrocket/simulation/BasicTumbleStepper.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/net/sf/openrocket/simulation/BasicTumbleStepper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/src/main/java/net/sf/openrocket/simulation/FlightEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/net/sf/openrocket/simulation/FlightEvent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/src/main/java/net/sf/openrocket/simulation/SimulationStepper.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/net/sf/openrocket/simulation/SimulationStepper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/src/main/java/net/sf/openrocket/util/Color.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/net/sf/openrocket/util/Color.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/src/main/resources/releasing.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/swing/src/main/java/net/sf/openrocket/gui/plot/PlotConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/swing/src/main/java/net/sf/openrocket/gui/plot/PlotConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swing/src/main/java/net/sf/openrocket/gui/plot/SimulationPlot.java" beforeDir="false" afterPath="$PROJECT_DIR$/swing/src/main/java/net/sf/openrocket/gui/plot/SimulationPlot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/estes/BTDATA.CSV" beforeDir="false" afterPath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/estes/BTDATA.CSV" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/estes/EBDATA.CSV" beforeDir="false" afterPath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/estes/EBDATA.CSV" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/estes/LLDATA.CSV" beforeDir="false" afterPath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/estes/LLDATA.CSV" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/estes/MODATA.CSV" beforeDir="false" afterPath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/estes/MODATA.CSV" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/estes/NCDATA.CSV" beforeDir="false" afterPath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/estes/NCDATA.CSV" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/estes/PCDATA.CSV" beforeDir="false" afterPath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/estes/PCDATA.CSV" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/estes/TCDATA.CSV" beforeDir="false" afterPath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/estes/TCDATA.CSV" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/estes/TRDATA.CSV" beforeDir="false" afterPath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/estes/TRDATA.CSV" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/quest/BTDATA.CSV" beforeDir="false" afterPath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/quest/BTDATA.CSV" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/quest/CRDATA.CSV" beforeDir="false" afterPath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/quest/CRDATA.CSV" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/quest/EBDATA.CSV" beforeDir="false" afterPath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/quest/EBDATA.CSV" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/quest/NCDATA.CSV" beforeDir="false" afterPath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/quest/NCDATA.CSV" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/quest/PCDATA.CSV" beforeDir="false" afterPath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/quest/PCDATA.CSV" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/quest/STDATA.CSV" beforeDir="false" afterPath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/quest/STDATA.CSV" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/quest/TCDATA.CSV" beforeDir="false" afterPath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/quest/TCDATA.CSV" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/quest/TRDATA.CSV" beforeDir="false" afterPath="$PROJECT_DIR$/swing/src/main/resources-src/datafiles/rocksim_components/quest/TRDATA.CSV" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
     <ignored path="$PROJECT_DIR$/build/" />
@@ -46,7 +76,30 @@
         </task>
         <projects_view>
           <tree_state>
-            <expand />
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="openrocket.gradleunstable" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="openrocket.gradleunstable" type="f1a62948:ProjectNode" />
+                <item name="openrocket.gradleunstable" type="2d1252cf:ModuleNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="openrocket.gradleunstable" type="f1a62948:ProjectNode" />
+                <item name="openrocket.gradleunstable" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="openrocket.gradleunstable" type="f1a62948:ProjectNode" />
+                <item name="openrocket.gradleunstable" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="verification" type="c8890929:TasksNode$1" />
+              </path>
+            </expand>
             <select />
           </tree_state>
         </projects_view>
@@ -123,19 +176,18 @@
         </counts>
       </usages-collector>
     </session>
+    <session id="-1079254045">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="1" />
+          <entry key="project.open.time.2" value="1" />
+          <entry key="project.opened" value="1" />
+        </counts>
+      </usages-collector>
+    </session>
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="62" column="18" selection-start-line="62" selection-start-column="18" selection-end-line="62" selection-end-column="18" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -172,14 +224,14 @@
         <entry>
           <key>
             <ExternalProjectPojo>
-              <option name="name" value="openrocket" />
+              <option name="name" value="openrocket.gradleunstable" />
               <option name="path" value="$PROJECT_DIR$" />
             </ExternalProjectPojo>
           </key>
           <value>
             <list>
               <ExternalProjectPojo>
-                <option name="name" value="openrocket" />
+                <option name="name" value="openrocket.gradleunstable" />
                 <option name="path" value="$PROJECT_DIR$" />
               </ExternalProjectPojo>
               <ExternalProjectPojo>
@@ -197,67 +249,11 @@
     </option>
     <option name="availableTasks">
       <map>
-        <entry key="$PROJECT_DIR$/../core">
-          <value>
-            <list>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays the components produced by project ':core'. [incubating]" />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":core:components" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays the sub-projects of project ':core'." />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":core:projects" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays the dependent components of components in project ':core'. [incubating]" />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":core:dependentComponents" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays all buildscript dependencies declared in project ':core'." />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":core:buildEnvironment" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays the insight into a specific dependency in project ':core'." />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":core:dependencyInsight" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays all dependencies declared in project ':core'." />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":core:dependencies" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays a help message." />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":core:help" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays the configuration model of project ':core'. [incubating]" />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":core:model" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays the properties of project ':core'." />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":core:properties" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays the tasks runnable from project ':core'." />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":core:tasks" />
-              </ExternalTaskPojo>
-            </list>
-          </value>
-        </entry>
         <entry key="$PROJECT_DIR$">
           <value>
             <list>
               <ExternalTaskPojo>
-                <option name="description" value="Displays the components produced by root project 'openrocket'. [incubating]" />
+                <option name="description" value="Displays the components produced by root project 'openrocket.gradleunstable'. [incubating]" />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
                 <option name="name" value="components" />
               </ExternalTaskPojo>
@@ -267,7 +263,7 @@
                 <option name="name" value="buildDependents" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
-                <option name="description" value="Displays the sub-projects of root project 'openrocket'." />
+                <option name="description" value="Displays the sub-projects of root project 'openrocket.gradleunstable'." />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
                 <option name="name" value="projects" />
               </ExternalTaskPojo>
@@ -277,12 +273,12 @@
                 <option name="name" value="classes" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
-                <option name="description" value="Displays the dependent components of components in root project 'openrocket'. [incubating]" />
+                <option name="description" value="Displays the dependent components of components in root project 'openrocket.gradleunstable'. [incubating]" />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
                 <option name="name" value="dependentComponents" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
-                <option name="description" value="Displays all buildscript dependencies declared in root project 'openrocket'." />
+                <option name="description" value="Displays all buildscript dependencies declared in root project 'openrocket.gradleunstable'." />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
                 <option name="name" value="buildEnvironment" />
               </ExternalTaskPojo>
@@ -307,7 +303,7 @@
                 <option name="name" value="jar" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
-                <option name="description" value="Displays the configuration model of root project 'openrocket'. [incubating]" />
+                <option name="description" value="Displays the configuration model of root project 'openrocket.gradleunstable'. [incubating]" />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
                 <option name="name" value="model" />
               </ExternalTaskPojo>
@@ -317,7 +313,7 @@
                 <option name="name" value="processResources" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
-                <option name="description" value="Displays the tasks runnable from root project 'openrocket' (some of the displayed tasks may belong to subprojects)." />
+                <option name="description" value="Displays the tasks runnable from root project 'openrocket.gradleunstable' (some of the displayed tasks may belong to subprojects)." />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
                 <option name="name" value="tasks" />
               </ExternalTaskPojo>
@@ -346,7 +342,7 @@
                 <option name="name" value="compileJava" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
-                <option name="description" value="Displays the insight into a specific dependency in root project 'openrocket'." />
+                <option name="description" value="Displays the insight into a specific dependency in root project 'openrocket.gradleunstable'." />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
                 <option name="name" value="dependencyInsight" />
               </ExternalTaskPojo>
@@ -371,7 +367,7 @@
                 <option name="name" value="compileTestJava" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
-                <option name="description" value="Displays all dependencies declared in root project 'openrocket'." />
+                <option name="description" value="Displays all dependencies declared in root project 'openrocket.gradleunstable'." />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
                 <option name="name" value="dependencies" />
               </ExternalTaskPojo>
@@ -401,7 +397,7 @@
                 <option name="name" value="shadowJar" />
               </ExternalTaskPojo>
               <ExternalTaskPojo>
-                <option name="description" value="Displays the properties of root project 'openrocket'." />
+                <option name="description" value="Displays the properties of root project 'openrocket.gradleunstable'." />
                 <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
                 <option name="name" value="properties" />
               </ExternalTaskPojo>
@@ -694,76 +690,20 @@
             </list>
           </value>
         </entry>
-        <entry key="$PROJECT_DIR$/../swing">
-          <value>
-            <list>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays the components produced by project ':swing'. [incubating]" />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":swing:components" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays the sub-projects of project ':swing'." />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":swing:projects" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays the dependent components of components in project ':swing'. [incubating]" />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":swing:dependentComponents" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays all buildscript dependencies declared in project ':swing'." />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":swing:buildEnvironment" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays the insight into a specific dependency in project ':swing'." />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":swing:dependencyInsight" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays all dependencies declared in project ':swing'." />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":swing:dependencies" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays a help message." />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":swing:help" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays the configuration model of project ':swing'. [incubating]" />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":swing:model" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays the properties of project ':swing'." />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":swing:properties" />
-              </ExternalTaskPojo>
-              <ExternalTaskPojo>
-                <option name="description" value="Displays the tasks runnable from project ':swing'." />
-                <option name="linkedExternalProjectPath" value="$PROJECT_DIR$" />
-                <option name="name" value=":swing:tasks" />
-              </ExternalTaskPojo>
-            </list>
-          </value>
-        </entry>
       </map>
     </option>
     <option name="modificationStamps">
       <map>
-        <entry key="$PROJECT_DIR$" value="15389669562997" />
+        <entry key="$PROJECT_DIR$" value="15390054956007" />
         <entry key="$PROJECT_DIR$/.gradle" value="0" />
         <entry key="$PROJECT_DIR$/build.gradle" value="829409138" />
-        <entry key="$PROJECT_DIR$/core" value="4616900736530" />
+        <entry key="$PROJECT_DIR$/core" value="4617004185907" />
         <entry key="$PROJECT_DIR$/core/.gradle" value="0" />
         <entry key="$PROJECT_DIR$/core/build.gradle" value="1097158436" />
         <entry key="$PROJECT_DIR$/core/settings.gradle" value="3297196451" />
         <entry key="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" value="2585518924" />
         <entry key="$PROJECT_DIR$/settings.gradle" value="2761787628" />
-        <entry key="$PROJECT_DIR$/swing" value="9233801489109" />
+        <entry key="$PROJECT_DIR$/swing" value="9234008407778" />
         <entry key="$PROJECT_DIR$/swing/.gradle" value="0" />
         <entry key="$PROJECT_DIR$/swing/build.gradle" value="4209136852" />
         <entry key="$PROJECT_DIR$/swing/settings.gradle" value="3925171759" />
@@ -776,21 +716,6 @@
             <ExternalProjectBuildClasspathPojo>
               <option name="modulesBuildClasspath">
                 <map>
-                  <entry key="$PROJECT_DIR$/../core">
-                    <value>
-                      <ExternalModuleBuildClasspathPojo>
-                        <option name="entries">
-                          <list>
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/4.0.1/de9a9e3e5590ece063faca228dfa6236cb105e95/shadow-4.0.1-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-backports-compat23/2.4.15/5f61b63dd10a8d008a869d3fb9c36b157be747a/groovy-backports-compat23-2.4.15-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/4.0.1/21f1262e29c65eb26f5190ef68b36d4820ca4e3a/shadow-4.0.1.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-backports-compat23/2.4.15/96cbcd01eaa6038f900b7154d08aae462c5430e/groovy-backports-compat23-2.4.15.jar" />
-                          </list>
-                        </option>
-                        <option name="path" value="$PROJECT_DIR$/../core" />
-                      </ExternalModuleBuildClasspathPojo>
-                    </value>
-                  </entry>
                   <entry key="$PROJECT_DIR$">
                     <value>
                       <ExternalModuleBuildClasspathPojo>
@@ -836,24 +761,9 @@
                       </ExternalModuleBuildClasspathPojo>
                     </value>
                   </entry>
-                  <entry key="$PROJECT_DIR$/../swing">
-                    <value>
-                      <ExternalModuleBuildClasspathPojo>
-                        <option name="entries">
-                          <list>
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/4.0.1/de9a9e3e5590ece063faca228dfa6236cb105e95/shadow-4.0.1-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-backports-compat23/2.4.15/5f61b63dd10a8d008a869d3fb9c36b157be747a/groovy-backports-compat23-2.4.15-sources.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jengelman.gradle.plugins/shadow/4.0.1/21f1262e29c65eb26f5190ef68b36d4820ca4e3a/shadow-4.0.1.jar" />
-                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-backports-compat23/2.4.15/96cbcd01eaa6038f900b7154d08aae462c5430e/groovy-backports-compat23-2.4.15.jar" />
-                          </list>
-                        </option>
-                        <option name="path" value="$PROJECT_DIR$/../swing" />
-                      </ExternalModuleBuildClasspathPojo>
-                    </value>
-                  </entry>
                 </map>
               </option>
-              <option name="name" value="openrocket" />
+              <option name="name" value="openrocket.gradleunstable" />
               <option name="projectBuildClasspath">
                 <list>
                   <option value="$USER_HOME$/.gradle/wrapper/dists/gradle-4.8-all/41c9mvq2w0645xx6nsenaerjl/gradle-4.8/src/announce" />
@@ -1012,12 +922,11 @@
     </option>
     <option name="projectSyncType">
       <map>
-        <entry key="$PROJECT_DIR$" value="RE_IMPORT" />
-        <entry key="$PROJECT_DIR$/core" value="RE_IMPORT" />
-        <entry key="$PROJECT_DIR$/swing" value="RE_IMPORT" />
         <entry key="$PROJECT_DIR$/../../openrocket2" value="PREVIEW" />
         <entry key="$PROJECT_DIR$/../../openrocket2/swing" value="PREVIEW" />
         <entry key="$PROJECT_DIR$/../../openrocket2a/swing" value="PREVIEW" />
+        <entry key="$PROJECT_DIR$/core" value="RE_IMPORT" />
+        <entry key="$PROJECT_DIR$/swing" value="RE_IMPORT" />
       </map>
     </option>
   </component>
@@ -1066,23 +975,23 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="openrocket" type="b2602c69:ProjectViewProjectNode" />
-              <item name="openrocket" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="openrocket.gradleunstable" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
       <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/build.gradle" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../openrocket.gradle/build.gradle" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -1096,7 +1005,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.SwingStartup">
+  <component name="RunManager" selected="Gradle.openrocket.gradleunstable [check]">
     <configuration name="SwingStartup" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="net.sf.openrocket.startup.SwingStartup" />
       <module name="swing_main" />
@@ -1110,6 +1019,24 @@
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
+    </configuration>
+    <configuration name="openrocket.gradleunstable [check]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="check" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <method v="2" />
     </configuration>
     <configuration name="All in swing_test (2)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="swing_test" />
@@ -1141,34 +1068,20 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="net.sf.openrocket in swing_test" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="swing_test" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="net.sf.openrocket.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="net.sf.openrocket" />
-      <option name="TEST_OBJECT" value="package" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <list>
       <item itemvalue="Application.SwingStartup" />
-      <item itemvalue="JUnit.net.sf.openrocket in swing_test" />
       <item itemvalue="JUnit.All in swing_test (2)" />
       <item itemvalue="JUnit.IntegrationTest" />
       <item itemvalue="JUnit.All in swing_test (3)" />
+      <item itemvalue="Gradle.openrocket.gradleunstable [check]" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.openrocket.gradleunstable [check]" />
         <item itemvalue="Application.SwingStartup" />
         <item itemvalue="JUnit.All in swing_test (3)" />
         <item itemvalue="JUnit.IntegrationTest" />
         <item itemvalue="JUnit.All in swing_test (2)" />
-        <item itemvalue="JUnit.net.sf.openrocket in swing_test" />
       </list>
     </recent_temporary>
   </component>
@@ -1186,12 +1099,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="All_in_core_test_(2) - 2018.10.07 at 22h 19m 28s.xml">
-      <configuration name="All in core_test (2)" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="All_in_core_test_(3) - 2018.10.07 at 22h 21m 12s.xml">
-      <configuration name="All in core_test (3)" configurationId="JUnit" />
-    </history-entry>
     <history-entry file="TestDirectoryIterator - 2018.10.07 at 22h 22m 37s.xml">
       <configuration name="TestDirectoryIterator" configurationId="JUnit" />
     </history-entry>
@@ -1216,12 +1123,17 @@
     <history-entry file="All_in_swing_test_(3) - 2018.10.07 at 22h 47m 36s.xml">
       <configuration name="All in swing_test (3)" configurationId="JUnit" />
     </history-entry>
+    <history-entry file="openrocket_gradleunstable_[check] - 2018.10.08 at 18h 48m 07s.xml">
+      <configuration name="openrocket.gradleunstable [check]" configurationId="GradleRunConfiguration" />
+    </history-entry>
+    <history-entry file="openrocket_gradleunstable_[check] - 2018.10.11 at 21h 13m 32s.xml">
+      <configuration name="openrocket.gradleunstable [check]" configurationId="GradleRunConfiguration" />
+    </history-entry>
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25746268" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26012793" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="UI Designer" order="3" />
@@ -1229,7 +1141,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.329718" />
       <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49946696" weight="0.329718" />
-      <window_info anchor="bottom" id="Debug" order="3" visible="true" weight="0.3991323" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.3991323" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -1242,7 +1154,7 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Palette" order="3" />
-      <window_info anchor="right" id="Gradle" order="4" weight="0.32995737" />
+      <window_info anchor="right" id="Gradle" order="4" visible="true" weight="0.32995737" />
       <window_info anchor="right" id="Palette&#9;" order="5" />
       <window_info anchor="right" id="Maven Projects" order="6" />
     </layout>
@@ -1277,13 +1189,7 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../../openrocket2/swing/settings.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" lean-forward="true" selection-start-column="26" selection-end-line="4" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../../openrocket2/swing/settings.gradle" />
     <entry file="file://$PROJECT_DIR$/core/src/test/java/net/sf/openrocket/util/WorldCoordinateTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="34">
@@ -1326,16 +1232,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/main/java/net/sf/openrocket/file/openrocket/importt/PositionSetter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="50" lean-forward="true" selection-start-column="50" selection-end-column="50" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/main/java/net/sf/openrocket/file/openrocket/importt/PositionSetter.java" />
     <entry file="file://$PROJECT_DIR$/../openrocket.unstable/core/src/net/sf/openrocket/rocketcomponent/RocketComponent.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="145">
@@ -1350,27 +1247,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/main/java/net/sf/openrocket/rocketcomponent/Stage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="9" column="47" selection-start-line="9" selection-start-column="47" selection-end-line="9" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/main/java/net/sf/openrocket/rocketcomponent/MotorConfiguration.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="23" column="8" lean-forward="true" selection-start-line="23" selection-start-column="8" selection-end-line="23" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/core/src/main/java/net/sf/openrocket/rocketcomponent/Stage.java" />
+    <entry file="file://$PROJECT_DIR$/core/src/main/java/net/sf/openrocket/rocketcomponent/MotorConfiguration.java" />
     <entry file="file://$PROJECT_DIR$/core/src/main/java/net/sf/openrocket/rocketcomponent/RingInstanceable.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="34">
           <caret line="2" selection-start-line="2" selection-end-line="2" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1409,13 +1291,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../openrocket.bak/core/src/test/java/net/sf/openrocket/file/iterator/TestDirectoryIterator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="12" column="127" lean-forward="true" selection-start-line="11" selection-start-column="60" selection-end-line="12" selection-end-column="127" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../openrocket.bak/core/src/test/java/net/sf/openrocket/file/iterator/TestDirectoryIterator.java" />
     <entry file="file://$PROJECT_DIR$/core/src/test/java/net/sf/openrocket/file/iterator/TestDirectoryIterator.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
@@ -1430,50 +1306,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/swing/src/main/java/net/sf/openrocket/gui/adaptors/FlightConfigurationModel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="24" column="23" selection-start-line="24" selection-start-column="23" selection-end-line="24" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/swing/src/main/java/net/sf/openrocket/gui/adaptors/FlightConfigurationModel.java" />
     <entry file="file://$PROJECT_DIR$/swing/src/main/java/net/sf/openrocket/gui/scalefigure/RocketPanel.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="422">
           <caret line="92" column="57" lean-forward="true" selection-start-line="92" selection-start-column="57" selection-end-line="92" selection-end-column="57" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../openrocket.bak/swing/src/main/java/net/sf/openrocket/gui/figure3d/geometry/FinRenderer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="48" lean-forward="true" selection-start-column="48" selection-end-line="10" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../openrocket.bak/swing/src/main/java/net/sf/openrocket/gui/figure3d/geometry/FinRenderer.java" />
     <entry file="file://$PROJECT_DIR$/swing/src/main/java/net/sf/openrocket/gui/figure3d/geometry/FinRenderer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state>
           <caret column="48" lean-forward="true" selection-start-column="48" selection-end-line="9" selection-end-column="59" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../openrocket.bak/swing/src/main/java/net/sf/openrocket/gui/figure3d/RocketFigure3d.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="29" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../openrocket.bak/swing/src/main/java/net/sf/openrocket/gui/figure3d/RocketFigure3d.java" />
     <entry file="file://$PROJECT_DIR$/swing/src/main/java/net/sf/openrocket/gui/figure3d/RocketFigure3d.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="340">
@@ -1481,13 +1330,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../openrocket.bak/swing/src/main/java/net/sf/openrocket/gui/figure3d/RocketRenderer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="24" lean-forward="true" selection-start-line="6" selection-start-column="24" selection-end-line="12" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../openrocket.bak/swing/src/main/java/net/sf/openrocket/gui/figure3d/RocketRenderer.java" />
     <entry file="file://$PROJECT_DIR$/swing/src/main/java/net/sf/openrocket/gui/figure3d/RocketRenderer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="221">
@@ -1495,33 +1338,15 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../openrocket.bak/swing/src/main/java/net/sf/openrocket/gui/figure3d/geometry/Geometry.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="48" lean-forward="true" selection-start-column="48" selection-end-line="2" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../openrocket.bak/swing/src/main/java/net/sf/openrocket/gui/figure3d/geometry/Geometry.java" />
     <entry file="file://$PROJECT_DIR$/swing/src/main/java/net/sf/openrocket/gui/figure3d/geometry/Geometry.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
           <caret line="8" column="29" selection-start-line="8" selection-start-column="29" selection-end-line="8" selection-end-column="29" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../openrocket.bak/swing/src/main/java/net/sf/openrocket/gui/figure3d/geometry/ComponentRenderer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="48" lean-forward="true" selection-start-column="48" selection-end-line="7" selection-end-column="40" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../openrocket.bak/swing/src/main/java/net/sf/openrocket/gui/figure3d/geometry/ComponentRenderer.java" />
     <entry file="file://$PROJECT_DIR$/swing/src/main/java/net/sf/openrocket/gui/figure3d/geometry/ComponentRenderer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
@@ -1529,13 +1354,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../openrocket.bak/swing/src/main/java/net/sf/openrocket/gui/figure3d/photo/sky/SkyBox.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="84">
-          <caret line="5" column="20" lean-forward="true" selection-start-line="5" selection-start-column="20" selection-end-line="8" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../openrocket.bak/swing/src/main/java/net/sf/openrocket/gui/figure3d/photo/sky/SkyBox.java" />
     <entry file="file://$PROJECT_DIR$/swing/src/main/java/net/sf/openrocket/gui/figure3d/photo/sky/SkyBox.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
@@ -1547,9 +1366,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
           <caret line="11" column="5" lean-forward="true" selection-start-line="11" selection-start-column="5" selection-end-line="11" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1567,13 +1383,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../openrocket.bak/swing/src/main/java/net/sf/openrocket/gui/print/DesignReport.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="202">
-          <caret line="41" column="42" lean-forward="true" selection-start-line="40" selection-start-column="35" selection-end-line="41" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../openrocket.bak/swing/src/main/java/net/sf/openrocket/gui/print/DesignReport.java" />
     <entry file="file://$PROJECT_DIR$/swing/src/main/java/net/sf/openrocket/gui/print/DesignReport.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
@@ -1592,9 +1402,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="108">
           <caret line="369" column="8" lean-forward="true" selection-start-line="369" selection-start-column="8" selection-end-line="369" selection-end-column="8" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1602,9 +1409,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="326">
           <caret line="276" column="49" selection-start-line="276" selection-start-column="49" selection-end-line="276" selection-end-column="49" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1612,9 +1416,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3">
           <caret line="602" column="38" lean-forward="true" selection-start-line="602" selection-start-column="38" selection-end-line="602" selection-end-column="38" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
