@@ -9,12 +9,19 @@ buildscript {
     }
 }
 
+Properties props = new Properties()
+try {
+    props.load(file('./core/src/main/resources/build.properties').newDataInputStream())
+} catch (Exception ex) {
+    throw new GradleException("1Missing build.properties. file: " + ex.getMessage())
+}
+
 allprojects {
     apply plugin: 'java'
     apply plugin: "com.github.johnrengelman.shadow"
 
     group 'net.sf.openrocket'
-    version '1.0'
+    version = props['build.version']
 
     sourceCompatibility = 1.8
 
