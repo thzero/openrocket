@@ -11,7 +11,14 @@ apply plugin: 'java'
 apply plugin: "com.github.johnrengelman.shadow"
 
 group 'net.sf.openrocket'
-version '1.0'
+
+Properties props = new Properties()
+try {
+    props.load(file('./src/main/resources/build.properties').newDataInputStream())
+} catch (Exception ex) {
+    throw new GradleException("3Missing build.properties. file: " + ex.getMessage())
+}
+version = props['build.version']
 
 sourceCompatibility = 1.8
 
