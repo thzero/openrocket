@@ -1,3 +1,25 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.1'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: "com.github.johnrengelman.shadow"
+
+group 'net.sf.openrocket'
+version '1.0'
+
+sourceCompatibility = 1.8
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
 
@@ -11,26 +33,10 @@ dependencies {
 
     compile project(':core')
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.3.1'
     testCompile group: 'org.jmock', name: 'jmock', version: '2.9.0'
     testCompile group: 'org.jmock', name: 'jmock-junit4', version: '2.9.0'
     testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 
-    testCompile project (path: ':core', configuration: 'testArtifacts')
+//    testCompile project (path: ':core', configuration: 'testBaseArtifacts')
 }
-//
-//jar {
-//    // Keep jar clean:
-////    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/*.MF'
-//    baseName = 'openrocket'
-//    classifier = null
-//
-//    manifest {
-//        attributes 'Main-Class': 'net.sf.openrocket.startup.SwingStartup'
-//    }
-//}
-//
-//shadowJar {
-//    baseName = 'openrocket'
-//    classifier = null
-//}

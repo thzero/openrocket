@@ -45,12 +45,10 @@ import net.sf.openrocket.startup.Application;
 import net.sf.openrocket.util.Coordinate;
 import net.sf.openrocket.utils.CoreServicesModule;
 
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JMock;
-import org.jmock.integration.junit4.JUnit4Mockery;
+import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
@@ -63,9 +61,9 @@ import com.google.inject.util.Modules;
  * This class contains various integration tests that simulate user actions that
  * might be performed.
  */
-@RunWith(JMock.class)
 public class IntegrationTest {
-	Mockery context = new JUnit4Mockery();
+	@Rule
+    public JUnitRuleMockery context = new JUnitRuleMockery();
 	
 	private OpenRocketDocument document;
 	private Action undoAction, redoAction;
