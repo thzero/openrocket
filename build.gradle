@@ -23,7 +23,9 @@ allprojects {
     group 'net.sf.openrocket'
     version = props['build.version']
 
-    sourceCompatibility = 1.8
+    //sourceCompatibility = 1.8
+    sourceCompatibility = JavaVersion.VERSION_1_9
+    targetCompatibility = JavaVersion.VERSION_1_9
 
     repositories {
         jcenter()
@@ -43,7 +45,10 @@ jar {
     classifier = null
 
     manifest {
-        attributes 'Main-Class': 'net.sf.openrocket.startup.SwingStartup'
+        attributes (
+            'Main-Class': 'net.sf.openrocket.startup.OpenRocket',
+            'SplashScreen-Image': 'pix/splashscreen.png'
+        )
     }
 }
 
