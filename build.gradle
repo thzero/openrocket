@@ -43,7 +43,10 @@ jar {
     classifier = null
 
     manifest {
-        attributes 'Main-Class': 'net.sf.openrocket.startup.SwingStartup'
+        attributes (
+                'Main-Class': 'net.sf.openrocket.startup.OpenRocket',
+                'SplashScreen-Image': 'pix/splashscreen.png'
+        )
     }
 }
 

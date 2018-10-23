@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>D:\Programming\java\openrocket\thzero\openrocket.gradle\build\libs\openrocket-15.04.jar</jar>
+  <outfile>D:\Programming\java\openrocket\thzero\openrocket.gradle\build\libs\openrocket-15.04.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://openjdk.java.net/install/</downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon>D:\Programming\java\openrocket\thzero\openrocket.gradle\swing\src\main\resources\pix\icon\icon.ico</icon>
+  <jre>
+    <path>C:\Program Files\Java\jre-10.0.1</path>
+    <bundledJre64Bit>false</bundledJre64Bit>
+    <bundledJreAsFallback>false</bundledJreAsFallback>
+    <minVersion>9</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <runtimeBits>64</runtimeBits>
+  </jre>
+</launch4jConfig>
