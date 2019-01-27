@@ -5,6 +5,6 @@ package net.sf.openrocket.plugin;
  * for testing purposes.
  */
 @Plugin
-public class JarPluginImpl implements ExamplePlugin, Example2Plugin {
-	
+public class JarPluginImpl implements ExamplePlugin {
+
 }
