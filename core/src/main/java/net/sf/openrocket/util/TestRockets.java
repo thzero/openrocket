@@ -32,7 +32,6 @@ import net.sf.openrocket.rocketcomponent.FinSet.CrossSection;
 import net.sf.openrocket.rocketcomponent.FlightConfiguration;
 import net.sf.openrocket.rocketcomponent.FlightConfigurationId;
 import net.sf.openrocket.rocketcomponent.FreeformFinSet;
-import net.sf.openrocket.rocketcomponent.IllegalFinPointException;
 import net.sf.openrocket.rocketcomponent.InnerTube;
 import net.sf.openrocket.rocketcomponent.InternalComponent;
 import net.sf.openrocket.rocketcomponent.LaunchLug;
@@ -613,17 +612,14 @@ public class TestRockets {
 		bodytube = new BodyTube(0.69, 0.033, 0.001);
 		
 		finset = new FreeformFinSet();
-		try {
-			finset.setPoints(new Coordinate[] {
-					new Coordinate(0, 0),
-					new Coordinate(0.115, 0.072),
-					new Coordinate(0.255, 0.072),
-					new Coordinate(0.255, 0.037),
-					new Coordinate(0.150, 0)
-			});
-		} catch (IllegalFinPointException e) {
-			e.printStackTrace();
-		}
+		final Coordinate[] finPoints = {
+				new Coordinate(0, 0),
+				new Coordinate(0.115, 0.072),
+				new Coordinate(0.255, 0.072),
+				new Coordinate(0.255, 0.037),
+				new Coordinate(0.150, 0)};
+		finset.setPoints(finPoints);
+
 		finset.setThickness(0.003);
 		finset.setFinCount(4);
 		
@@ -865,7 +861,7 @@ public class TestRockets {
 		// ====== Payload Stage ======
 		// ====== ====== ====== ======
 		AxialStage payloadStage = new AxialStage();
-		payloadStage.setName("Payload Fairing");
+		payloadStage.setName("Payload Fairing Stage");
 		rocket.addChild(payloadStage);
 
 		{

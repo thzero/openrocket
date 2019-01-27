@@ -5,10 +5,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.jmock.Expectations;
+import org.jmock.Mockery;
 import org.jmock.auto.Mock;
-import org.jmock.integration.junit4.JUnitRuleMockery;
-import org.junit.Rule;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import net.sf.openrocket.document.Simulation;
 import net.sf.openrocket.optimization.general.OptimizationException;
@@ -20,9 +22,10 @@ import net.sf.openrocket.unit.Value;
 import net.sf.openrocket.util.Pair;
 import net.sf.openrocket.util.BaseTestCase;
 
+
+@RunWith(JMock.class)
 public class TestRocketOptimizationFunction extends BaseTestCase {
-	@Rule
-	public JUnitRuleMockery context = new JUnitRuleMockery();
+	Mockery context = new JUnit4Mockery();
 	
 	@Mock
 	OptimizableParameter parameter;

@@ -202,26 +202,30 @@ public class BarrowmanCalculator extends AbstractAerodynamicCalculator {
 			AerodynamicForces componentForces = new AerodynamicForces().zero();
 			calcObj.calculateNonaxialForces(conditions, componentForces, warnings);
 			
-			Coordinate x_cp_comp = componentForces.getCP();
-			Coordinate x_cp_weighted = x_cp_comp.setWeight(x_cp_comp.weight);
-			Coordinate x_cp_absolute = component.toAbsolute(x_cp_weighted)[0];
-			componentForces.setCP(x_cp_absolute);
+			Coordinate cp_comp = componentForces.getCP();
+			
+			Coordinate cp_weighted = cp_comp.setWeight(cp_comp.weight);
+			Coordinate cp_absolute = component.toAbsolute(cp_weighted)[0];
+			if(1 < component.getInstanceCount()) {
+				cp_absolute = cp_absolute.setY(0.).setZ(0.);
+			}
+			
+			componentForces.setCP(cp_absolute);
 			double CN_instanced = componentForces.getCN();
 			componentForces.setCm(CN_instanced * componentForces.getCP().x / conditions.getRefLength());
 		
-//			if( 0.0001 < Math.abs(0 - componentForces.getCNa())){
-//				System.err.println(String.format("%s....Component.CNa: %g   @ CPx: %g", indent, componentForces.getCNa(), componentForces.getCP().x));
+//			if( 0.0001 < Math.abs(componentForces.getCNa())){
+//				final Coordinate cp = assemblyForces.getCP();
+//				System.err.println(String.format("%s....Component.CNa: %g   @ CP: { %f, %f, %f}", indent, componentForces.getCNa(), cp.x, cp.y, cp.z));
 //			}
 			
 			assemblyForces.merge(componentForces);
 		}
 		
 //		if( 0.0001 < Math.abs(0 - assemblyForces.getCNa())){
-//			System.err.println(String.format("%s....Assembly.CNa: %g   @ CPx: %g", indent, assemblyForces.getCNa(), assemblyForces.getCP().x));
+//			final Coordinate cp = assemblyForces.getCP();
+//			System.err.println(String.format("%s....Assembly.CNa: %g   @ CP: { %f, %f, %f}", indent, assemblyForces.getCNa(), cp.x, cp.y, cp.z));
 //		}
-		
-		// fetches instanced versions 
-		// int instanceCount = component.getLocations().length;
 		
 		if( component.allowsChildren() && (component.getInstanceCount() > 1)) {
 			return assemblyForces.multiplex(component.getInstanceCount());
@@ -473,7 +477,7 @@ public class BarrowmanCalculator extends AbstractAerodynamicCalculator {
 				FinSet f = (FinSet) c;
 				double mac = ((FinSetCalc) calcMap.get(c)).getMACLength();
 				double cd = componentCf * (1 + 2 * f.getThickness() / mac) *
-						2 * f.getFinCount() * f.getFinArea();
+						2 * f.getFinCount() * f.getPlanformArea();
 				finFriction += cd;
 				
 				if (map != null) {
@@ -712,17 +716,21 @@ public class BarrowmanCalculator extends AbstractAerodynamicCalculator {
 		
 		// Calculate pitch and yaw damping moments
 		double mul = getDampingMultiplier(configuration, conditions,
-				conditions.getPitchCenter().x);
-		double pitch = conditions.getPitchRate();
-		double yaw = conditions.getYawRate();
-		double vel = conditions.getVelocity();
-		
-		vel = MathUtil.max(vel, 1);
+										  conditions.getPitchCenter().x);
+		double pitchRate = conditions.getPitchRate();
+		double yawRate = conditions.getYawRate();
+		double velocity = conditions.getVelocity();
 		
 		mul *= 3; // TODO: Higher damping yields much more realistic apogee turn
 		
-		total.setPitchDampingMoment(mul * MathUtil.sign(pitch) * pow2(pitch / vel));
-		total.setYawDampingMoment(mul * MathUtil.sign(yaw) * pow2(yaw / vel));
+		// find magnitude of damping moments, and clamp so they can't
+		// exceed magnitude of pitch and yaw moments
+		double pitchDampingMomentMagnitude = MathUtil.min(mul * pow2(pitchRate / velocity), total.getCm());
+		double yawDampingMomentMagnitude = MathUtil.min(mul * pow2(yawRate / velocity), total.getCyaw());
+
+		// multiply by sign of pitch and yaw rates
+		total.setPitchDampingMoment(MathUtil.sign(pitchRate) * pitchDampingMomentMagnitude);
+		total.setYawDampingMoment(MathUtil.sign(yawRate) * yawDampingMomentMagnitude);
 	}
 	
 	// TODO: MEDIUM: Are the rotation etc. being added correctly?  sin/cos theta?
@@ -757,7 +765,7 @@ public class BarrowmanCalculator extends AbstractAerodynamicCalculator {
 		for (RocketComponent c : configuration.getActiveComponents()) {
 			if (c instanceof FinSet) {
 				FinSet f = (FinSet) c;
-				mul += 0.6 * Math.min(f.getFinCount(), 4) * f.getFinArea() *
+				mul += 0.6 * Math.min(f.getFinCount(), 4) * f.getPlanformArea() *
 						MathUtil.pow3(Math.abs(f.toAbsolute(new Coordinate(
 								((FinSetCalc) calcMap.get(f)).getMidchordPos()))[0].x
 								- cgx)) /
@@ -785,23 +793,19 @@ public class BarrowmanCalculator extends AbstractAerodynamicCalculator {
 	private void buildCalcMap(FlightConfiguration configuration) {
 		Iterator<RocketComponent> iterator;
 		
-		//System.err.println("> Building Calc Map.");
 		calcMap = new HashMap<RocketComponent, RocketComponentCalc>();
-		
-		iterator = configuration.getRocket().iterator();
-		while (iterator.hasNext()) {
-			RocketComponent c = iterator.next();
-			
-			if (!c.isAerodynamic())
+
+		for (RocketComponent comp: configuration.getActiveComponents()) {
+			if (!comp.isAerodynamic())
 				continue;
-			RocketComponentCalc calcObj = (RocketComponentCalc) Reflection.construct(BARROWMAN_PACKAGE, c, BARROWMAN_SUFFIX, c);
+			
+			RocketComponentCalc calcObj = (RocketComponentCalc) Reflection.construct(BARROWMAN_PACKAGE, comp, BARROWMAN_SUFFIX, comp);
 			//String isNull = (null==calcObj?"null":"valid");
 			//System.err.println("    >> At component: "+c.getName() +"=="+c.getID()+". CalcObj is "+isNull);
 			
-			calcMap.put(c, calcObj ); 
+			calcMap.put(comp, calcObj ); 
 		}
 	}
-	
 	
 	@Override
 	public int getModID() {
