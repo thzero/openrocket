@@ -45,6 +45,7 @@ dependencies {
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.3.1'
     testCompile group: 'org.jmock', name: 'jmock', version: '2.9.0'
     testCompile group: 'org.jmock', name: 'jmock-junit4', version: '2.9.0'
+    testCompile 'junit:junit:4.12'
 }
 
 task testBaseArtifactsJar(type: Jar) {

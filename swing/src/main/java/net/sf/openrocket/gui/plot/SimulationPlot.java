@@ -46,14 +46,16 @@ import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.title.TextTitle;
-import org.jfree.chart.ui.RectangleEdge;
-import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.data.Range;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.text.TextUtilities;
 import org.jfree.ui.LengthAdjustmentType;
 import org.jfree.ui.RectangleAnchor;
+// thzero - begin
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.ui.RectangleInsets;
+// thzero - end
 import org.jfree.ui.TextAnchor;
 
 /*
@@ -81,7 +83,9 @@ public class SimulationPlot {
 	
 	void setShowPoints(boolean showPoints) {
 		for (ModifiedXYItemRenderer r : renderers) {
+// thzero - begin
 			r.setDefaultShapesVisible(showPoints);
+// thzero - end
 		}
 	}
 	
@@ -244,8 +248,10 @@ public class SimulationPlot {
 				ModifiedXYItemRenderer r = new ModifiedXYItemRenderer(branchCount);
 				renderers.add(r);
 				plot.setRenderer(axisno, r);
+// thzero - begin
 				r.setDefaultShapesVisible(initialShowPoints);
 				r.setDefaultShapesFilled(true);
+// thzero - end
 				for (int j = 0; j < data[i].getSeriesCount(); j++) {
 					Stroke lineStroke = new BasicStroke(PLOT_STROKE_WIDTH);
 					r.setSeriesStroke(j, lineStroke);
@@ -405,8 +411,10 @@ public class SimulationPlot {
 					xcoord = config.getDomainAxisUnit().toUnit(xcoord);
 					ycoord = config.getUnit(index).toUnit(ycoord);
 					
+// thzero - begin
 					XYImageAnnotation annotation =
 							new XYImageAnnotation(xcoord, ycoord, image, org.jfree.chart.ui.RectangleAnchor.CENTER);
+// thzero - end
 					annotation.setToolTipText(event);
 					plot.addAnnotation(annotation);
 				}
@@ -597,14 +605,18 @@ public class SimulationPlot {
 			g2.draw(line);
 			
 			String label = marker.getLabel();
+// thzero - begin
 			org.jfree.chart.ui.RectangleAnchor anchor = marker.getLabelAnchor();
+// thzero - end
 			if (label != null) {
 				Font labelFont = marker.getLabelFont();
 				g2.setFont(labelFont);
 				g2.setPaint(marker.getLabelPaint());
+// thzero - begin
 				Point2D coordinates = calculateDomainMarkerTextAnchorPoint(g2,
 						orientation, dataArea, line.getBounds2D(), marker
 								.getLabelOffset(), org.jfree.chart.ui.LengthAdjustmentType.EXPAND, anchor);
+// thzero - end
 				
 				// Changed:
 				TextAnchor textAnchor = TextAnchor.TOP_RIGHT;

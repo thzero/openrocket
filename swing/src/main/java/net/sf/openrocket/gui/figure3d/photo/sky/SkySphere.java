@@ -2,10 +2,12 @@ package net.sf.openrocket.gui.figure3d.photo.sky;
 
 import java.net.URL;
 
+// thzero - begin
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.GLUquadric;
+// thzero - end
 
 import net.sf.openrocket.gui.figure3d.TextureCache;
 

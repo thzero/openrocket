@@ -6,7 +6,9 @@ import net.sf.openrocket.rocketcomponent.Rocket;
 import net.sf.openrocket.rocketcomponent.RocketComponent;
 import net.sf.openrocket.util.Transformation;
 
+// thzero - begin
 import com.jogamp.opengl.GL2;
+// thzero - end
 
 
 /*

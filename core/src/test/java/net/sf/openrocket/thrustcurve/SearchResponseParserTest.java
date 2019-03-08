@@ -6,13 +6,15 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import net.sf.openrocket.util.BaseTestCase;
+import net.sf.openrocket.util.BaseTestCase.BaseTestCase;
 
 public class SearchResponseParserTest extends BaseTestCase {
 	
 	@Test
 	public void simpleParseTest() throws Exception {
+// thzero - begin
 		InputStream is = SearchResponseParserTest.class.getResourceAsStream("/SampleSearchResponse.xml");
+// thzero - end
 		SearchResponse response = SearchResponseParser.parse(is);
 		assertEquals(252, response.getMatches());
 	}

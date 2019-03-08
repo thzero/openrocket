@@ -1,6 +1,8 @@
 package net.sf.openrocket.gui.print.visitor;
 
+// thzero - begin
 import com.itextpdf.awt.PdfGraphics2D;
+// thzero - end
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Rectangle;
@@ -107,9 +109,10 @@ public class FinMarkingGuideStrategy {
     private void printOnOnePage(final FinMarkingGuide theMarkingGuide) {
         Dimension d = getPageSize();
         PdfContentByte cb = writer.getDirectContent();
+// thzero - begin
         // TODO: Deprecated (External Dependency)
-        // Graphics2D g2 = cb.createGraphics(d.width, d.height);
         Graphics2D g2 = new PdfGraphics2D(cb, d.width, d.height);
+// thzero - end
         theMarkingGuide.print(g2);
         g2.dispose();
         document.newPage();

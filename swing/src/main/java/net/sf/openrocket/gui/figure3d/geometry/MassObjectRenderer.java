@@ -114,8 +114,10 @@
  */
 package net.sf.openrocket.gui.figure3d.geometry;
 
+// thzero - begin
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
+// thzero - end
 
 import net.sf.openrocket.rocketcomponent.MassObject;
 

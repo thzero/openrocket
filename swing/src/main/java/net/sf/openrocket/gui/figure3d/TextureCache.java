@@ -5,9 +5,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+// thzero - begin
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLProfile;
+// thzero - end
 
 import net.sf.openrocket.appearance.Decal;
 
