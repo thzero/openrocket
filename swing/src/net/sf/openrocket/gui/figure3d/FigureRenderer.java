@@ -2,11 +2,13 @@ package net.sf.openrocket.gui.figure3d;
 
 import java.util.HashMap;
 
+// thzero - begin
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GL2ES1;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.fixedfunc.GLLightingFunc;
+// thzero - end
 
 import net.sf.openrocket.gui.figure3d.geometry.Geometry;
 import net.sf.openrocket.gui.figure3d.geometry.Geometry.Surface;

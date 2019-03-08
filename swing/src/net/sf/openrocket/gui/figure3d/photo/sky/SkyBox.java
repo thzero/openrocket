@@ -5,8 +5,10 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+// thzero - begin
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
+// thzero - end
 
 import net.sf.openrocket.gui.figure3d.TextureCache;
 

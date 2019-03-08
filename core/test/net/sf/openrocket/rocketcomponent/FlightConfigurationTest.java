@@ -12,7 +12,7 @@ import org.junit.Test;
 import net.sf.openrocket.util.Coordinate;
 import net.sf.openrocket.util.MathUtil;
 import net.sf.openrocket.util.TestRockets;
-import net.sf.openrocket.util.BaseTestCase;
+import net.sf.openrocket.util.BaseTestCase.BaseTestCase;
 
 public class FlightConfigurationTest extends BaseTestCase {
 	private final static double EPSILON = MathUtil.EPSILON*1E3; 

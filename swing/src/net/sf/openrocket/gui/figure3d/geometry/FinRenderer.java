@@ -1,5 +1,6 @@
 package net.sf.openrocket.gui.figure3d.geometry;
 
+// thzero - begin
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.fixedfunc.GLLightingFunc;
@@ -8,6 +9,7 @@ import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.GLUtessellator;
 import com.jogamp.opengl.glu.GLUtessellatorCallback;
 import com.jogamp.opengl.glu.GLUtessellatorCallbackAdapter;
+// thzero - end
 
 import net.sf.openrocket.rocketcomponent.EllipticalFinSet;
 import net.sf.openrocket.rocketcomponent.FinSet;

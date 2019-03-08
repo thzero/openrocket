@@ -1,11 +1,13 @@
 package net.sf.openrocket.gui.figure3d.geometry;
 
+// thzero - begin
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.GLUquadric;
+// thzero - end
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

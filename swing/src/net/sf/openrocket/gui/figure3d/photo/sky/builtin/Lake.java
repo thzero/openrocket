@@ -1,6 +1,8 @@
 package net.sf.openrocket.gui.figure3d.photo.sky.builtin;
 
+// thzero - begin
 import com.jogamp.opengl.GL2;
+// thzero - end
 
 import net.sf.openrocket.gui.figure3d.TextureCache;
 import net.sf.openrocket.gui.figure3d.photo.sky.Sky.Credit;

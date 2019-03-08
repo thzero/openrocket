@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
+// thzero - begin
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLProfile;
+// thzero - end
 
 import net.sf.openrocket.gui.figure3d.TextureCache;
 

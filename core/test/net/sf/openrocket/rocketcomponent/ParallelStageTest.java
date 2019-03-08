@@ -10,7 +10,7 @@ import junit.framework.Assert;
 import net.sf.openrocket.rocketcomponent.position.*;
 import net.sf.openrocket.util.Coordinate;
 import net.sf.openrocket.util.TestRockets;
-import net.sf.openrocket.util.BaseTestCase;
+import net.sf.openrocket.util.BaseTestCase.BaseTestCase;
 
 public class ParallelStageTest extends BaseTestCase {
 	

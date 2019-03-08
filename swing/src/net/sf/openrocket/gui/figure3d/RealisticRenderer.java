@@ -1,11 +1,13 @@
 package net.sf.openrocket.gui.figure3d;
 
+// thzero - begin
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GL2ES1;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.fixedfunc.GLLightingFunc;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
+// thzero - end
 
 import net.sf.openrocket.appearance.Appearance;
 import net.sf.openrocket.appearance.Decal;

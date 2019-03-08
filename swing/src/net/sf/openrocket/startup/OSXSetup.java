@@ -1,3 +1,4 @@
+// thzero - begin
 //package net.sf.openrocket.startup;
 //
 //import java.awt.Image;
@@ -114,3 +115,4 @@
 //	}
 //
 //}
+// thzero - end
