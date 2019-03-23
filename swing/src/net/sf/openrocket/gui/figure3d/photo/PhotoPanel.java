@@ -269,7 +269,9 @@ public class PhotoPanel extends JPanel implements GLEventListener {
 			BufferedImage i = (new AWTGLReadBufferUtil(
 					GLProfile.get(GLProfile.GL2), false))
 					.readPixelsToBufferedImage(drawable.getGL(), 0, 0,
+// thZero - Begin
 							drawable.getSurfaceWidth(), drawable.getSurfaceHeight(), true);
+// thZero - End
 			final Vector<ImageCallback> cbs = new Vector<PhotoPanel.ImageCallback>(
 					imageCallbacks);
 			imageCallbacks.clear();

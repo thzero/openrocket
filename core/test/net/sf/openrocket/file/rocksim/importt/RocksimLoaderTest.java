@@ -33,7 +33,7 @@ public class RocksimLoaderTest extends BaseTestCase {
     @org.junit.Test
     public void testFinsOnInnerTube() throws Exception {
         RocksimLoader loader = new RocksimLoader();
-/// thzero - begin
+// thzero - begin
         InputStream stream = this.getClass().getResourceAsStream("/PodFins.rkt");
 // thzero - end
         Assert.assertNotNull("Could not open PodFins.rkt", stream);

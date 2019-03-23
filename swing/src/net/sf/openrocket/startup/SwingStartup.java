@@ -65,12 +65,10 @@ public class SwingStartup {
 		checkHead();
 		
 		// If running on a MAC set up OSX UI Elements.
-// thzero - begin
-//		if (SystemInfo.getPlatform() == Platform.MAC_OS) {
-//			OSXSetup.setupOSX();
-//		}
-// thzero - end
-
+		if (SystemInfo.getPlatform() == Platform.MAC_OS) {
+			OSXSetup.setupOSX();
+		}
+		
 		final SwingStartup runner = new SwingStartup();
 		
 		// Run the actual startup method in the EDT since it can use progress dialogs etc.
