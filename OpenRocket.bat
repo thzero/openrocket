@@ -1,0 +1,1 @@
+"C:\Program Files\Java\jdk-9\bin\java" -Dsun.java2d.d3d=false -jar .\swing\build\jar\OpenRocket.jar
