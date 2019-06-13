@@ -58,8 +58,6 @@ public class SerializePresets extends BasicApplication {
 		
 		oos.writeObject(list);
 		
-		System.out.println("Total number of presets = " + list.size());
-		
 		ofs.flush();
 		ofs.close();
 	}
