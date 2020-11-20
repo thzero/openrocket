@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import net.sf.openrocket.util.BoundingBox;
 import net.sf.openrocket.util.Coordinate;
 import net.sf.openrocket.util.MathUtil;
 
@@ -16,7 +17,7 @@ import net.sf.openrocket.util.MathUtil;
  *
  * @author Sampo Niskanen <sampo.niskanen@iki.fi>
  */
-public abstract class RingComponent extends StructuralComponent implements Coaxial {
+public abstract class RingComponent extends StructuralComponent implements BoxBounded, Coaxial {
 	
 	protected boolean outerRadiusAutomatic = false;
 	protected boolean innerRadiusAutomatic = false;
@@ -102,7 +103,7 @@ public abstract class RingComponent extends StructuralComponent implements Coaxi
 	 * @param dir  the radial direction.
 	 */
 	public void setRadialDirection(double dir) {
-		dir = MathUtil.reduce180(dir);
+		dir = MathUtil.reducePi(dir);
 		if (radialDirection == dir)
 			return;
 		radialDirection = dir;
@@ -111,9 +112,18 @@ public abstract class RingComponent extends StructuralComponent implements Coaxi
 		fireComponentChangeEvent(ComponentChangeEvent.MASS_CHANGE);
 	}
 	
+	public BoundingBox getInstanceBoundingBox(){
+		BoundingBox instanceBounds = new BoundingBox();
+		
+		instanceBounds.update(new Coordinate(this.getLength(), 0,0));
+		
+		final double r = getOuterRadius();
+		instanceBounds.update(new Coordinate(0,r,r));
+		instanceBounds.update(new Coordinate(0,-r,-r));
+		
+		return instanceBounds;
+	}
 	
-
-
 	/**
 	 * Return the radial position of the component.  The position is the distance
 	 * of the center of the component from the center of the parent component.
@@ -179,8 +189,7 @@ public abstract class RingComponent extends StructuralComponent implements Coaxi
 		if (1 == instanceCount ) {
 			cg = new Coordinate( length/2, 0, 0, instanceMass );
 		}else{
-			Coordinate offsets[] = getInstanceOffsets();
-			for( Coordinate c : offsets) {
+			for( Coordinate c : getInstanceOffsets() ) {
 				c = c.setWeight( instanceMass );
 				cg = cg.average(c); 
 			}

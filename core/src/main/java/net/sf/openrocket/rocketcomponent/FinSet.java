@@ -6,9 +6,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import net.sf.openrocket.l10n.Translator;
 import net.sf.openrocket.material.Material;
 
@@ -25,17 +22,13 @@ import net.sf.openrocket.util.Coordinate;
 import net.sf.openrocket.util.MathUtil;
 import net.sf.openrocket.util.Transformation;
 
-public abstract class FinSet extends ExternalComponent implements RingInstanceable, AxialPositionable {
+public abstract class FinSet extends ExternalComponent implements AxialPositionable, BoxBounded, RingInstanceable {
 	private static final Translator trans = Application.getTranslator();
-	
-	@SuppressWarnings("unused")
-	private static final Logger log = LoggerFactory.getLogger(FinSet.class);
-	
 
 	/**
 	 * Maximum allowed cant of fins.
 	 */
-	public static final double MAX_CANT = (15.0 * Math.PI / 180);
+	public static final double MAX_CANT_RADIANS = (15.0 * Math.PI / 180);
 	
 	public enum CrossSection {
 		//// Square
@@ -66,25 +59,25 @@ public abstract class FinSet extends ExternalComponent implements RingInstanceab
 	/**
 	 * Number of fins.
 	 */
-	private int finCount = 1;
+	private int finCount = 3;
 
 	/**
 	 * Rotation about the x-axis by 2*PI/fins.
 	 */
-	private Transformation finRotation = Transformation.IDENTITY;
+	private Transformation finRotationIncrement = Transformation.IDENTITY;
 
 
 	/**
 	 * Rotation angle of the first fin.  Zero corresponds to the positive y-axis.
 	 */
 	private AngleMethod angleMethod = AngleMethod.RELATIVE;
-	private double firstFinOffset = 0;
+	private double firstFinOffsetRadians = 0;
 	private Transformation baseRotation = Transformation.IDENTITY;  // initially, rotate by 0 degrees.
 
 	/**
 	 * Cant angle of fins.
 	 */
-	private double cantAngle = 0;
+	private double cantRadians = 0;
 	
 	/* Cached value: */
 	private Transformation cantRotation = null;
@@ -164,13 +157,13 @@ public abstract class FinSet extends ExternalComponent implements RingInstanceab
 			n = 8;
 		finCount = n;
 
-		finRotation = Transformation.rotate_x(2 * Math.PI / finCount);
+		finRotationIncrement = Transformation.rotate_x(2 * Math.PI / finCount);
 
 		fireComponentChangeEvent(ComponentChangeEvent.BOTH_CHANGE);
 	}
 	
 	public Transformation getFinRotationTransformation() {
-		return finRotation;
+		return finRotationIncrement;
 	}
 
 	@Override
@@ -194,28 +187,32 @@ public abstract class FinSet extends ExternalComponent implements RingInstanceab
 		setAngleOffset(r);
 	}
 	
+	/**
+	 * @return angle current cant angle, in radians 
+	 */
 	public double getCantAngle() {
-		return cantAngle;
+		return cantRadians;
 	}
 	
-	public void setCantAngle(double cant) {
-		cant = MathUtil.clamp(cant, -MAX_CANT, MAX_CANT);
-		if (MathUtil.equals(cant, cantAngle))
+	/**
+	 * 
+	 * @param newCantRadians -- new cant angle, in radians
+	 */
+	public void setCantAngle(final double newCantRadians) {
+		final double clampedCant = MathUtil.clamp(newCantRadians, -MAX_CANT_RADIANS, MAX_CANT_RADIANS);
+		if (MathUtil.equals(clampedCant, this.cantRadians))
 			return;
-		this.cantAngle = cant;
+		this.cantRadians = clampedCant;
+		
 		fireComponentChangeEvent(ComponentChangeEvent.BOTH_CHANGE);
 	}
-	
-	
+
 	public Transformation getCantRotation() {
-		if (cantRotation == null) {
-			if (MathUtil.equals(cantAngle, 0)) {
+		if( null == cantRotation ) {
+			if (MathUtil.equals(this.cantRadians, 0)) {
 				cantRotation = Transformation.IDENTITY;
 			} else {
-				Transformation t = new Transformation(-length / 2, 0, 0);
-				t = Transformation.rotate_y(cantAngle).applyTransformation(t);
-				t = new Transformation(length / 2, 0, 0).applyTransformation(t);
-				cantRotation = t;
+				cantRotation = Transformation.rotate_y(cantRadians);
 			}
 		}
 		return cantRotation;
@@ -249,23 +246,28 @@ public abstract class FinSet extends ExternalComponent implements RingInstanceab
 	}
 	
 	/**
-	 * Set the height from the fin's base at the reference point -- i.e. where the tab is located from.  If the tab is located via BOTTOM, then the back edge will be 
-	 * <code>height</code> deep, and the bottom edge of the tab will be parallel to the stage centerline.  If the tab is located via TOP, the the front edge will have corresponding height/depth. 
+	 * Set the height from the fin's base at the reference point --
+	 * i.e. where the tab is located from.  If the tab is located via
+	 * BOTTOM, then the back edge will be  <code>height</code> deep,
+	 * and the bottom edge of the tab will be parallel to the stage
+	 * centerline.  If the tab is located via TOP, the the front edge
+	 * will have corresponding height/depth.
 	 * If the tab is located via MIDDLE, the tab's midpoint is used.
 	 * 
-	 * Note this function also does bounds checking, and will not set a tab height that passes through it's parent's midpoint.  
+	 * Note this function also does bounds checking, and will not set
+	 * a tab height that passes through it's parent's midpoint.
 	 *  
-	 * @param newHeightRequest how deep the fin tab should project from the fin root, at the reference point 
+	 * @param newTabHeight how deep the fin tab should project
+	 * from the fin root, at the reference point
 	 * 
 	 */
-	public void setTabHeight(final double newHeightRequest) {
-		if (MathUtil.equals(this.tabHeight, MathUtil.max(newHeightRequest, 0))){
+	public void setTabHeight(final double newTabHeight) {
+		if (MathUtil.equals(this.tabHeight, MathUtil.max(newTabHeight, 0))){
 			return;
 		}
 		
-		this.tabHeight = newHeightRequest;
-		
-		validateFinTab();
+		tabHeight = newTabHeight;
+
 		fireComponentChangeEvent(ComponentChangeEvent.MASS_CHANGE);
 	}
 	
@@ -273,26 +275,29 @@ public abstract class FinSet extends ExternalComponent implements RingInstanceab
 	public double getTabLength() {
 		return tabLength;
 	}
-	
-	public void setTabLength(double length) {
-		length = MathUtil.max(length, 0);
-		if (MathUtil.equals(this.tabLength, length))
+
+	/**
+	 * set tab length
+	 */
+	public void setTabLength(final double lengthRequest) {
+		if (MathUtil.equals(tabLength, MathUtil.max(lengthRequest, 0))) {
 			return;
-		tabLength = length;
-		validateFinTab();
+		}
+		
+		tabLength = lengthRequest;
+		
 		fireComponentChangeEvent(ComponentChangeEvent.MASS_CHANGE);
 	}
-
+	
 	/** 
-	 * internally, set the internal  
+	 * internally, set the internal offset and optionally validate tab
 	 * 
-	 * @param newOffset new requested shift of tab -- from
+	 * @param offsetRequest new requested tab offset
 	 */
-	public void setTabOffset( final double newOffset) {
-		this.tabOffset = newOffset;
-		this.tabPosition = this.tabOffsetMethod.getAsPosition( newOffset, this.tabLength, this.length);
-
-		validateFinTab();
+	public void setTabOffset( final double offsetRequest) {
+		tabOffset = offsetRequest;
+		tabPosition = tabOffsetMethod.getAsPosition( tabOffset, tabLength, length);
+		
 		fireComponentChangeEvent(ComponentChangeEvent.MASS_CHANGE);
 	}
 	
@@ -333,14 +338,19 @@ public abstract class FinSet extends ExternalComponent implements RingInstanceab
 		//check front bounds:
 		if( tabPosition < 0){
 			this.tabPosition = 0;
-	    }
-		
+		}
+
 		//check tail bounds:
-	    final double xTabBack = getTabTrailingEdge();
+		if (this.length < tabPosition ) {
+			this.tabPosition = length;
+		}
+		final double xTabBack = getTabTrailingEdge();
 		if( this.length < xTabBack ){
 			this.tabLength -= (xTabBack - this.length);
 		}
-		
+
+		tabLength = Math.max(0, tabLength);
+
 		// check tab height 
 		if( null != getParent() ){
 			// pulls the parent-body radius at the fin-tab reference point.
@@ -621,17 +631,18 @@ public abstract class FinSet extends ExternalComponent implements RingInstanceab
 	}
 
 	/*
-	 * Return an approximation of the longitudinal unitary inertia of the fin set.
+	 * Return an approximation of the longitudinal unitary moment of inertia
+     *
 	 * The process is the following:
 	 * 
-	 * 1. Approximate the fin with a rectangular fin
+	 * 1. Approximate a fin with a rectangular thin plate
 	 * 
-	 * 2. The inertia of one fin is taken as the average of the moments of inertia
-	 *    through its center perpendicular to the plane, and the inertia through
-	 *    its center parallel to the plane
+	 * 2. The unitary moment of inertia of one fin is taken as the average
+	 *    of the unitary moments of inertia through its center perpendicular
+	 *    to the plane (Izz/M), and through its center parallel to the plane (Iyy/M)
 	 *    
-	 * 3. If there are multiple fins, the inertia is shifted to the center of the fin
-	 *    set and multiplied by the number of fins.
+	 * 3. If there are multiple fins, the inertia is shifted to the center of the
+	 *    FinSet using the Parallel Axis Theorem
 	 */
 	@Override
 	public double getLongitudinalUnitInertia() {
@@ -644,23 +655,31 @@ public abstract class FinSet extends ExternalComponent implements RingInstanceab
 		double w = getLength();
 		double h = getSpan();
 		double w2, h2;
-		
-		if (MathUtil.equals(w * h, 0)) {
+
+		// If either h or w is 0, we punt and treat the fin as square
+		if (MathUtil.equals(h * w, 0)) {
 			w2 = singlePlanformArea;
 			h2 = singlePlanformArea;
 		} else {
 			w2 = w * singlePlanformArea / h;
 			h2 = h * singlePlanformArea / w;
 		}
-		
-		double inertia = (h2 + 2 * w2) / 24;
+
+		// Iyy = h * w^3 / 12, so Iyy/M = w^2 / 12
+		// Izz = h * w * (h^2 + w^2) / 12, so Izz/M = (h^2 + w^2) / 12
+		// (Iyy / M + Izz / M) / 2 = (h^2 + 2 * w^2)/24
+		final double inertia = (h2 + 2 * w2) / 24;
+
 		
 		if (finCount == 1)
 			return inertia;
-		
-		final double rFront = this.getFinFront().y;
-		
-		return finCount * (inertia + MathUtil.pow2(MathUtil.safeSqrt(h2) + rFront));
+
+		// Move axis to center of FinSet.  We need to apply the Parallel Axis Theorem
+		// to Izz, but not to Iyy (as the displacement as we move to the new axis
+		// is along Y).  Since our moment of inertia is the average of Iyy and Izz,
+		// this is accomplished by just weighting the transformation from the theorem
+		// by 1/2
+		return inertia + MathUtil.pow2(MathUtil.safeSqrt(h2) / 2 + getBodyRadius()) / 2;
 	}
 	
 	
@@ -668,11 +687,13 @@ public abstract class FinSet extends ExternalComponent implements RingInstanceab
 	 * Return an approximation of the rotational unitary inertia of the fin set.
 	 * The process is the following:
 	 * 
-	 * 1. Approximate the fin with a rectangular fin and calculate the inertia of the
-	 *    rectangular approximate
+	 * 1. Approximate the fin with a rectangular thin plate
+	 *
+	 * 2. calculate the unitary rotational inertia (Ixx/M) of the
+	 *    rectangular approximation, about the center of the approximated fin.
 	 *    
-	 * 2. If there are multiple fins, shift the inertia center to the fin set center
-	 *    and multiply with the number of fins.
+	 * 2. If there are multiple fins, shift the inertia axis to the center
+	 *    of the Finset.
 	 */
 	@Override
 	public double getRotationalUnitInertia() {
@@ -681,31 +702,38 @@ public abstract class FinSet extends ExternalComponent implements RingInstanceab
 		}
 
 		// Approximate fin with a rectangular fin
+		// h2 is square of fin height
 		double w = getLength();
 		double h = getSpan();
-
+		double h2;
+		
+		// If either h or w is 0, punt and treat it as a square fin
 		if (MathUtil.equals(w * h, 0)) {
-			h = MathUtil.safeSqrt(singlePlanformArea);
+			h2 = singlePlanformArea;
 		} else {
-			h = MathUtil.safeSqrt(h * singlePlanformArea/ w);
+			h2 = h * singlePlanformArea / w;
 		}
 
-		final double rFront = this.getFinFront().y;
+		// Ixx = w * h^3 / 12, so Ixx / M = h^2 / 12
+		final double inertia = h2 / 12;
 
-		return finCount * (h * h / 12 + MathUtil.pow2(h / 2 + rFront));
+		if (finCount == 1)
+			return inertia;
+
+		// Move axis to center of FinSet using Parallel Axis Theorem
+		return inertia + MathUtil.pow2(MathUtil.safeSqrt(h2) / 2 + getBodyRadius());
 	}
 	
 
-	public BoundingBox getBoundingBox() {
-		BoundingBox singleFinBounds= new BoundingBox().update(getFinPoints());
-		final double finLength = singleFinBounds.max.x;
-		final double finHeight = singleFinBounds.max.y;
-		
-		BoundingBox compBox = new BoundingBox().update(getComponentLocations());
-		
-		BoundingBox finSetBox = new BoundingBox( compBox.min.sub( 0, finHeight, finHeight ), 
-												compBox.max.add( finLength, finHeight, finHeight ));
-		return finSetBox; 
+	public BoundingBox getInstanceBoundingBox(){
+		final BoundingBox singleFinBounds = new BoundingBox();
+
+		singleFinBounds.update(getFinPoints());
+
+		singleFinBounds.update(new Coordinate( 0, 0, -this.thickness/2));
+		singleFinBounds.update(new Coordinate( 0, 0,  this.thickness/2));
+
+		return singleFinBounds;
 	}
 	
 	/**
@@ -716,7 +744,7 @@ public abstract class FinSet extends ExternalComponent implements RingInstanceab
 	 */
 	@Override
 	public Collection<Coordinate> getComponentBounds() {
-		Collection<Coordinate> bounds = new ArrayList<Coordinate>(8);
+		Collection<Coordinate> bounds = new ArrayList<>(8);
 		
 		// should simply return this component's bounds in this component's body frame.
 		
@@ -872,24 +900,23 @@ public abstract class FinSet extends ExternalComponent implements RingInstanceab
 		
 		final double xTabFront = getTabFrontEdge();
 		final double xTabTrail = getTabTrailingEdge();
-		
-		final double xTabReference = finFront.x + getTabOffset();
-		
-		double yTabFront = 0;
-		double yTabTrail = 0;
-		double yTabBottom = -tabHeight;
+
+		// // limit the new heights to be no greater than the current body radius.
+		double yTabFront = Double.NaN;
+		double yTabTrail = Double.NaN;
+		double yTabBottom = Double.NaN;
 		if( null != body ){
 			yTabFront = body.getRadius( finFront.x + xTabFront ) - finFront.y;
 			yTabTrail = body.getRadius( finFront.x + xTabTrail ) - finFront.y;
-			yTabBottom = body.getRadius( xTabReference ) - tabHeight - finFront.y;
+			yTabBottom = MathUtil.min(yTabFront, yTabTrail) - tabHeight;
 		}
-		
+
 		points[0] = new Coordinate(xTabFront, yTabFront);
 		points[1] = new Coordinate(xTabFront, yTabBottom );
 		points[2] = new Coordinate(xTabTrail, yTabBottom );
 		points[3] = new Coordinate(xTabTrail, yTabTrail);
 
-	    return points;
+		return points;
 	}
 
 	public Coordinate getFinFront() {
@@ -909,26 +936,27 @@ public abstract class FinSet extends ExternalComponent implements RingInstanceab
 	 * but the minor performance hit is not worth the code complexity of dealing with.
 	 */
 	public Coordinate[] getFinPointsWithTab() {
-		final Coordinate[] finPoints = getFinPoints();
-		final Coordinate[] tabPoints = getTabPoints();
-		
-		Coordinate[] combinedPoints = Arrays.copyOf(finPoints, finPoints.length + tabPoints.length);
-		System.arraycopy(tabPoints, 0, combinedPoints, finPoints.length, tabPoints.length);
-		return combinedPoints;
+		return combineCurves(getFinPoints(), getTabPoints());
 	}
 	
 	@Override
 	public double getAngleOffset() {
-		return firstFinOffset;
+		return firstFinOffsetRadians;
 	}
 
-
 	@Override
-	public void setAngleOffset(double angle) {
-		angle = MathUtil.reduce180(angle);
-		if (MathUtil.equals(angle, firstFinOffset))
+	public void setAngleOffset(final double angleRadians) {
+		final double reducedAngle = MathUtil.reducePi(angleRadians);
+		if (MathUtil.equals(reducedAngle, firstFinOffsetRadians))
 			return;
-		firstFinOffset = angle;
+		firstFinOffsetRadians = reducedAngle;
+
+		if (MathUtil.equals(this.firstFinOffsetRadians, 0)) {
+			baseRotation = Transformation.IDENTITY;
+		} else {
+			baseRotation = Transformation.rotate_x(firstFinOffsetRadians);
+		}
+		
 		fireComponentChangeEvent(ComponentChangeEvent.BOTH_CHANGE);
 	}
 
@@ -938,13 +966,12 @@ public abstract class FinSet extends ExternalComponent implements RingInstanceab
 	}
 	
 	@Override
-	public double[] getInstanceAngles(){		
-		final double baseAngle = getAngleOffset();
-		final double incrAngle = getInstanceAngleIncrement();
+	public double[] getInstanceAngles() {
+		final double angleIncrementRadians = getInstanceAngleIncrement();
 		
 		double[] result = new double[ getFinCount()]; 
-		for( int i=0; i<getFinCount(); ++i){
-			result[i] = MathUtil.reduce360( baseAngle + incrAngle*i);
+		for( int finNumber=0; finNumber < getFinCount(); ++finNumber ){
+			result[finNumber] = MathUtil.reduce2Pi( firstFinOffsetRadians + angleIncrementRadians*finNumber);
 		}
 		
 		return result;
@@ -1010,9 +1037,9 @@ public abstract class FinSet extends ExternalComponent implements RingInstanceab
 	protected List<RocketComponent> copyFrom(RocketComponent c) {
 		FinSet src = (FinSet) c;
 		this.finCount = src.finCount;
-		this.finRotation = src.finRotation;
-		this.firstFinOffset = src.firstFinOffset;
-		this.cantAngle = src.cantAngle;
+		this.finRotationIncrement = src.finRotationIncrement;
+		this.firstFinOffsetRadians = src.firstFinOffsetRadians;
+		this.cantRadians = src.cantRadians;
 		this.cantRotation = src.cantRotation;
 		this.thickness = src.thickness;
 		this.crossSection = src.crossSection;
@@ -1057,7 +1084,6 @@ public abstract class FinSet extends ExternalComponent implements RingInstanceab
 	}
 
 	/**
-<<<<<<< HEAD
 	 * use this for calculating physical properties, and routine drawing
 	 *
 	 * @return points representing the fin-root points, relative to ( x: fin-front, y: centerline ) i.e. relto: fin Component reference point
@@ -1217,22 +1243,22 @@ public abstract class FinSet extends ExternalComponent implements RingInstanceab
 		checkState();
 
 		final double bodyRadius = this.getBodyRadius();
+		
+		// already includes the base rotation
 		final double[] angles = getInstanceAngles();
 
-		final Transformation localCantRotation = getCantRotation();
-
+		final Transformation localCantRotation = new Transformation(length / 2, 0, 0)
+													.applyTransformation(getCantRotation())
+													.applyTransformation(new Transformation(-length / 2, 0, 0));
+		
 		Coordinate[] toReturn = new Coordinate[finCount];
 		for (int instanceNumber = 0; instanceNumber < finCount; instanceNumber++) {
-			final double curY = bodyRadius * Math.cos(angles[instanceNumber]);
-			final double curZ = bodyRadius * Math.sin(angles[instanceNumber]);
-
-			final Coordinate naiveLocation = new Coordinate(0, curY, curZ);
-
-			final Coordinate adjustedLocation = baseRotation.transform(localCantRotation.transform( naiveLocation));
-
-			toReturn[instanceNumber] = adjustedLocation;
+			final Coordinate raw = new Coordinate( 0, bodyRadius, 0);
+			final Coordinate canted = localCantRotation.transform(raw);
+			final Coordinate rotated = Transformation.rotate_x(angles[instanceNumber]).transform(canted);
+			toReturn[instanceNumber] = rotated;
 		}
-	 		
+		
 		return toReturn;
 	}
 }

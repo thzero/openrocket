@@ -3,7 +3,9 @@ package net.sf.openrocket.rocketcomponent;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import net.sf.openrocket.database.Databases;
 import net.sf.openrocket.l10n.Translator;
+import net.sf.openrocket.material.Material;
 import net.sf.openrocket.preset.ComponentPreset;
 import net.sf.openrocket.preset.ComponentPreset.Type;
 import net.sf.openrocket.rocketcomponent.position.AngleMethod;
@@ -11,16 +13,17 @@ import net.sf.openrocket.rocketcomponent.position.AnglePositionable;
 import net.sf.openrocket.rocketcomponent.position.AxialMethod;
 import net.sf.openrocket.rocketcomponent.position.AxialPositionable;
 import net.sf.openrocket.startup.Application;
+import net.sf.openrocket.util.BoundingBox;
 import net.sf.openrocket.util.BugException;
 import net.sf.openrocket.util.Coordinate;
 import net.sf.openrocket.util.MathUtil;
 
 /** 
- * WARNING:  This class is only partially implemented.  Recomend a bit of testing before you attach it to the GUI.
+ * WARNING:  This class is only partially implemented.  Recommend a bit of testing before you attach it to the GUI.
  * @author widget (Daniel Williams)
  *
  */
-public class RailButton extends ExternalComponent implements AnglePositionable, AxialPositionable, LineInstanceable {
+public class RailButton extends ExternalComponent implements AnglePositionable, AxialPositionable, BoxBounded, LineInstanceable {
 	
 	private static final Translator trans = Application.getTranslator();
 	
@@ -59,12 +62,13 @@ public class RailButton extends ExternalComponent implements AnglePositionable, 
 	
 	public RailButton(){
 		super(AxialMethod.MIDDLE);
-		this.outerDiameter_m = 1.0;
-		this.totalHeight_m = 1.0;		
-		this.innerDiameter_m = 0.8;
+		this.outerDiameter_m = 0.0097;
+		this.totalHeight_m = 0.0097;
+		this.innerDiameter_m = 0.008;
 		this.flangeHeight_m = 0.002;
 		this.setStandoff( 0.002);
-		this.setInstanceSeparation( 1.0);
+		this.setInstanceSeparation( this.outerDiameter_m * 6);
+		this.setMaterial(Databases.findMaterial(Material.Type.BULK, "Delrin"));
 	}
 	
 	public RailButton( final double od, final double ht ) {
@@ -81,6 +85,7 @@ public class RailButton extends ExternalComponent implements AnglePositionable, 
 		this.flangeHeight_m = flangeThickness;
 		this.setStandoff( _standoff);
 		this.setInstanceSeparation( od*2);
+		this.setMaterial(Databases.findMaterial(Material.Type.BULK, "Delrin"));
 	}
 	
 	private static final RailButton make1010Button(){
@@ -152,21 +157,13 @@ public class RailButton extends ExternalComponent implements AnglePositionable, 
 
 	public void setOuterDiameter( final double newOD ){
 		this.outerDiameter_m = newOD;
-		
-		// devel
-		this.innerDiameter_m = newOD*0.8;
-		this.setInstanceSeparation( newOD*6);
 
 		fireComponentChangeEvent(ComponentChangeEvent.BOTH_CHANGE);
 	}
 
 	public void setTotalHeight( final double newHeight ) {
 		this.totalHeight_m = newHeight;
-		
-		// devel
-		this.flangeHeight_m = newHeight*0.25;
-		this.setStandoff( newHeight*0.25);
-		
+
 		fireComponentChangeEvent(ComponentChangeEvent.BOTH_CHANGE);
 	}
 	
@@ -214,6 +211,18 @@ public class RailButton extends ExternalComponent implements AnglePositionable, 
 		fireComponentChangeEvent(ComponentChangeEvent.AERODYNAMIC_CHANGE);
 	}
 	
+	public BoundingBox getInstanceBoundingBox(){
+		BoundingBox instanceBounds = new BoundingBox();
+		
+		instanceBounds.update(new Coordinate(0, this.getTotalHeight(), 0));
+		
+		final double r = this.getOuterDiameter();
+		instanceBounds.update(new Coordinate(r,r,0));
+		instanceBounds.update(new Coordinate(-r,-r,0));
+		
+		return instanceBounds;
+	}
+	
 	@Override
 	public Coordinate[] getInstanceOffsets(){
 		Coordinate[] toReturn = new Coordinate[this.getInstanceCount()];
@@ -241,8 +250,10 @@ public class RailButton extends ExternalComponent implements AnglePositionable, 
 		double parentRadius=0;
 		
 		for (body = this.getParent(); body != null; body = body.getParent()) {
-			if (body instanceof BodyTube)
+			if (body instanceof BodyTube) {
 				parentRadius = ((BodyTube) body).getOuterRadius();
+				break;
+			}
 		}
 		
 		this.radialDistance_m = parentRadius;

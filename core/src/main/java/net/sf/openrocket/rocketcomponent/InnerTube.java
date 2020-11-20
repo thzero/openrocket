@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import net.sf.openrocket.util.BoundingBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +26,7 @@ import net.sf.openrocket.util.MathUtil;
  *
  * @author Sampo Niskanen <sampo.niskanen@iki.fi>
  */
-public class InnerTube extends ThicknessRingComponent implements AxialPositionable, Clusterable, RadialParent, MotorMount {
+public class InnerTube extends ThicknessRingComponent implements AxialPositionable, BoxBounded, Clusterable, RadialParent, MotorMount {
 	private static final Translator trans = Application.getTranslator();
 	private static final Logger log = LoggerFactory.getLogger(InnerTube.class);
 	
@@ -135,6 +136,18 @@ public class InnerTube extends ThicknessRingComponent implements AxialPositionab
 		}
 	}
 	
+	public BoundingBox getInstanceBoundingBox(){
+		BoundingBox instanceBounds = new BoundingBox();
+		
+		instanceBounds.update(new Coordinate(this.getLength(), 0,0));
+		
+		final double r = getOuterRadius();
+		instanceBounds.update(new Coordinate(0,r,r));
+		instanceBounds.update(new Coordinate(0,-r,-r));
+		
+		return instanceBounds;
+	}
+	
 	@Override
 	public int getInstanceCount() {
 		return cluster.getClusterCount();
@@ -187,7 +200,7 @@ public class InnerTube extends ThicknessRingComponent implements AxialPositionab
 	 * @param rotation the clusterRotation to set
 	 */
 	public void setClusterRotation(double rotation) {
-		rotation = MathUtil.reduce180(rotation);
+		rotation = MathUtil.reducePi(rotation);
 		if (clusterRotation == rotation)
 			return;
 		this.clusterRotation = rotation;
@@ -217,12 +230,15 @@ public class InnerTube extends ThicknessRingComponent implements AxialPositionab
 	@Override
 	public Coordinate[] getInstanceOffsets(){
 		
-		if ( 1 == getInstanceCount())
-			return new Coordinate[] { Coordinate.ZERO };
+		if ( 1 == getInstanceCount()) {
+			double yOffset = this.radialPosition * Math.cos(this.radialDirection);
+			double zOffset = this.radialPosition * Math.sin(this.radialDirection);
+			return new Coordinate[] { Coordinate.ZERO.add(0.0, yOffset, zOffset) };
+		}
 		
 		List<Coordinate> points = getClusterPoints();
 		
-		return points.toArray( new Coordinate[ points.size()]);
+		return points.toArray( new Coordinate[ points.size() ]);
 	}
 	
 //	@Override
@@ -253,6 +269,11 @@ public class InnerTube extends ThicknessRingComponent implements AxialPositionab
 	@Override
 	public MotorConfiguration getDefaultMotorConfig(){
 		return this.motors.getDefault();
+	}
+	
+	@Override
+	public MotorConfigurationSet getMotorConfigurationSet() {
+		return this.motors;
 	}
 		
 	@Override
@@ -298,6 +319,7 @@ public class InnerTube extends ThicknessRingComponent implements AxialPositionab
     	if (this.isActingMount == _active)
     		return;
     	this.isActingMount = _active;
+		fireComponentChangeEvent(ComponentChangeEvent.MOTOR_CHANGE);
     }
 
 	@Override
@@ -318,7 +340,7 @@ public class InnerTube extends ThicknessRingComponent implements AxialPositionab
 	
 	@Override
 	public int getMotorCount() {
-		return this.motors.size();
+		return this.getClusterConfiguration().getClusterCount();
 	}
 	
 	

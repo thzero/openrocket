@@ -1,6 +1,7 @@
 package net.sf.openrocket.rocketcomponent;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +71,16 @@ public class FlightConfiguration implements FlightConfigurableParameter<FlightCo
 	private double cachedRefLength = -1;
 	
 	private int modID = 0;
-	
+
+	/**
+	 * Create a Default configuration with the specified <code>Rocket</code>.
+	 *
+	 * @param rocket  the rocket
+	 */
+	public FlightConfiguration(final Rocket rocket) {
+		this(rocket, FlightConfigurationId.DEFAULT_VALUE_FCID);
+	}
+
 	/**
 	 * Create a new configuration with the specified <code>Rocket</code>.
 	 * 
@@ -105,7 +115,7 @@ public class FlightConfiguration implements FlightConfigurableParameter<FlightCo
 		this._setAllStages(true);
 		this.updateMotors();
 	}
-		
+
 	private void _setAllStages(final boolean _active) {
 		for (StageFlags cur : stages.values()) {
 			cur.active = _active;
@@ -124,6 +134,32 @@ public class FlightConfiguration implements FlightConfigurableParameter<FlightCo
 	 */
 	public void clearStage(final int stageNumber) {
 		_setStageActive( stageNumber, false );
+	}
+	
+	/**
+	 * Activates all stages as active starting from the specified component
+	 * to the top-most stage in the rocket. Active stages are those stages
+	 * which contribute to the mass of the rocket. Given a rocket with the
+	 * following stages:
+	 * 
+	 * <ul>
+	 *   <li>StageA - top most stage, containing nose cone etc.</li>
+	 *   <li>StageB - middle stage</li>
+	 *   <li>StageC - bottom stage</li>
+	 * </ul>
+	 * 
+	 * invoking <code>FlightConfiguration.activateStagesThrough(StageB)</code>
+	 * will cause both StageA and StageB to be marked as active, and StageC
+	 * will be marked as inactive.
+	 * 
+	 * @param stage the AxialStage to activate all stages up to (inclusive)
+	 */
+	public void activateStagesThrough(final AxialStage stage) {
+		clearAllStages();
+		for (int i=0; i <= stage.getStageNumber(); i++) {
+			_setStageActive(i, true);
+		}
+		updateMotors();
 	}
 	
 	/** 
@@ -146,6 +182,7 @@ public class FlightConfiguration implements FlightConfigurableParameter<FlightCo
 	private void _setStageActive(final int stageNumber, final boolean _active ) {
 		if ((0 <= stageNumber) && (stages.containsKey(stageNumber))) {
 			stages.get(stageNumber).active = _active;
+			fireChangeEvent();
 			return;
 		}
 		log.error("error: attempt to retrieve via a bad stage number: " + stageNumber);
@@ -168,13 +205,30 @@ public class FlightConfiguration implements FlightConfigurableParameter<FlightCo
 	 */
 	public boolean isStageActive(int stageNumber) {
 		if( -1 == stageNumber ) {
-			return false;
+			return true;
 		}
 		
 		return stages.get(stageNumber).active;
 	}
-	
+
 	public Collection<RocketComponent> getAllComponents() {
+		List<RocketComponent> traversalOrder = new ArrayList<RocketComponent>();
+		recurseAllComponentsDepthFirst(this.rocket,traversalOrder);
+		return traversalOrder;
+	}
+
+	private void recurseAllComponentsDepthFirst(RocketComponent comp, List<RocketComponent> traversalOrder){
+		traversalOrder.add(comp);
+		for( RocketComponent child : comp.getChildren()){
+			recurseAllComponentsDepthFirst(child, traversalOrder);
+		}
+	}
+
+	/** Returns all the components on core stages (i.e. centerline)
+	 * 
+	 * NOTE: components, NOT instances
+	 */
+	public ArrayList<RocketComponent> getCoreComponents() {
 		Queue<RocketComponent> toProcess = new ArrayDeque<RocketComponent>();
 		toProcess.offer(this.rocket);
 		
@@ -183,11 +237,24 @@ public class FlightConfiguration implements FlightConfigurableParameter<FlightCo
 		while (!toProcess.isEmpty()) {
 			RocketComponent comp = toProcess.poll();
 			
-			toReturn.add(comp);
+			if (! comp.getClass().equals(Rocket.class)) {
+				toReturn.add(comp);
+			}
+			
 			for (RocketComponent child : comp.getChildren()) {
-				if (!(child instanceof AxialStage)) {
+				if (child.getClass().equals(AxialStage.class)) {
+					// recurse through AxialStage -- these are still centerline.
+				    // however -- insist on an exact type match to disallow off-core stages
+					if(isStageActive(child.getStageNumber())){
+						toProcess.offer(child);
+					}
+				}else if( child instanceof ComponentAssembly) {
+					// i.e. ParallelStage or PodSet
+					// pass
+				}else{
 					toProcess.offer(child);
 				}
+				
 			}
 		}
 		
@@ -223,36 +290,33 @@ public class FlightConfiguration implements FlightConfigurableParameter<FlightCo
 	 */
 	public InstanceMap getActiveInstances() {
 		InstanceMap contexts = new InstanceMap();
-		getContextListAt( this.rocket, contexts, Transformation.IDENTITY);
+		getActiveContextListAt( this.rocket, contexts, Transformation.IDENTITY);
 		return contexts;
 	}
 
-	private InstanceMap getContextListAt(final RocketComponent component, final InstanceMap results, final Transformation parentTransform ){
+	private InstanceMap getActiveContextListAt(final RocketComponent component, final InstanceMap results, final Transformation parentTransform ){
+		final boolean active = this.isComponentActive(component);
+		if (!active)
+			return results;
 		final int instanceCount = component.getInstanceCount();
 		final Coordinate[] allOffsets = component.getInstanceOffsets();
 		final double[] allAngles = component.getInstanceAngles();
-		final boolean active = this.isComponentActive(component);
 		
 		final Transformation compLocTransform = Transformation.getTranslationTransform( component.getPosition() );
 		final Transformation componentTransform = parentTransform.applyTransformation(compLocTransform);
 
 		// generate the Instance's Context:
 		for(int currentInstanceNumber=0; currentInstanceNumber < instanceCount; currentInstanceNumber++) {
-			
-			final Coordinate instanceOffset = allOffsets[currentInstanceNumber];
-			final Transformation offsetTransform = Transformation.getTranslationTransform( instanceOffset );
-			
-			final double instanceAngle = allAngles[currentInstanceNumber];
-			final Transformation angleTransform = Transformation.getAxialRotation(instanceAngle);
-			
+			final Transformation offsetTransform = Transformation.getTranslationTransform( allOffsets[currentInstanceNumber] );
+			final Transformation angleTransform = Transformation.getAxialRotation(allAngles[currentInstanceNumber]);
 			final Transformation currentTransform = componentTransform.applyTransformation(offsetTransform)
-																  	  .applyTransformation(angleTransform);
+				.applyTransformation(angleTransform);
 			
-			// constructs entry in-place 
+			// constructs entry in-place
 			results.emplace(component, active, currentInstanceNumber, currentTransform);
-			
+
 			for(RocketComponent child : component.getChildren()) {
-				getContextListAt(child, results, currentTransform);
+				getActiveContextListAt(child, results, currentTransform);
 			}
 		}
 
@@ -337,10 +401,10 @@ public class FlightConfiguration implements FlightConfigurableParameter<FlightCo
 	}
 	
 	private void updateStages() {
-        if (this.rocket.getStageCount() == this.stages.size()) {
-            return;
-        }
-	                		
+		if (this.rocket.getStageCount() == this.stages.size()) {
+			return;
+		}
+
 		this.stages.clear();
 		for (AxialStage curStage : this.rocket.getStageList()) {
 			
@@ -482,23 +546,97 @@ public class FlightConfiguration implements FlightConfigurableParameter<FlightCo
 	 * @return the rocket's bounding box (under the selected configuration)
 	 */
 	public BoundingBox getBoundingBox() {
-		if (rocket.getModID() != boundsModID) {
-			calculateBounds();
-		}
+//		if (rocket.getModID() != boundsModID) {
+		calculateBounds();
+//		}
+		
+		if(cachedBounds.isEmpty())
+			cachedBounds = new BoundingBox(Coordinate.ZERO,Coordinate.X_UNIT);
+		
 		return cachedBounds;
 	}
 
+	/**
+	 * Calculates the bounds for all the active component instances
+	 * in the current configuration.
+	 */
 	private void calculateBounds(){
-		BoundingBox bounds = new BoundingBox();
-			
-		for (RocketComponent component : this.getActiveComponents()) {
-			BoundingBox componentBounds = new BoundingBox().update(component.getComponentBounds());
-			bounds.update( componentBounds );
-		}
+		BoundingBox rocketBounds = new BoundingBox();
 
+		InstanceMap map = getActiveInstances();
+		for (Map.Entry<RocketComponent, java.util.ArrayList<InstanceContext>>  entry : map.entrySet()) {
+			final RocketComponent component = entry.getKey();
+			final BoundingBox componentBounds = new BoundingBox();
+			final List<InstanceContext> contexts = entry.getValue();
+			
+			if( ! component.isAerodynamic()){
+//				System.err.println("    << non-aerodynamic");
+				// all non-aerodynamic components should be surrounded by aerodynamic ones
+				continue;
+			}
+
+			// FinSets already provide a bounding box, so let's use that.
+			if (component instanceof BoxBounded) {
+				final BoundingBox instanceBounds = ((BoxBounded) component).getInstanceBoundingBox();
+				if(instanceBounds.isEmpty()) {
+					// probably redundant
+					// this component is probably non-physical (like an assembly) or has invalid bounds.  Skip.
+					continue;
+				}
+
+				for (InstanceContext context : contexts) {
+					/*
+					 * If the instance is not active in the current context, then
+					 * skip the bound calculations. This is mildly confusing since
+					 * getActiveInstances() implies that it will only return the
+					 * instances that are active, but it returns all instances and
+					 * the context indicates if it is active or not.
+					 */
+					if (!context.active) {
+						// break out of per-instance loop.
+						break;
+					}
+
+					componentBounds.update(instanceBounds.transform(context.transform));
+				}
+			} else {
+				// Legacy Case: These components do not implement the BoxBounded Interface.
+				Collection<Coordinate> instanceCoordinates = component.getComponentBounds();
+				for (InstanceContext context : contexts) {
+					/*
+					 * If the instance is not active in the current context, then
+					 * skip the bound calculations. This is mildly confusing since
+					 * getActiveInstances() implies that it will only return the
+					 * instances that are active, but it returns all instances and
+					 * the context indicates if it is active or not.
+					 */
+					if (!context.active) {
+						continue;
+					}
+
+					Collection<Coordinate> transformedCoords = new ArrayList<>(instanceCoordinates);
+					// mutating.  Transforms coordinates in place.
+					context.transform.transform(instanceCoordinates);
+
+					for (Coordinate tc : transformedCoords) {
+						componentBounds.update(tc);
+					}
+				}
+			}
+
+			rocketBounds.update(componentBounds);
+		}
+		
 		boundsModID = rocket.getModID();
-		cachedLength = bounds.span().x;
-		cachedBounds.update( bounds );
+		cachedLength = rocketBounds.span().x;
+		/* Special case for the scenario that all of the stages are removed and are
+		 * inactive. Its possible that this shouldn't be allowed, but it is currently
+		 * so we'll just adjust the length here.  
+		 */
+		if (rocketBounds.isEmpty()) {
+			cachedLength = 0;
+		}
+		cachedBounds = rocketBounds;
 	}
 	
 	/**

@@ -3,10 +3,7 @@ package net.sf.openrocket.gui.configdialog;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -43,11 +40,8 @@ import net.sf.openrocket.l10n.Translator;
 import net.sf.openrocket.material.Material;
 import net.sf.openrocket.preset.ComponentPreset;
 import net.sf.openrocket.rocketcomponent.ComponentAssembly;
-import net.sf.openrocket.rocketcomponent.ExternalComponent;
+import net.sf.openrocket.rocketcomponent.*;
 import net.sf.openrocket.rocketcomponent.ExternalComponent.Finish;
-import net.sf.openrocket.rocketcomponent.Instanceable;
-import net.sf.openrocket.rocketcomponent.NoseCone;
-import net.sf.openrocket.rocketcomponent.RocketComponent;
 import net.sf.openrocket.rocketcomponent.position.AxialMethod;
 import net.sf.openrocket.startup.Application;
 import net.sf.openrocket.unit.UnitGroup;
@@ -77,7 +71,8 @@ public class RocketComponentConfig extends JPanel {
 	
 	
 	public RocketComponentConfig(OpenRocketDocument document, RocketComponent component) {
-		setLayout(new MigLayout("fill, gap 5!, ins panel", "[]:5[]", "[growprio 10]10![fill, grow, growprio 500]10![growprio 10]"));
+		setLayout(new MigLayout("fill, gap 4!, ins panel", "[]:5[]", "[growprio 5]5![fill, grow, growprio 500]5![growprio 5]"));
+
 		this.document = document;
 		this.component = component;
 		
@@ -85,7 +80,7 @@ public class RocketComponentConfig extends JPanel {
 		JLabel label = new JLabel(trans.get("RocketCompCfg.lbl.Componentname"));
 		//// The component name.
 		label.setToolTipText(trans.get("RocketCompCfg.ttip.Thecomponentname"));
-		this.add(label, "spanx, height 50!, split");
+		this.add(label, "spanx, height 32!, split");
 		
 		componentNameField = new JTextField(15);
 		textFieldListener = new TextFieldListener();
@@ -111,11 +106,11 @@ public class RocketComponentConfig extends JPanel {
 		//// Override and Mass and CG override options
 		tabbedPane.addTab(trans.get("RocketCompCfg.tab.Override"), null, overrideTab(),
 				trans.get("RocketCompCfg.tab.MassandCGoverride"));
-		if (component.isMassive())
-			
+		if (component.isMassive()) {
 			//// Appearance options
 			tabbedPane.addTab(trans.get("RocketCompCfg.tab.Appearance"), null, new AppearancePanel(document, component),
 					"Appearance Tool Tip");
+		}
 		
 		//// Comment and Specify a comment for the component
 		tabbedPane.addTab(trans.get("RocketCompCfg.tab.Comment"), null, commentTab(),
@@ -132,8 +127,8 @@ public class RocketComponentConfig extends JPanel {
 			this.remove(buttonPanel);
 		}
 		
-		buttonPanel = new JPanel(new MigLayout("fillx, ins 0"));
-		
+		buttonPanel = new JPanel(new MigLayout("fillx, ins 5"));
+
 		//// Mass:
 		infoLabel = new StyledLabel(" ", -1);
 		buttonPanel.add(infoLabel, "growx");
@@ -154,7 +149,7 @@ public class RocketComponentConfig extends JPanel {
 		
 		updateFields();
 		
-		this.add(buttonPanel, "newline, spanx, growx, height 50!");
+		this.add(buttonPanel, "newline, spanx, growx, height 32!");
 	}
 	
 	
@@ -622,12 +617,12 @@ public class RocketComponentConfig extends JPanel {
 		this.invalidatables.add(model);
 	}
 	
-	public void invalidateModels() {
+	public void invalidate() {
+		super.invalidate();
 		for (Invalidatable i : invalidatables) {
 			i.invalidate();
 		}
 		((ComponentPresetDatabase) Application.getComponentPresetDao()).removeChangeListener(presetModel);
-		
 	}
 	
 

@@ -8,6 +8,8 @@ import java.text.MessageFormat;
 
 import net.sf.openrocket.appearance.AppearanceBuilder;
 import net.sf.openrocket.appearance.DecalImage;
+import net.sf.openrocket.arch.SystemInfo;
+import net.sf.openrocket.arch.SystemInfo.Platform;
 import net.sf.openrocket.document.OpenRocketDocument;
 import net.sf.openrocket.gui.dialogs.EditDecalDialog;
 import net.sf.openrocket.gui.watcher.FileWatcher;
@@ -72,15 +74,17 @@ public class EditDecalHelper {
 		
 		boolean sysPrefSet = prefs.isDecalEditorPreferenceSet();
 		int usageCount = doc.countDecalUsage(decal);
+		boolean isSnapConfined = (SystemInfo.getPlatform() == Platform.UNIX && SystemInfo.isConfined());
 		
 		//First Check preferences
-		if (sysPrefSet && usageCount == 1) {
-			
-			launchEditor(prefs.isDecalEditorPreferenceSystem(), prefs.getDecalEditorCommandLine(), decal);
+		if (usageCount == 1 && (sysPrefSet || isSnapConfined)) {
+			String commandLine = isSnapConfined ? "xdg-open %%" : prefs.getDecalEditorCommandLine();
+			launchEditor(prefs.isDecalEditorPreferenceSystem(), commandLine, decal);
 			return decal;
 		}
 		
-		EditDecalDialog dialog = new EditDecalDialog(parent, !sysPrefSet, usageCount);
+		boolean promptForEditor = (!sysPrefSet && !isSnapConfined);
+		EditDecalDialog dialog = new EditDecalDialog(parent, promptForEditor, usageCount);
 		dialog.setVisible(true);
 		
 		if (dialog.isCancel()) {
@@ -91,7 +95,10 @@ public class EditDecalHelper {
 		boolean useSystemEditor = false;
 		String commandLine = "";
 		
-		if (sysPrefSet) {
+		if (isSnapConfined) {
+			useSystemEditor = false;
+			commandLine = "xdg-open %%";
+		} else if (sysPrefSet) {
 			useSystemEditor = prefs.isDecalEditorPreferenceSystem();
 			commandLine = prefs.getDecalEditorCommandLine();
 		} else {
@@ -177,6 +184,15 @@ public class EditDecalHelper {
 				command = commandTemplate.replace("%%", filename);
 			} else {
 				command = commandTemplate + " " + filename;
+			}
+			
+			/* On OSX, the program needs to be opened using the command
+			 * open -a to tell it which application to use to open the 
+			 * program. Check to see if the command starts with it or not
+			 * and pre-pend it as necessary. See issue #619.
+			 */
+			if (SystemInfo.getPlatform() == Platform.MAC_OS && !command.startsWith("open -a")) {
+				command = "open -a " + command;
 			}
 			
 			try {

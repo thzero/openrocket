@@ -115,7 +115,7 @@ public class MotorClusterState {
 	}
 
 	public double getMotorTime( final double _simulationTime ){
-		return _simulationTime - this.getIgnitionTime();
+		return Math.max(_simulationTime - this.getIgnitionTime(), 0.0);
 	}
 	
 	/**
@@ -160,6 +160,10 @@ public class MotorClusterState {
 
 	public boolean hasEjectionCharge(){
 		return ! isPlugged();
+	}
+
+	public boolean isDelaying() {
+		return currentState == ThrustState.DELAYING;
 	}
 
 	public boolean isSpent(){

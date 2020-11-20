@@ -9,19 +9,15 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.List;
 
-// thzero - begin
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReaderBuilder;
-// thzero - end
 import net.sf.openrocket.preset.TypedPropertyMap;
 import net.sf.openrocket.unit.Unit;
 import net.sf.openrocket.unit.UnitGroup;
 import net.sf.openrocket.util.ArrayList;
 import net.sf.openrocket.util.StringUtil;
-// thzero - begin
 import com.opencsv.CSVReader;
-// thzero - end
 
 /**
  * Primary entry point for parsing component CSV files that are in Rocksim format.
@@ -120,23 +116,21 @@ public abstract class RocksimComponentFileLoader {
 		InputStreamReader r = null;
 		try {
 			r = new InputStreamReader(is);
-			
-// thzero - begin
+
 			// Create the CSV reader.  Use comma separator.
-			// TODO: Deprecated (External Dependency)
+            // TODO: Deprecated (External Dependency)
 //			CSVReader reader = new CSVReader(r, ',', '\'', '\\');
 
-			final CSVParser parser =  new CSVParserBuilder()
-					.withSeparator(',')
-					.withQuoteChar('\'')
-					.withEscapeChar('\\')
-					.build();
-			final CSVReader reader = new CSVReaderBuilder(r)
-					.withSkipLines(1)
-					.withCSVParser(parser)
-					.build();
-// thzero - end
-
+            final CSVParser parser =  new CSVParserBuilder()
+            .withSeparator(',')
+            .withQuoteChar('\'')
+            .withEscapeChar('\\')
+            .build();
+            final CSVReader reader = new CSVReaderBuilder(r)
+            .withSkipLines(1)
+            .withCSVParser(parser)
+            .build();
+			
 			//Read and throw away the header row.
 			parseHeaders(reader.readNext());
 			

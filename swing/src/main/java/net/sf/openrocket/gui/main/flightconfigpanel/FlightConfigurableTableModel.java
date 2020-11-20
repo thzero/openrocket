@@ -88,6 +88,15 @@ public class FlightConfigurableTableModel<T extends FlightConfigurableComponent>
 		}
 	}
 
+	public int getColumnIndex(FlightConfigurableComponent comp) {
+		int index = components.indexOf(comp);
+		if (index >= 0) {
+			// Increment the index to account for the fcid column.
+			index += 1;
+		}
+		return index;
+	}
+
 	@Override
 	public String getColumnName(int column) {
 		switch (column) {

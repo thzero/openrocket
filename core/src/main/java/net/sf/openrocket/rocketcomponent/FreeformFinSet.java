@@ -24,7 +24,10 @@ public class FreeformFinSet extends FinSet {
 	
 	private static final double SNAP_SMALLER_THAN = 5e-3;
 	private static final double IGNORE_SMALLER_THAN = 1e-12;
-	
+
+	// attempts to set a fin value any larger than this will be snapped to this max value
+	public static final double SNAP_LARGER_THAN = 2.5; // in meters
+
 	public FreeformFinSet() {
 		points.add(Coordinate.ZERO);
 		points.add(new Coordinate(0.025, 0.05));
@@ -164,6 +167,16 @@ public class FreeformFinSet extends FinSet {
 			newPoints = translatePoints( newPoints, delta);
 		}
 
+		for ( int i =0; i < newPoints.size(); ++i ) {
+			final Coordinate p = newPoints.get(i);
+			if( p.x > SNAP_LARGER_THAN){
+				newPoints.set(i, p.setX(SNAP_LARGER_THAN));
+			}
+			if( p.y > SNAP_LARGER_THAN){
+				newPoints.set(i, p.setY(SNAP_LARGER_THAN));
+			}
+		}
+
 		// copy the old points, in case validation fails
 		final ArrayList<Coordinate> pointsCopy = new ArrayList<>(this.points);
 		final double lengthCopy = this.length;
@@ -203,25 +216,50 @@ public class FreeformFinSet extends FinSet {
 	 * @param yRequest the y-coordinate.
 	 */
 	public void setPoint(final int index, final double xRequest, final double yRequest) {
+		if(null == this.getParent()) {
+			return;
+		}
 
-		if(null != this.getParent()) {
-			final Coordinate prior =  points.get(index);
-			points.set(index, new Coordinate(xRequest, yRequest));
-
-			if((points.size() - 1) == index){
-				clampLastPoint(xRequest-prior.x);
+		// if the new x,y would cause a fin larger than our max-size, limit the new request:
+		double xAccept = xRequest;
+		double yAccept = yRequest;
+		if(0 == index) {
+			final Coordinate cl = points.get(points.size() - 1);
+			double newLength = cl.x - xRequest;
+			if (newLength > SNAP_LARGER_THAN) {
+				xAccept = SNAP_LARGER_THAN - cl.x;
 			}
+		}else{
+			if (xAccept > SNAP_LARGER_THAN) {
+				xAccept = SNAP_LARGER_THAN;
+			}
+			if (yAccept > SNAP_LARGER_THAN) {
+				yAccept = SNAP_LARGER_THAN;
+			}
+		}
+
+		final Coordinate revertPoint = points.get(index);
+
+		points.set(index, new Coordinate(xAccept, yAccept));
+
+		if( IGNORE_SMALLER_THAN > Math.abs(revertPoint.x - xAccept) && IGNORE_SMALLER_THAN > Math.abs(revertPoint.y - yAccept) ){
+			// no-op. ignore
+			return;
+		}
+
+		if ((points.size() - 1) == index) {
+			clampLastPoint(xAccept - revertPoint.x);
 		}
 
 		update();
 
-		// this maps the last index and the next-to-last-index to the same 'testIndex'
-		int testIndex = Math.min(index, (points.size() - 2));
-		if (intersects(testIndex)) {
+		if (intersects()) {
 			// intersection found!  log error and abort!
-			log.error(String.format("ERROR: found an intersection while setting fin point #%d to [%6.4g, %6.4g] <body frame> : ABORTING setPoint(..) !! ", index, xRequest, yRequest));
+			points.set(index, revertPoint);
 			return;
 		}
+
+		fireComponentChangeEvent(ComponentChangeEvent.AEROMASS_CHANGE);
 	}
 	
 	private void movePoints(final double delta_x, final double delta_y) {
@@ -393,7 +431,8 @@ public class FreeformFinSet extends FinSet {
 	 */
 	private boolean intersects(final int targetIndex) {
 		if ((points.size() - 2) < targetIndex) {
-			throw new IndexOutOfBoundsException("request validate of non-existent fin edge segment: " + targetIndex + "/" + points.size());
+			log.error("request validation of non-existent fin edge segment: " + targetIndex + "/" + points.size());
+			// throw new IndexOutOfBoundsException("request validate of non-existent fin edge segment: " + targetIndex + "/" + points.size());
 		}
 
 		// (pre-check the indices above.)
@@ -417,9 +456,9 @@ public class FreeformFinSet extends FinSet {
 			
 			final Line2D.Double comparisonLine = new Line2D.Double(pc1, pc2);
 			if (targetLine.intersectsLine(comparisonLine)) {
-				log.error(String.format("Found intersection at %d-%d and %d-%d", targetIndex, targetIndex+1, comparisonIndex, comparisonIndex+1)); 
-				log.error(String.format("                   between (%g, %g) => (%g, %g)", pt1.x, pt1.y, pt2.x, pt2.y)); 
-				log.error(String.format("                       and (%g, %g) => (%g, %g)", pc1.x, pc1.y, pc2.x, pc2.y));
+				log.warn(String.format("Found intersection at %d-%d and %d-%d", targetIndex, targetIndex+1, comparisonIndex, comparisonIndex+1));
+				log.warn(String.format("                   between (%g, %g) => (%g, %g)", pt1.x, pt1.y, pt2.x, pt2.y));
+				log.warn(String.format("                       and (%g, %g) => (%g, %g)", pc1.x, pc1.y, pc2.x, pc2.y));
 				return true;
 			}
 		}
