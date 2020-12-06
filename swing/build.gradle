@@ -48,7 +48,7 @@ dependencies {
     testCompile group: 'org.jmock', name: 'jmock', version: '2.9.0' // 2.12.0
     testCompile group: 'org.jmock', name: 'jmock-junit4', version: '2.9.0' // 2.12.0
     testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
-    testCompile 'junit:junit:4.12' // 4.3.1 org.junit.jupiter » junit-jupiter-api
+    testCompile 'junit:junit:4.12' // 4.3.1 org.junit.jupiter
 
 //    testCompile project (path: ':core', configuration: 'testBaseArtifacts')
 }
