@@ -1,6 +1,15 @@
 language: java
+dist: bionic
+sudo: false
 jdk:
   - openjdk10
+  - openjdk11
+  - openjdk13
+  - oraclejdk11
+  - oraclejdk13
 script:
   - "./gradlew check"
   - "./gradlew shadowJar"
+
+notifications:
+    webhooks: https://www.travisbuddy.com/

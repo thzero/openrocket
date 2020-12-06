@@ -30,10 +30,10 @@ public class SerializePresets extends BasicApplication {
 		
 		ComponentPresetDatabase componentPresetDao = new ComponentPresetDatabase();
 		
-		FileIterator iterator = DirectoryIterator.findDirectory("resources/datafiles/presets", new SimpleFileFilter("", false, "orc"));
+		FileIterator iterator = DirectoryIterator.findDirectory("resources-src/datafiles/presets", new SimpleFileFilter("", false, "orc"));
 		
 		if (iterator == null) {
-			throw new RuntimeException("Can't find resources/presets directory");
+			throw new RuntimeException("Can't find resources-src/presets directory");
 		}
 		while (iterator.hasNext()) {
 			Pair<String, InputStream> f = iterator.next();

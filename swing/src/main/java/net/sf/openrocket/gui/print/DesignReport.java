@@ -391,8 +391,6 @@ public class DesignReport {
 		
 		DecimalFormat ttwFormat = new DecimalFormat("0.00");
 		
-		MassCalculator massCalc = new MassCalculator();
-		
 		if( motorId.hasError() ){
 		    throw new IllegalStateException("Attempted to add motor data with an invalid fcid");
 		}

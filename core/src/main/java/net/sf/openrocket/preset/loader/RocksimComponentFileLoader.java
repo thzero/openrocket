@@ -9,9 +9,6 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.List;
 
-import com.opencsv.CSVParser;
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReaderBuilder;
 import net.sf.openrocket.preset.TypedPropertyMap;
 import net.sf.openrocket.unit.Unit;
 import net.sf.openrocket.unit.UnitGroup;
@@ -116,20 +113,9 @@ public abstract class RocksimComponentFileLoader {
 		InputStreamReader r = null;
 		try {
 			r = new InputStreamReader(is);
-
+			
 			// Create the CSV reader.  Use comma separator.
-            // TODO: Deprecated (External Dependency)
-//			CSVReader reader = new CSVReader(r, ',', '\'', '\\');
-
-            final CSVParser parser =  new CSVParserBuilder()
-            .withSeparator(',')
-            .withQuoteChar('\'')
-            .withEscapeChar('\\')
-            .build();
-            final CSVReader reader = new CSVReaderBuilder(r)
-            .withSkipLines(1)
-            .withCSVParser(parser)
-            .build();
+			CSVReader reader = new CSVReader(r, ',', '\'', '\\');
 			
 			//Read and throw away the header row.
 			parseHeaders(reader.readNext());
