@@ -462,6 +462,8 @@ public class RocketFigure3d extends JPanel implements GLEventListener {
 		final double ratio = (double) w / (double) h;
 		fovX = fovY * ratio;
 		
+		// Make sure to set the viewport size to cover the full size
+		gl.glViewport(0, 0, w, h);
 		gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
 		gl.glLoadIdentity();
 		glu.gluPerspective(fovY, ratio, 0.1f, 50f);
@@ -499,7 +501,7 @@ public class RocketFigure3d extends JPanel implements GLEventListener {
 		// Add 10% for space around it.
 		final double dX = (b.span().x * 1.2 / 2.0)
 				/ Math.tan(Math.toRadians(fovX / 2.0));
-		final double dY = (b.span().y * 2.0 * 1.2 / 2.0)
+		final double dY = (b.span().y * 1.2 / 2.0)
 				/ Math.tan(Math.toRadians(fovY / 2.0));
 		
 		// Move back the greater of the 2 distances

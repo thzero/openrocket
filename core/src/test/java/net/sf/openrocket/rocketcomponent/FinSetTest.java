@@ -16,7 +16,13 @@ public class FinSetTest extends BaseTestCase {
 	@Test
 	public void testMultiplicity() {
 		final EllipticalFinSet fins = new EllipticalFinSet();
-		assertEquals(1, fins.getFinCount());
+		assertEquals(3, fins.getFinCount());
+		
+		final FreeformFinSet freeFins = new FreeformFinSet();
+		assertEquals(3, freeFins.getFinCount());
+		
+		final TrapezoidFinSet trapFins = new TrapezoidFinSet();
+		assertEquals(3, trapFins.getFinCount());
 	}
 
     /**
@@ -50,8 +56,24 @@ public class FinSetTest extends BaseTestCase {
 
         fins.setFilletRadius(0.0);
 
-        return fins;
-	}
+        fins.setAngleMethod(AngleMethod.FIXED);
+        fins.setAngleOffset(Math.toRadians(90.0));
+
+        fins.setCantAngle(Math.toRadians(3.0));
+
+	    return fins;
+    }
+
+    @Test
+    public void testAngleOffset() {
+        final FinSet fins = FinSetTest.createSimpleFin();
+
+        assertEquals("Angle Offset Doesn't match!", Math.PI/2, fins.getAngleOffset(), EPSILON);
+        assertEquals("Angle Offset Doesn't match!", 90.0, Math.toDegrees(fins.getAngleOffset()), EPSILON);
+        
+        assertEquals("Cant angle doesn't match!", Math.PI/60, fins.getCantAngle(), EPSILON);
+        assertEquals("Cant angle doesn't match!", 3.0, Math.toDegrees(fins.getCantAngle()), EPSILON);
+   }
 
 	@Test
 	public void testTabLocation() {

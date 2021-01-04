@@ -35,9 +35,12 @@ import net.sf.openrocket.rocketcomponent.FinSet;
 import net.sf.openrocket.rocketcomponent.FreeformFinSet;
 import net.sf.openrocket.rocketcomponent.InnerTube;
 import net.sf.openrocket.rocketcomponent.RocketComponent;
+import net.sf.openrocket.rocketcomponent.SymmetricComponent;
+import net.sf.openrocket.rocketcomponent.Transition;
 import net.sf.openrocket.rocketcomponent.position.AxialMethod;
 import net.sf.openrocket.startup.Application;
 import net.sf.openrocket.unit.UnitGroup;
+import net.sf.openrocket.util.MathUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -228,31 +231,29 @@ public abstract class FinSetConfig extends RocketComponentConfig {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				log.info(Markers.USER_MARKER, "Computing " + component.getComponentName() + " tab height.");
-				
+
+				double inRad = 0.0;
 				RocketComponent parent = component.getParent();
-				if (parent instanceof Coaxial) {
+				if (parent instanceof SymmetricComponent){
 					try {
 						document.startUndo("Compute fin tabs");
 						
 						List<CenteringRing> rings = new ArrayList<>();
-                        //Do deep recursive iteration
+                        // Do deep recursive iteration to find centering rings and determine
+						// radius of inner tube
                         Iterator<RocketComponent> iter = parent.iterator(false);
                         while (iter.hasNext()) {
                             RocketComponent rocketComponent =  iter.next();
 							if (rocketComponent instanceof InnerTube) {
 								InnerTube it = (InnerTube) rocketComponent;
 								if (it.isMotorMount()) {
-									double depth = ((Coaxial) parent).getOuterRadius() - it.getOuterRadius();
-									//Set fin tab depth
-									if (depth >= 0.0d) {
-										tabHeightModel.setValue(depth);
-										tabHeightModel.setCurrentUnit(UnitGroup.UNITS_LENGTH.getDefaultUnit());
-									}
+									inRad = it.getOuterRadius();
 								}
 							} else if (rocketComponent instanceof CenteringRing) {
 								rings.add((CenteringRing) rocketComponent);
 							}
 						}
+						
 						//Figure out position and length of the fin tab
 						if (!rings.isEmpty()) {
 						    AxialMethod temp = (AxialMethod) em.getSelectedItem();
@@ -263,7 +264,16 @@ public abstract class FinSetConfig extends RocketComponentConfig {
 							//Be nice to the user and set the tab relative position enum back the way they had it.
 							em.setSelectedItem(temp);
 						}
-						
+
+						// compute tab height
+						double height = MathUtil.min(((SymmetricComponent)parent).getRadius(((FinSet) component).getTabFrontEdge()),
+													 ((SymmetricComponent)parent).getRadius(((FinSet) component).getTabTrailingEdge())) - inRad;
+						// double height = ((Coaxial) parent).getOuterRadius() - inRad;
+						//Set fin tab height
+						if (height >= 0.0d) {
+							tabHeightModel.setValue(height);
+							tabHeightModel.setCurrentUnit(UnitGroup.UNITS_LENGTH.getDefaultUnit());
+						}
 					} finally {
 						document.stopUndo();
 					}

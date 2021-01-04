@@ -2,13 +2,18 @@ package net.sf.openrocket.rocketcomponent;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.closeTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+
+import net.sf.openrocket.util.ArrayList;
 import org.junit.Test;
 
+import net.sf.openrocket.rocketcomponent.position.AxialMethod;
 import net.sf.openrocket.rocketcomponent.position.AngleMethod;
 import net.sf.openrocket.rocketcomponent.position.RadiusMethod;
+import net.sf.openrocket.util.BoundingBox;
 import net.sf.openrocket.util.Coordinate;
 import net.sf.openrocket.util.MathUtil;
 import net.sf.openrocket.util.TestRockets;
@@ -57,10 +62,10 @@ public class RocketTest extends BaseTestCase {
 
 	@Test
 	public void testEstesAlphaIII(){
-		Rocket rocket = TestRockets.makeEstesAlphaIII();
-			
-		AxialStage stage= (AxialStage)rocket.getChild(0);
-		
+		final Rocket rocket = TestRockets.makeEstesAlphaIII();
+
+		final AxialStage stage= (AxialStage)rocket.getChild(0);
+
 		Coordinate expLoc;
 		Coordinate actLoc;
 		{
@@ -135,6 +140,72 @@ public class RocketTest extends BaseTestCase {
 			}
 			
 		}
+
+		final BoundingBox bounds = rocket.getBoundingBox();
+		assertEquals(bounds.min.x, 0.0,  EPSILON);
+		assertEquals(bounds.max.x, 0.27, EPSILON);
+
+		assertEquals( -0.032385640, bounds.min.y, EPSILON);
+		assertEquals( -0.054493575, bounds.min.z, EPSILON);
+		assertEquals(  0.062000000,  bounds.max.y, EPSILON);
+		assertEquals(  0.052893575, bounds.max.z, EPSILON);
+	}
+
+
+	@Test
+	public void testChangeAxialMethod(){
+		class AxialPositionTestCase {
+			final public AxialMethod beginMethod;
+			final public double beginOffset;
+			final public AxialMethod endMethod;
+			final public double endOffset;
+			final public double endPosition;
+
+			public AxialPositionTestCase( AxialMethod _begMeth, double _begOffs, AxialMethod _endMeth, double _endOffs, double _endPos){
+				beginMethod = _begMeth;  beginOffset = _begOffs; endMethod = _endMeth; endOffset = _endOffs; endPosition = _endPos;
+			}
+		}
+
+		final Rocket rocket = TestRockets.makeEstesAlphaIII();
+		final AxialStage stage= (AxialStage)rocket.getChild(0);
+		final BodyTube body = (BodyTube)stage.getChild(1);
+		final FinSet fins = (FinSet) body.getChild(0);
+
+		{ // verify construction:
+			assertEquals("incorrect body length:", 0.20, body.getLength(), EPSILON);
+			assertEquals("incorrect fin length:", 0.05, fins.getLength(), EPSILON);
+			{ // fin #1
+				final Coordinate expLoc = new Coordinate(0.22, 0.012, 0);
+				final Coordinate actLocs[] = fins.getComponentLocations();
+				assertThat(fins.getName() + " not positioned correctly: ", actLocs[0], equalTo(expLoc));
+			}
+		}
+
+		final ArrayList<AxialPositionTestCase> allTestCases = new ArrayList<>(10);
+		allTestCases.add(0, new AxialPositionTestCase(AxialMethod.BOTTOM, 0.0, AxialMethod.TOP,  0.15, 0.15));
+		allTestCases.add(1, new AxialPositionTestCase(AxialMethod.TOP, 0.0, AxialMethod.BOTTOM, -0.15, 0.0));
+		allTestCases.add(2, new AxialPositionTestCase(AxialMethod.BOTTOM, -0.03, AxialMethod.TOP, 0.12, 0.12));
+		allTestCases.add(3, new AxialPositionTestCase(AxialMethod.BOTTOM, 0.03, AxialMethod.TOP, 0.18, 0.18));
+		allTestCases.add(4, new AxialPositionTestCase(AxialMethod.BOTTOM, 0.03, AxialMethod.MIDDLE, 0.105, 0.18));
+		allTestCases.add(5, new AxialPositionTestCase(AxialMethod.MIDDLE, 0.0, AxialMethod.TOP, 0.075, 0.075));
+		allTestCases.add(6, new AxialPositionTestCase(AxialMethod.MIDDLE, 0.0, AxialMethod.BOTTOM, -0.075, 0.075));
+		allTestCases.add(7, new AxialPositionTestCase(AxialMethod.MIDDLE, 0.005, AxialMethod.TOP, 0.08, 0.08));
+
+		for( int caseIndex=0; caseIndex < allTestCases.size(); ++caseIndex ){
+			final AxialPositionTestCase cur = allTestCases.get(caseIndex);
+			// test repositioning
+			fins.setAxialOffset(cur.beginMethod, cur.beginOffset);
+			assertEquals(fins.getName() + " incorrect start axial-position-method: ", fins.getAxialMethod(), cur.beginMethod);
+			assertEquals(fins.getName() + " incorrect start axial-position-value: ", cur.beginOffset, fins.getAxialOffset(), EPSILON);
+
+			{
+				// System.err.println(String.format("## Running Test case # %d :", caseIndex));
+				fins.setAxialMethod(cur.endMethod);
+				assertEquals(String.format(" Test Case # %d // offset doesn't match!", caseIndex), cur.endOffset, fins.getAxialOffset(), EPSILON);
+				assertEquals(String.format(" Test Case # %d // position doesn't match!", caseIndex), cur.endPosition, fins.getPosition().x, EPSILON);
+			}
+		}
+
 	}
 	
 	@Test 
@@ -156,7 +227,84 @@ public class RocketTest extends BaseTestCase {
 			assertThat(locPost.x, equalTo(0.0));
 		}
 	}
-	
+
+	@Test
+	public void testAutoSizePreviousComponent() {
+		Rocket rocket = TestRockets.makeBeta();
+
+		final AxialStage sustainer = (AxialStage) rocket.getChild(0);
+		final AxialStage booster = (AxialStage) rocket.getChild(1);
+		final double expRadius = 0.012;
+
+		{ // test auto-radius within a stage: nose -> body tube
+			final NoseCone nose = (NoseCone) sustainer.getChild(0);
+			assertEquals(" radius match: ", expRadius, nose.getAftRadius(), EPSILON);
+			final BodyTube body = (BodyTube) sustainer.getChild(1);
+			assertEquals(" radius match: ", expRadius, body.getOuterRadius(), EPSILON);
+
+			body.setOuterRadiusAutomatic(true);
+			assertEquals(" radius match: ", expRadius, body.getOuterRadius(), EPSILON);
+		}
+		{ // test auto-radius within a stage: tail cone -> body tube
+			final BodyTube body = (BodyTube) booster.getChild(0);
+			assertEquals(" radius match: ", expRadius, body.getOuterRadius(), EPSILON);
+			final Transition tailCone = (Transition)booster.getChild(1);
+			assertEquals(" radius match: ", expRadius, tailCone.getForeRadius(), EPSILON);
+
+			tailCone.setForeRadiusAutomatic(true);
+			assertEquals(" trailing transition match: ", expRadius, tailCone.getForeRadius(), EPSILON);
+		}
+		{ // test auto-radius across stages: sustainer body -> booster body
+			BodyTube sustainerBody = (BodyTube) sustainer.getChild(1);
+			assertEquals(" radius match: ", expRadius, sustainerBody.getOuterRadius(), EPSILON);
+			BodyTube boosterBody = (BodyTube) booster.getChild(0);
+			assertEquals(" radius match: ", expRadius, boosterBody.getOuterRadius(), EPSILON);
+
+			boosterBody.setOuterRadiusAutomatic(true);
+			assertEquals(" radius match: ", expRadius, boosterBody.getOuterRadius(), EPSILON);
+		}
+	}
+
+	@Test
+	public void testAutoSizeNextComponent() {
+		Rocket rocket = TestRockets.makeBeta();
+
+		final AxialStage sustainer = (AxialStage) rocket.getChild(0);
+		final AxialStage booster = (AxialStage) rocket.getChild(1);
+		final double expRadius = 0.012;
+
+		{ // test auto-radius within a stage: nose <- body tube
+			System.err.println("## Testing auto-radius:  sustainer:  nose <- body");
+			final NoseCone nose = (NoseCone) sustainer.getChild(0);
+			assertEquals(" radius match: ", expRadius, nose.getAftRadius(), EPSILON);
+			final BodyTube body = (BodyTube) sustainer.getChild(1);
+			assertEquals(" radius match: ", expRadius, body.getOuterRadius(), EPSILON);
+
+			nose.setAftRadiusAutomatic(true);
+			assertEquals(" radius match: ", expRadius, nose.getAftRadius(), EPSILON);
+		}
+		{ // test auto-radius within a stage: body tube <- trailing transition
+			System.err.println("## Testing auto-radius:  booster: body <- tail");
+			final BodyTube boosterBody = (BodyTube) booster.getChild(0);
+			assertEquals(" radius match: ", expRadius, boosterBody.getOuterRadius(), EPSILON);
+			final Transition tailCone = (Transition)booster.getChild(1);
+			assertEquals(" radius match: ", expRadius, tailCone.getForeRadius(), EPSILON);
+
+			boosterBody.setOuterRadiusAutomatic(true);
+			assertEquals(" trailing transition match: ", expRadius, boosterBody.getOuterRadius(), EPSILON);
+		}
+		{ // test auto-radius across stages: sustainer body <- booster body
+			System.err.println("## Testing auto-radius:  booster:body -> sustainer:body");
+			BodyTube sustainerBody = (BodyTube) sustainer.getChild(1);
+			assertEquals(" radius match: ", expRadius, sustainerBody.getOuterRadius(), EPSILON);
+			BodyTube boosterBody = (BodyTube) booster.getChild(0);
+			assertEquals(" radius match: ", expRadius, boosterBody.getOuterRadius(), EPSILON);
+
+			sustainerBody.setOuterRadiusAutomatic(true);
+			assertEquals(" radius match: ", expRadius, sustainerBody.getOuterRadius(), EPSILON);
+		}
+	}
+
 	@Test
 	public void testBeta(){
 		Rocket rocket = TestRockets.makeBeta();
@@ -192,6 +340,15 @@ public class RocketTest extends BaseTestCase {
 				assertThat(mmt.getName()+" not positioned correctly: ", actLoc, equalTo( expLoc ));
 			}
 		}
+
+		final BoundingBox bounds = rocket.getBoundingBox();
+		assertEquals( bounds.min.x, 0.0,  EPSILON);
+		assertEquals( bounds.max.x, 0.335, EPSILON);
+
+		assertEquals( -0.032385640, bounds.min.y, EPSILON);
+		assertEquals( -0.054493575, bounds.min.z, EPSILON);
+		assertEquals(  0.062000000,  bounds.max.y, EPSILON);
+		assertEquals(  0.052893575, bounds.max.z, EPSILON);
 	}
 	
 	@Test
@@ -311,8 +468,20 @@ public class RocketTest extends BaseTestCase {
 					assertEquals(coreFins.getName()+" location is incorrect: ", 1.044, loc.x, EPSILON);
 				}
 			}
-			
 		}
+
+		// DEBUG
+		System.err.println(rocket.toDebugTree());
+
+		final BoundingBox bounds = rocket.getBoundingBox();
+		assertEquals( 0.0,   bounds.min.x,  EPSILON);
+		assertEquals( 1.364, bounds.max.x, EPSILON);
+
+		assertEquals( -0.215500, bounds.min.y, EPSILON);
+		assertEquals(  0.215500, bounds.max.y, EPSILON);
+
+		assertEquals( -0.12069451, bounds.min.z, EPSILON);
+		assertEquals(  0.12069451, bounds.max.z, EPSILON);
 	}
 
 }

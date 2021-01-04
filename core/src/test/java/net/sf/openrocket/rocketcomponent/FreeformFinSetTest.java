@@ -1,12 +1,16 @@
 package net.sf.openrocket.rocketcomponent;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.awt.geom.Point2D;
 
 import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.*;
 
 import net.sf.openrocket.aerodynamics.AerodynamicForces;
 import net.sf.openrocket.aerodynamics.FlightConditions;
@@ -16,14 +20,13 @@ import net.sf.openrocket.material.Material;
 import net.sf.openrocket.material.Material.Type;
 import net.sf.openrocket.rocketcomponent.ExternalComponent.Finish;
 import net.sf.openrocket.rocketcomponent.FinSet.CrossSection;
-
-import net.sf.openrocket.rocketcomponent.position.AxialMethod;
 import net.sf.openrocket.rocketcomponent.Transition.Shape;
+import net.sf.openrocket.rocketcomponent.position.AxialMethod;
 import net.sf.openrocket.util.Color;
 import net.sf.openrocket.util.Coordinate;
 import net.sf.openrocket.util.LineStyle;
-import net.sf.openrocket.util.BaseTestCase.BaseTestCase;
 import net.sf.openrocket.util.Transformation;
+import net.sf.openrocket.util.BaseTestCase.BaseTestCase;
 
 public class FreeformFinSetTest extends BaseTestCase {
 
@@ -52,8 +55,8 @@ public class FreeformFinSetTest extends BaseTestCase {
 		sourceSet.setOverrideCGX(0.012);
 		sourceSet.setOverrideMass(0.0123);
 		sourceSet.setOverrideSubcomponents(true);
-		sourceSet.setAxialOffset(0.1);
 		sourceSet.setAxialMethod(AxialMethod.ABSOLUTE);
+		sourceSet.setAxialOffset(0.1);
 		sourceSet.setTabHeight(0.01);
 		sourceSet.setTabLength(0.02);
 		sourceSet.setTabOffsetMethod(AxialMethod.BOTTOM);
@@ -301,13 +304,14 @@ public class FreeformFinSetTest extends BaseTestCase {
 
 			// fin is a simple trapezoid against a linearly changing body...
 			// height is set s.t. the tab trailing edge height == 0
-			final double expectedTabArea = (fins.getTabHeight())*3/4 * fins.getTabLength();
-			final double expectedTotalVolume = (expectedWettedArea + expectedTabArea)*fins.getThickness();
+			final double tabLength = fins.getFinFront().x + fins.getTabOffset();
+			final double expectedTabArea = (fins.getTabHeight()) * 0.5 * tabLength;
+			final double expectedTotalVolume = (expectedWettedArea + expectedTabArea) * fins.getThickness();
 			assertEquals("Calculated fin volume is wrong: ", expectedTotalVolume, fins.getComponentVolume(), EPSILON);
 
 			Coordinate tcg = fins.getCG(); // relative to parent.  also includes fin tab CG.
-			assertEquals("Calculated fin centroid is wrong! ", 0.245454, tcg.x, EPSILON);
-			assertEquals("Calculated fin centroid is wrong! ", 0.75303, tcg.y, EPSILON);
+			assertEquals("Calculated fin centroid is wrong! ", 0.238461, tcg.x, EPSILON);
+			assertEquals("Calculated fin centroid is wrong! ", 0.714102, tcg.y, EPSILON);
 		}
 	}
 
@@ -501,6 +505,7 @@ public class FreeformFinSetTest extends BaseTestCase {
 		}{ // case 3:
 			fins.setAxialOffset( AxialMethod.MIDDLE, 0.0);
 			fins.setPoints(initialPoints);
+			assertEquals(0.0, fins.getAxialOffset(), EPSILON);
 			assertEquals(0.3, fins.getFinFront().x, EPSILON);
 
 			// vvvv function under test vvvv
@@ -510,8 +515,8 @@ public class FreeformFinSetTest extends BaseTestCase {
 			assertEquals(0.05, fins.getAxialOffset(), EPSILON);
 			assertEquals(0.3, fins.getLength(), EPSILON);
 
-            assertEquals(0.35, fins.getFinFront().x, EPSILON);
-			assertEquals(0.825, fins.getFinFront().y, EPSILON);
+			assertEquals(0.4, fins.getFinFront().x, EPSILON);
+			assertEquals(0.8, fins.getFinFront().y, EPSILON);
 
 			final Coordinate[] postPoints = fins.getFinPoints();
             assertEquals(postPoints.length, 3);
@@ -526,13 +531,15 @@ public class FreeformFinSetTest extends BaseTestCase {
 		}{ // case 4:
 			fins.setAxialOffset( AxialMethod.MIDDLE, 0.0);
 			fins.setPoints(initialPoints);
+			assertEquals(0.3, fins.getFinFront().x, EPSILON);
+			assertEquals(0.85, fins.getFinFront().y, EPSILON);
 
 			// vvvv function under test vvvv
-	    	fins.setPoint( 0, -0.1, 0.1f);
+			fins.setPoint( 0, -0.1, 0.1f);
             // ^^^^ function under test ^^^^
 
-            assertEquals(0.25, fins.getFinFront().x, EPSILON);
-			assertEquals(0.875, fins.getFinFront().y, EPSILON);
+			assertEquals(0.2, fins.getFinFront().x, EPSILON);
+			assertEquals(0.9, fins.getFinFront().y, EPSILON);
 
 			final Coordinate[] postPoints = fins.getFinPoints();
             assertEquals(postPoints.length, 3);
@@ -1200,7 +1207,7 @@ public class FreeformFinSetTest extends BaseTestCase {
 		assertEquals(0.03423168, coords.x, EPSILON);
 		assertEquals(0.01427544, coords.y, EPSILON);
 		
-		BodyTube bt = new BodyTube();
+		BodyTube bt = new BodyTube(0.1, 0.1);
 		bt.addChild(fins);
 		FinSetCalc calc = new FinSetCalc(fins);
 		FlightConditions conditions = new FlightConditions(null);
@@ -1325,6 +1332,7 @@ public class FreeformFinSetTest extends BaseTestCase {
 		FreeformFinSet fins = new FreeformFinSet();
 		body.addChild(fins);
 		fins.setAxialOffset( AxialMethod.TOP, 1.0);
+		fins.setFinCount(1);
 
 		Coordinate[] points = new Coordinate[] {
 				new Coordinate(0.0, 0),

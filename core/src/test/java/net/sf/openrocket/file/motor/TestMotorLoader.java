@@ -26,38 +26,38 @@ public class TestMotorLoader {
 		MotorLoader loader = new GeneralMotorLoader();
 		
 // thzero - begin
-		test(loader, "/test1.eng", DIGEST1);
-		test(loader, "/test2.rse", DIGEST2);
-		test(loader, "/test.zip", DIGEST2, DIGEST1);
-		test(loader, "/test3.rse", DIGEST3);
+		test(loader, "/motor/test1.eng", DIGEST1);
+		test(loader, "/motor/test2.rse", DIGEST2);
+		test(loader, "/motor/test.zip", DIGEST2, DIGEST1);
+		test(loader, "/motor/test3.rse", DIGEST3);
 // thzero - end
 	}
 	
 	@Test
 	public void testRASPMotorLoader() throws IOException {
 // thzero - begin
-		test(new RASPMotorLoader(), "/test1.eng", DIGEST1);
+		test(new RASPMotorLoader(), "/motor/test1.eng", DIGEST1);
 // thzero - end
 	}
 	
 	@Test
 	public void testRocksimMotorLoader() throws IOException {
 // thzero - begin
-		test(new RockSimMotorLoader(), "/test2.rse", DIGEST2);
+		test(new RockSimMotorLoader(), "/motor/test2.rse", DIGEST2);
 // thzero - end
 	}
 	
 	@Test
 	public void testRocksimMotorLoader3() throws IOException {
 // thzero - begin
-		test(new RockSimMotorLoader(), "/test3.rse", DIGEST3);
+		test(new RockSimMotorLoader(), "/motor/test3.rse", DIGEST3);
 // thzero - end
 	}
 	
 	@Test
 	public void testZipMotorLoader() throws IOException {
 // thzero - begin
-		test(new ZipFileMotorLoader(), "/test.zip", DIGEST2, DIGEST1);
+		test(new ZipFileMotorLoader(), "/motor/test.zip", DIGEST2, DIGEST1);
 // thzero - end
 	}
 	

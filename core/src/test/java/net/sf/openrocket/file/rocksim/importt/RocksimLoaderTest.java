@@ -34,7 +34,7 @@ public class RocksimLoaderTest extends BaseTestCase {
     public void testFinsOnInnerTube() throws Exception {
         RocksimLoader loader = new RocksimLoader();
 /// thzero - begin
-        InputStream stream = this.getClass().getResourceAsStream("/PodFins.rkt");
+        InputStream stream = this.getClass().getResourceAsStream("/rocksim/PodFins.rkt");
 // thzero - end
         Assert.assertNotNull("Could not open PodFins.rkt", stream);
         try {
@@ -71,7 +71,7 @@ public class RocksimLoaderTest extends BaseTestCase {
         Assert.assertTrue(loader.getWarnings().isEmpty());
 
 // thzero - begin
-        stream = this.getClass().getResourceAsStream("/rocksimTestRocket2.rkt");
+        stream = this.getClass().getResourceAsStream("/rocksim/rocksimTestRocket2.rkt");
 // thzero - end
         Assert.assertNotNull("Could not open rocksimTestRocket2.rkt", stream);
 
@@ -101,7 +101,7 @@ public class RocksimLoaderTest extends BaseTestCase {
         Assert.assertFalse(stage3.isCGOverridden());
 
 // thzero - begin
-        stream = this.getClass().getResourceAsStream("/rocksimTestRocket3.rkt");
+        stream = this.getClass().getResourceAsStream("/rocksim/rocksimTestRocket3.rkt");
 // thzero - end
         Assert.assertNotNull("Could not open rocksimTestRocket3.rkt", stream);
 
@@ -140,7 +140,7 @@ public class RocksimLoaderTest extends BaseTestCase {
 
         BodyTube bt = (BodyTube) stage2.getChild(0);
         LaunchLug ll = (LaunchLug) bt.getChild(6);
-        Assert.assertEquals(1.22d, ll.getAngularOffset(), 0.001);
+        Assert.assertEquals(1.22d, ll.getAngleOffset(), 0.001);
 
         Assert.assertEquals(2, stage3.getChildCount());
         Assert.assertEquals("Transition", stage3.getChild(0).getName());
@@ -165,7 +165,7 @@ public class RocksimLoaderTest extends BaseTestCase {
         Assert.assertTrue(loader.getWarnings().isEmpty());
 
 // thzero - begin
-        stream = this.getClass().getResourceAsStream("/SubAssemblyTest.rkt");
+        stream = this.getClass().getResourceAsStream("/rocksim/SubAssemblyTest.rkt");
 // thzero - end
         Assert.assertNotNull("Could not open SubAssemblyTest.rkt", stream);
 
@@ -198,7 +198,7 @@ public class RocksimLoaderTest extends BaseTestCase {
 
     public static OpenRocketDocument loadRocksimRocket(RocksimLoader theLoader) throws IOException, RocketLoadException {
 // thzero - begin
-        InputStream stream = RocksimLoaderTest.class.getResourceAsStream("/rocksimTestRocket1.rkt");
+        InputStream stream = RocksimLoaderTest.class.getResourceAsStream("/rocksim/rocksimTestRocket1.rkt");
 // thzero - end
         try {
             Assert.assertNotNull("Could not open rocksimTestRocket1.rkt", stream);
@@ -216,7 +216,7 @@ public class RocksimLoaderTest extends BaseTestCase {
 
     public static OpenRocketDocument loadRocksimRocket3(RocksimLoader theLoader) throws IOException, RocketLoadException {
 // thzero - begin
-        InputStream stream = RocksimLoaderTest.class.getResourceAsStream("/rocksimTestRocket3.rkt");
+        InputStream stream = RocksimLoaderTest.class.getResourceAsStream("/rocksim/rocksimTestRocket3.rkt");
 // thzero - end
         try {
             Assert.assertNotNull("Could not open rocksimTestRocket3.rkt", stream);
@@ -234,7 +234,7 @@ public class RocksimLoaderTest extends BaseTestCase {
 
     public static OpenRocketDocument loadRocksimSubassemblyRocket(RocksimLoader theLoader) throws IOException, RocketLoadException {
 // thzero - begin
-        InputStream stream = RocksimLoaderTest.class.getResourceAsStream("/SubAssemblyTest.rkt");
+        InputStream stream = RocksimLoaderTest.class.getResourceAsStream("/rocksim/SubAssemblyTest.rkt");
 // thzero - end
         try {
             Assert.assertNotNull("Could not open SubAssemblyTest.rkt", stream);
