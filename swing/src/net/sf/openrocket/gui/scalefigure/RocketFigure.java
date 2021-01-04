@@ -3,9 +3,9 @@ package net.sf.openrocket.gui.scalefigure;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
@@ -65,7 +65,7 @@ public class RocketFigure extends AbstractScaleFigure {
 	public static final double SELECTED_WIDTH = 2.0;
 	
 
-	private Rocket rocket;
+	final private Rocket rocket;
 	
 	private RocketComponent[] selection = new RocketComponent[0];
 	
@@ -93,10 +93,15 @@ public class RocketFigure extends AbstractScaleFigure {
 		
 		this.rotation = 0.0;
 		this.axialRotation = Transformation.rotate_x(0.0);
-		
+
 		updateFigure();
 	}
-	
+
+	public Point getAutoZoomPoint(){
+		return new Point( Math.max(0, originLocation_px.x - borderThickness_px.width),
+						  Math.max(0, - borderThickness_px.height));
+	}
+
 	public RocketComponent[] getSelection() {
 		return selection;
 	}
@@ -361,7 +366,7 @@ public class RocketFigure extends AbstractScaleFigure {
 	 * Gets the shapes required to draw the component.
 	 * 
 	 * @param component
-	 * @param params
+	 *
 	 * @return the <code>ArrayList</code> containing all the shapes to draw.
 	 */
 	private static ArrayList<RocketComponentShape> addThisShape(
@@ -407,53 +412,60 @@ public class RocketFigure extends AbstractScaleFigure {
 	}
 	
 
-    /**
-     * Gets the bounds of the drawn subject in Model-Space
-     * 
-     *  i.e. the maximum extents in the selected dimensions.
-     * The bounds are stored in the variables minX, maxX and maxR.
-     * 
-     * @return
-     */
-    @Override
-    protected void updateSubjectDimensions() {
-        // calculate bounds, and store in class variables
-        final BoundingBox bounds = rocket.getSelectedConfiguration().getBoundingBox();
-        
-        switch (currentViewType) {
-        case SideView:
-            subjectBounds_m = new Rectangle2D.Double(bounds.min.x, bounds.min.y, bounds.span().x, bounds.span().y); 
-            break;
-        case BackView:
-            final double maxR = Math.max(Math.hypot(bounds.min.y, bounds.min.z), Math.hypot(bounds.max.y, bounds.max.z));
-            subjectBounds_m = new Rectangle2D.Double(-maxR, -maxR, 2 * maxR, 2 * maxR);
-            break;
-        default:
-            throw new BugException("Illegal figure type = " + currentViewType);
-        }
-    }
-    
+	/**
+	 * Gets the bounds of the drawn subject in Model-Space
+	 *
+	 *  i.e. the maximum extents in the selected dimensions.
+	 * The bounds are stored in the variables minX, maxX and maxR.
+	 *
+	 * @return
+	 */
+	@Override
+	protected void updateSubjectDimensions() {
+		// calculate bounds, and store in class variables
+		
+		final FlightConfiguration config = rocket.getSelectedConfiguration().clone();
+		// Explicitly zoom & draw at a scale to fit the entire rocket, but only show the selected stages.
+		config.setAllStages();
+		final BoundingBox newBounds = config.getBoundingBox();
+		
+		final double maxR = Math.max( Math.hypot(newBounds.min.y, newBounds.min.z),
+									  Math.hypot(newBounds.max.y, newBounds.max.z));
+
+		switch (currentViewType) {
+			case SideView:
+				subjectBounds_m = new Rectangle2D.Double(newBounds.min.x, -maxR, newBounds.span().x, 2 * maxR);
+				break;
+			case BackView:
+				subjectBounds_m = new Rectangle2D.Double(-maxR, -maxR, 2 * maxR, 2 * maxR);
+				break;
+			default:
+				throw new BugException("Illegal figure type = " + currentViewType);
+		}
+		// for a rocket, these are the same
+		contentBounds_m = subjectBounds_m;
+	}
+
 	/**
 	 * Calculates the necessary size of the figure and set the PreferredSize 
 	 * property accordingly.
 	 */
 	@Override
 	protected void updateCanvasOrigin() {
-	    final int subjectFront = (int)(subjectBounds_m.getMinX()*scale);
-	    final int subjectWidth = (int)(subjectBounds_m.getWidth()*scale);
-	    final int subjectHeight = (int)(subjectBounds_m.getHeight()*scale);
-	    
-	    if (currentViewType == RocketPanel.VIEW_TYPE.BackView){
-	        final int newOriginX = borderThickness_px.width + Math.max(getWidth(), subjectWidth + 2*borderThickness_px.width)/ 2;	        
-	        final int newOriginY = borderThickness_px.height + getHeight() / 2;
-	        
-	        originLocation_px = new Dimension(newOriginX, newOriginY);
-    	}else if (currentViewType == RocketPanel.VIEW_TYPE.SideView){
-            final int newOriginX = borderThickness_px.width - subjectFront;
-    	    final int newOriginY = Math.max(getHeight(), subjectHeight + 2*borderThickness_px.height )/ 2;
-            
-    	    originLocation_px = new Dimension(newOriginX, newOriginY);
-    	}
+		final int subjectWidth = (int)(subjectBounds_m.getWidth()*scale);
+		final int subjectHeight = (int)(subjectBounds_m.getHeight()*scale);
+		final int mid_x = (Math.max(getWidth(), subjectWidth) / 2);
+		
+		if (currentViewType == RocketPanel.VIEW_TYPE.BackView){
+			final int newOriginX = mid_x;
+			final int newOriginY = borderThickness_px.height + getHeight() / 2;
+			
+			originLocation_px = new Point(newOriginX, newOriginY);
+		}else if (currentViewType == RocketPanel.VIEW_TYPE.SideView){
+			final int newOriginX = mid_x - (subjectWidth / 2);
+			final int newOriginY = Math.max(getHeight(), subjectHeight + 2*borderThickness_px.height )/ 2;
+			originLocation_px = new Point(newOriginX, newOriginY);
+		}
 	}
 
 }

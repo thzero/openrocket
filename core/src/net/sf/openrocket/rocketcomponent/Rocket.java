@@ -1,11 +1,6 @@
 package net.sf.openrocket.rocketcomponent;
 
-import java.util.Collection;
-import java.util.EventListener;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import net.sf.openrocket.l10n.Translator;
 import net.sf.openrocket.rocketcomponent.position.AxialMethod;
 import net.sf.openrocket.startup.Application;
-import net.sf.openrocket.util.ArrayList;
+import net.sf.openrocket.util.BoundingBox;
 import net.sf.openrocket.util.Coordinate;
 import net.sf.openrocket.util.MathUtil;
 import net.sf.openrocket.util.StateChangeListener;
@@ -39,7 +34,7 @@ public class Rocket extends ComponentAssembly {
 	/**
 	 * List of component change listeners.
 	 */
-	private List<EventListener> listenerList = new ArrayList<>();
+	private Set<EventListener> listenerList = new HashSet<>();
 	
 	/**
 	 * When freezeList != null, events are not dispatched but stored in the list.
@@ -84,11 +79,20 @@ public class Rocket extends ComponentAssembly {
 		functionalModID = modID;
 
 		// must be after the hashmaps :P 
-        FlightConfiguration defaultConfig = new FlightConfiguration(this, FlightConfigurationId.DEFAULT_VALUE_FCID);
+		final FlightConfiguration defaultConfig = new FlightConfiguration(this, FlightConfigurationId.DEFAULT_VALUE_FCID);
 		configSet = new FlightConfigurableParameterSet<>( defaultConfig );
 		this.selectedConfiguration = defaultConfig;
 	}
-	
+
+	/**
+	 * Return a bounding box enveloping the rocket.  By definition, the bounding box is a convex hull.
+	 *
+	 * Note: this function gets the bounding box for the entire rocket.
+	 *
+	 * @return    Return a bounding box enveloping the rocket
+	 */
+	public BoundingBox getBoundingBox (){ return selectedConfiguration.getBoundingBox(); }
+
 	public String getDesigner() {
 		checkState();
 		return designer;
@@ -326,15 +330,26 @@ public class Rocket extends ComponentAssembly {
 	 */
 	@Override
 	public Rocket copyWithOriginalID() {
-		Rocket copy = (Rocket) super.copyWithOriginalID();
-		
+		final Rocket copyRocket = (Rocket) super.copyWithOriginalID();
+
 		// Rocket copy is cloned, so non-trivial members must be cloned as well:
-		copy.stageMap = new HashMap<Integer, AxialStage>();
-		copy.configSet = new FlightConfigurableParameterSet<FlightConfiguration>( this.configSet );
-		copy.selectedConfiguration = copy.configSet.get( this.getSelectedConfiguration().getId());
-		copy.listenerList = new ArrayList<EventListener>();
+		copyRocket.stageMap = new HashMap<>();
+		for( Map.Entry<Integer,AxialStage> entry : this.stageMap.entrySet()){
+			final AxialStage stage = (AxialStage)copyRocket.findComponent(entry.getValue().getID());
+			copyRocket.stageMap.put(entry.getKey(), stage);
+		}
+
+		// these flight configurations need to reference the _new_ Rocket copy
+		// the default value needs to be explicitly set, because it has different semantics
+		copyRocket.configSet = new FlightConfigurableParameterSet<>(new FlightConfiguration(copyRocket));
+		for (FlightConfigurationId key : this.configSet.getIds()) {
+			copyRocket.configSet.set(key, new FlightConfiguration(copyRocket, key));
+		}
+
+		copyRocket.selectedConfiguration = copyRocket.configSet.get( this.getSelectedConfiguration().getId());
+		copyRocket.listenerList = new HashSet<>();
 		
-		return copy;
+		return copyRocket;
 	}
 	
 	public int getFlightConfigurationCount() {
@@ -372,8 +387,13 @@ public class Rocket extends ComponentAssembly {
 		this.functionalModID = r.functionalModID;
 		this.refType = r.refType;
 		this.customReferenceLength = r.customReferenceLength;
-		this.configSet = new FlightConfigurableParameterSet<FlightConfiguration>( r.configSet );
-		
+
+		// these flight configurations need to reference the _this_ Rocket:
+		this.configSet.setDefault(new FlightConfiguration(this));
+		for (FlightConfigurationId key : r.configSet.map.keySet()) {
+			this.configSet.set(key, new FlightConfiguration(this, key));
+		}
+
 		this.perfectFinish = r.perfectFinish;
 		
 		this.checkComponentStructure();
@@ -397,7 +417,7 @@ public class Rocket extends ComponentAssembly {
 	 */
 	public void resetListeners() {
 		//		System.out.println("RESETTING LISTENER LIST of Rocket "+this);
-		listenerList = new ArrayList<EventListener>();
+		listenerList = new HashSet<EventListener>();
 	}
 	
 	
@@ -413,16 +433,16 @@ public class Rocket extends ComponentAssembly {
 	@Override
 	public void addComponentChangeListener(ComponentChangeListener l) {
 		checkState();
+
 		listenerList.add(l);
-		log.trace("Added ComponentChangeListener " + l + ", current number of listeners is " +
-				listenerList.size());
+
+		log.trace("Added ComponentChangeListener " + l + ", current number of listeners is " + listenerList.size());
 	}
 	
 	@Override
 	public void removeComponentChangeListener(ComponentChangeListener l) {
 		listenerList.remove(l);
-		log.trace("Removed ComponentChangeListener " + l + ", current number of listeners is " +
-				listenerList.size());
+		log.trace("Removed ComponentChangeListener " + l + ", current number of listeners is " + listenerList.size());
 	}
 	
 	@Override

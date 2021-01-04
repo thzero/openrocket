@@ -1,6 +1,7 @@
 package net.sf.openrocket.aerodynamics.barrowman;
 
 import static java.lang.Math.pow;
+import static net.sf.openrocket.util.MathUtil.EPSILON;
 import static net.sf.openrocket.util.MathUtil.pow2;
 
 import java.util.Arrays;
@@ -48,8 +49,8 @@ public class FinSetCalc extends RocketComponentCalc {
 	
 	private final double thickness;
 	private final double bodyRadius;
+	private final double bodyLength;
 	private final int finCount;
-	private final double baseRotation;
 	private final double cantAngle;
 	private final FinSet.CrossSection crossSection;
 	
@@ -65,10 +66,10 @@ public class FinSetCalc extends RocketComponentCalc {
 		FinSet fin = (FinSet) component;
 
 		thickness = fin.getThickness();
+		bodyLength = component.getParent().getLength();
 		bodyRadius = fin.getBodyRadius();
 		finCount = fin.getFinCount();
 		
-		baseRotation = fin.getBaseRotation();
 		cantAngle = fin.getCantAngle();
 		span = fin.getSpan();
 		finArea = fin.getPlanformArea();
@@ -99,9 +100,15 @@ public class FinSetCalc extends RocketComponentCalc {
 			forces.setCyaw(0);
 			return;
 		}
-		
-		// Add warnings  (radius/2 == diameter/4)
-		if( (0 < bodyRadius) && (thickness > bodyRadius / 2)){
+
+		if((EPSILON > bodyLength)) {
+			// Add warnings: Phantom Body
+			warnings.add(Warning.ZERO_LENGTH_BODY);
+		}else if((EPSILON > bodyRadius)){
+				// Add warnings: Phantom Body
+				warnings.add(Warning.ZERO_RADIUS_BODY);
+		}else if( (0 < bodyRadius) && (thickness > bodyRadius / 2)){
+			// Add warnings  (radius/2 == diameter/4)
 			warnings.add(Warning.THICK_FIN);
 		}
 		warnings.addAll(geometryWarnings);
@@ -114,10 +121,12 @@ public class FinSetCalc extends RocketComponentCalc {
 		// Multiple fins with fin-fin interference
 		double cna;
 		double theta = conditions.getTheta();
-		double angle = baseRotation + transform.getXrotation();
-		
+		double angle = transform.getXrotation();
+
 		// Compute basic CNa without interference effects
 		cna = cna1 * MathUtil.pow2(Math.sin(theta - angle));
+//		final double cna_x = cna1 * MathUtil.pow2(Math.sin(theta - angle));
+//		final double cna_y = cna1 * MathUtil.pow2(Math.sin(theta - angle));
 		
 		//		logger.debug("Component cna = {}", cna);
 		
@@ -166,7 +175,6 @@ public class FinSetCalc extends RocketComponentCalc {
 		// (Barrowman thesis pdf-page 40)
 		
 		// TODO: LOW: fin-fin mach cone effect, MIL-HDBK page 5-25
-		
 		// Calculate CP position
 		double x = macLead + calculateCPPos(conditions) * macLength;
 		//		logger.debug("Component macLead = {}", macLead);
@@ -285,8 +293,15 @@ public class FinSetCalc extends RocketComponentCalc {
 			
 			for (int i = i1; i <= i2; i++) {
 				// Intersection point (x,y)
+				// Note that y can be outside the bounds of the line
+				// defined by (x1, y1) (x2 y2) so x can similarly be outside
+				// the bounds.  If the line is nearly horizontal, it can be
+				// 'way outside.  We want to get the whole "strip", so we
+				// don't clamp y; however, we do clamp x to avoid numerical
+				// instabilities
 				double y = i * span / (DIVISIONS - 1);
-				double x = (y - y2) / (y1 - y2) * x1 + (y1 - y) / (y1 - y2) * x2;
+				double x = MathUtil.clamp((y - y2) / (y1 - y2) * x1 + (y1 - y) / (y1 - y2) * x2,
+										  Math.min(x1, x2), Math.max(x1, x2));
 				if (x < chordLead[i])
 					chordLead[i] = x;
 				if (x > chordTrail[i])
@@ -645,7 +660,7 @@ public class FinSetCalc extends RocketComponentCalc {
 		// Airfoil assumed to have zero base drag
 		
 		// Scale to correct reference area
-		drag *= finCount * span * thickness / conditions.getRefArea();
+		drag *= span * thickness / conditions.getRefArea();
 		
 		return drag;
 	}

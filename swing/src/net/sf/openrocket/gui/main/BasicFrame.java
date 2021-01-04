@@ -60,6 +60,7 @@ import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import net.sf.openrocket.rocketcomponent.AxialStage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -263,6 +264,18 @@ public class BasicFrame extends JFrame {
 		});
 
 		frames.add(this);
+		if( componentSelectionModel.isSelectionEmpty() ){
+			final Rocket rocket = document.getRocket();
+			if( rocket != null ) {
+				final AxialStage topStage = (AxialStage) rocket.getChild(0);
+				if (topStage != null) {
+					final TreePath selectionPath = new TreePath(topStage);
+					componentSelectionModel.setSelectionPath(selectionPath);
+					tree.setSelectionRow(1);
+					log.debug("... Setting Initial Selection: " + tree.getSelectionPath() );
+				}
+			}
+		}
 		log.debug("BasicFrame instantiation complete");
 	}
 
@@ -344,9 +357,6 @@ public class BasicFrame extends JFrame {
 		panel.add(button, "sizegroup buttons, aligny 0%");
 
 		button = new JButton(actions.getEditAction());
-		panel.add(button, "sizegroup buttons");
-
-		button = new JButton(actions.getNewStageAction());
 		panel.add(button, "sizegroup buttons");
 
 		button = new JButton(actions.getDeleteAction());
@@ -685,32 +695,30 @@ public class BasicFrame extends JFrame {
 		menubar.add(menu);
 
 
-//      TODO: reimplement this
-//		//// Component analysis
-//		item = new JMenuItem(trans.get("main.menu.analyze.componentAnalysis"), KeyEvent.VK_C);
-//		//// Analyze the rocket components separately
-//		item.getAccessibleContext().setAccessibleDescription(trans.get("main.menu.analyze.componentAnalysis.desc"));
-//		item.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				log.info(Markers.USER_MARKER, "Component analysis selected");
-//				ComponentAnalysisDialog.showDialog(rocketpanel);
-//			}
-//		});
-//		menu.add(item);
+		//// Component analysis
+		item = new JMenuItem(trans.get("main.menu.analyze.componentAnalysis"), KeyEvent.VK_C);
+		//// Analyze the rocket components separately
+		item.getAccessibleContext().setAccessibleDescription(trans.get("main.menu.analyze.componentAnalysis.desc"));
+		item.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				log.info(Markers.USER_MARKER, "Component analysis selected");
+				ComponentAnalysisDialog.showDialog(rocketpanel);
+			}
+		});
+		menu.add(item);
 
-// TODO: reimplement this dialog
-//		//// Optimize
-//		item = new JMenuItem(trans.get("main.menu.analyze.optimization"), KeyEvent.VK_O);
-//		item.getAccessibleContext().setAccessibleDescription(trans.get("main.menu.analyze.optimization.desc"));
-//		item.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				log.info(Markers.USER_MARKER, "Rocket optimization selected");
-//				new GeneralOptimizationDialog(document, BasicFrame.this).setVisible(true);
-//			}
-//		});
-//		menu.add(item);
+		//// Optimize
+		item = new JMenuItem(trans.get("main.menu.analyze.optimization"), KeyEvent.VK_O);
+		item.getAccessibleContext().setAccessibleDescription(trans.get("main.menu.analyze.optimization.desc"));
+		item.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				log.info(Markers.USER_MARKER, "Rocket optimization selected");
+				new GeneralOptimizationDialog(document, BasicFrame.this).setVisible(true);
+			}
+		});
+		menu.add(item);
 
 		//// Custom expressions
 		item = new JMenuItem(trans.get("main.menu.analyze.customExpressions"), KeyEvent.VK_E);

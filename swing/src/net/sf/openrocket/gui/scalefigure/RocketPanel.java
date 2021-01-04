@@ -24,6 +24,8 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
@@ -121,6 +123,7 @@ public class RocketPanel extends JPanel implements TreeSelectionListener, Change
 	private TreeSelectionModel selectionModel = null;
 
 	private BasicSlider rotationSlider;
+	private DoubleModel rotationModel;
 	private ScaleSelector scaleSelector;
 
 	/* Calculation of CP and CG */
@@ -260,6 +263,7 @@ public class RocketPanel extends JPanel implements TreeSelectionListener, Change
 		figureHolder.add(scrollPane, BorderLayout.CENTER);
 		rotationSlider.setEnabled(true);
 		scaleSelector.setEnabled(true);
+		scrollPane.revalidate();
 		revalidate();
 		figureHolder.revalidate();
 		figure.repaint();
@@ -322,9 +326,8 @@ public class RocketPanel extends JPanel implements TreeSelectionListener, Change
 		add(configComboBox, "wrap, width 16%, wmin 100");
 
 		// Create slider and scroll pane
-		DoubleModel theta = new DoubleModel(figure, "Rotation",
-				UnitGroup.UNITS_ANGLE, 0, 2 * Math.PI);
-		UnitSelector us = new UnitSelector(theta, true);
+		rotationModel = new DoubleModel(figure, "Rotation", UnitGroup.UNITS_ANGLE, 0, 2 * Math.PI);
+		UnitSelector us = new UnitSelector(rotationModel, true);
 		us.setHorizontalAlignment(JLabel.CENTER);
 		add(us, "alignx 50%, growx");
 
@@ -336,8 +339,14 @@ public class RocketPanel extends JPanel implements TreeSelectionListener, Change
 		JLabel l = new JLabel("360" + Chars.DEGREE);
 		Dimension d = l.getPreferredSize();
 
-		add(rotationSlider = new BasicSlider(theta.getSliderModel(0, 2 * Math.PI), JSlider.VERTICAL, true),
+		add(rotationSlider = new BasicSlider(rotationModel.getSliderModel(0, 2 * Math.PI), JSlider.VERTICAL, true),
 				"ax 50%, wrap, width " + (d.width + 6) + "px:null:null, growy");
+		rotationSlider.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				updateExtras();
+			}
+		});
 
 		//// <html>Click to select &nbsp;&nbsp; Shift+click to select other &nbsp;&nbsp; Double-click to edit &nbsp;&nbsp; Click+drag to move
 		infoMessage = new JLabel(trans.get("RocketPanel.lbl.infoMessage"));
@@ -553,12 +562,18 @@ public class RocketPanel extends JPanel implements TreeSelectionListener, Change
 
 	private void updateExtras() {
 		Coordinate cp, cg;
-		double cpx, cgx;
+		double cgx = Double.NaN;
+		double cgy = Double.NaN;
+		double cpx = Double.NaN;
+		double cpy = Double.NaN;
+		final double rotation = rotationModel.getValue();
 
 		FlightConfiguration curConfig = document.getSelectedConfiguration();
 		// TODO: MEDIUM: User-definable conditions
 		FlightConditions conditions = new FlightConditions(curConfig);
 		warnings.clear();
+
+		extraText.setCurrentConfig(curConfig);
 
 		if (!Double.isNaN(cpMach)) {
 			conditions.setMach(cpMach);
@@ -588,38 +603,21 @@ public class RocketPanel extends JPanel implements TreeSelectionListener, Change
 			cp = aerodynamicCalculator.getWorstCP(curConfig, conditions, warnings);
 		}
 		extraText.setTheta(cpTheta);
-
-		cg = MassCalculator.calculateLaunch( curConfig).getCM();
-
-		if (cp.weight > MassCalculator.MIN_MASS){
+		if (cp.weight > MathUtil.EPSILON){
 			cpx = cp.x;
-		}else{
-			cpx = Double.NaN;
+			// map the 3D value into the 2D Display Panel
+			cpy = cp.y * Math.cos(rotation) + cp.z*Math.sin(rotation);
 		}
 		
+		cg = MassCalculator.calculateLaunch( curConfig).getCM();
 		if (cg.weight > MassCalculator.MIN_MASS){
 			cgx = cg.x;
-		}else{
-			cgx = Double.NaN;
+			// map the 3D value into the 2D Display Panel
+			cgy = cg.y * Math.cos(rotation) + cg.z*Math.sin(rotation);
 		}
 
-		figure3d.setCG(cg);
-		figure3d.setCP(cp);
-
-		// Length bound is assumed to be tight
-		double length = 0;
-		Collection<Coordinate> bounds = curConfig.getBounds();
-		if (!bounds.isEmpty()) {
-			double minX = Double.POSITIVE_INFINITY, maxX = Double.NEGATIVE_INFINITY;
-			for (Coordinate c : bounds) {
-				if (c.x < minX)
-					minX = c.x;
-				if (c.x > maxX)
-					maxX = c.x;
-			}
-			length = maxX - minX;
-		}
-
+		double length = curConfig.getLength();
+		
 		double diameter = Double.NaN;
 		for (RocketComponent c : curConfig.getCoreComponents()) {
 			if (c instanceof SymmetricComponent) {
@@ -635,21 +633,24 @@ public class RocketPanel extends JPanel implements TreeSelectionListener, Change
 		extraText.setCP(cpx);
 		extraText.setLength(length);
 		extraText.setDiameter(diameter);
-		extraText.setMass(cg.weight);
+		extraText.setMassWithMotors(cg.weight);
 		extraText.setMassWithoutMotors( emptyInfo.getMass() );
 		extraText.setWarnings(warnings);
 
-		if (figure.getType() == RocketPanel.VIEW_TYPE.SideView && length > 0) {
-
-			// TODO: LOW: Y-coordinate and rotation
-			extraCP.setPosition(cpx, 0);
-			extraCG.setPosition(cgx, 0);
-
+		if (length > 0) {
+			figure3d.setCG(cg);
+			figure3d.setCP(cp);
 		} else {
-
+			figure3d.setCG(new Coordinate(Double.NaN, Double.NaN));
+			figure3d.setCP(new Coordinate(Double.NaN, Double.NaN));
+		}
+		
+		if (figure.getType() == RocketPanel.VIEW_TYPE.SideView && length > 0) {
+			extraCP.setPosition(cpx, cpy);
+			extraCG.setPosition(cgx, cgy);
+		} else {
 			extraCP.setPosition(Double.NaN, Double.NaN);
 			extraCG.setPosition(Double.NaN, Double.NaN);
-
 		}
 
 		////////  Flight simulation in background
@@ -686,9 +687,27 @@ public class RocketPanel extends JPanel implements TreeSelectionListener, Change
 			extraText.setCalculatingData(true);
 
 			Rocket duplicate = (Rocket) document.getRocket().copy();
-			Simulation simulation = ((SwingPreferences) Application.getPreferences()).getBackgroundSimulation(duplicate);
-			simulation.setFlightConfigurationId( document.getSelectedConfiguration().getId());
 
+			// find a Simulation based on the current flight configuration
+			FlightConfigurationId curID = curConfig.getFlightConfigurationID();
+			Simulation simulation = null;
+			for (Simulation sim : document.getSimulations()) {
+				if (sim.getFlightConfigurationId().compareTo(curID) == 0) {
+					simulation = sim;
+					break;
+				}
+			}
+
+			// I *think* every FlightConfiguration has at least one associated simulation; just in case I'm wrong,
+			// if there isn't one we'll create a new simulation to update the statistics in the panel using the
+			// default simulation conditions
+			if (simulation == null) {
+				System.out.println("creating new simulation");
+				simulation = ((SwingPreferences) Application.getPreferences()).getBackgroundSimulation(duplicate);
+				simulation.setFlightConfigurationId( document.getSelectedConfiguration().getId());
+			} else
+				System.out.println("using pre-existing simulation");
+			
 			backgroundSimulationWorker = new BackgroundSimulationWorker(document, simulation);
 			backgroundSimulationExecutor.execute(backgroundSimulationWorker);
 		}

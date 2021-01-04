@@ -1,13 +1,13 @@
 package net.sf.openrocket.gui.figure3d.geometry;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-import javax.media.opengl.fixedfunc.GLLightingFunc;
-import javax.media.opengl.fixedfunc.GLMatrixFunc;
-import javax.media.opengl.glu.GLU;
-import javax.media.opengl.glu.GLUtessellator;
-import javax.media.opengl.glu.GLUtessellatorCallback;
-import javax.media.opengl.glu.GLUtessellatorCallbackAdapter;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.fixedfunc.GLLightingFunc;
+import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
+import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.glu.GLUtessellator;
+import com.jogamp.opengl.glu.GLUtessellatorCallback;
+import com.jogamp.opengl.glu.GLUtessellatorCallbackAdapter;
 
 import net.sf.openrocket.rocketcomponent.EllipticalFinSet;
 import net.sf.openrocket.rocketcomponent.FinSet;
@@ -19,7 +19,7 @@ public class FinRenderer {
 	
 	public void renderFinSet(final GL2 gl, FinSet finSet ) {
 		
-	    BoundingBox bounds = finSet.getBoundingBox();
+	    BoundingBox bounds = finSet.getInstanceBoundingBox();
 		gl.glMatrixMode(GL.GL_TEXTURE);
 		gl.glPushMatrix();
 		gl.glScaled(1 / (bounds.max.x - bounds.min.x), 1 / (bounds.max.y - bounds.min.y), 0);

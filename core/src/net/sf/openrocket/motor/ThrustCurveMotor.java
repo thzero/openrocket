@@ -30,21 +30,21 @@ public class ThrustCurveMotor implements Motor, Comparable<ThrustCurveMotor>, Se
 	
 	private static final DesignationComparator DESIGNATION_COMPARATOR = new DesignationComparator();
 	
-	private String digest;
+	private String digest = "";
 	
-	private Manufacturer manufacturer;
-	private String designation;
-	private String description;
-	private Motor.Type type;
-	private double[] delays;
+	private Manufacturer manufacturer = Manufacturer.getManufacturer("Unknown");
+	private String designation = "";
+	private String description = "";
+	private Motor.Type type = Motor.Type.UNKNOWN;
+	private double[] delays = {};
 	private double diameter;
 	private double length;
-	private double[] time;
-	private double[] thrust;
-	private Coordinate[] cg;
+	private double[] time = {};
+	private double[] thrust = {};
+	private Coordinate[] cg = {};
 	
-	private String caseInfo;
-	private String propellantInfo;
+	private String caseInfo = "";
+	private String propellantInfo = "";
 	
 	private double initialMass;
 	private double maxThrust;
@@ -59,16 +59,6 @@ public class ThrustCurveMotor implements Motor, Comparable<ThrustCurveMotor>, Se
 	public static class Builder {
 		
 		ThrustCurveMotor motor = new ThrustCurveMotor();
-		
-		public Builder setAverageThrustEstimate(double v) {
-			motor.averageThrust = v;
-			return this;
-		}
-		
-		public Builder setBurnTimeEstimate(double v) {
-			motor.burnTimeEstimate = v;
-			return this;
-		}
 		
 		public Builder setCaseInfo(String v) {
 			motor.caseInfo = v;
@@ -115,11 +105,6 @@ public class ThrustCurveMotor implements Motor, Comparable<ThrustCurveMotor>, Se
 			return this;
 		}
 		
-		public Builder setMaxThrustEstimate(double v) {
-			motor.maxThrust = v;
-			return this;
-		}
-		
 		public Builder setMotorType(Motor.Type t) {
 			motor.type = t;
 			return this;
@@ -145,11 +130,6 @@ public class ThrustCurveMotor implements Motor, Comparable<ThrustCurveMotor>, Se
 			return this;
 		}
 		
-		public Builder setTotalThrustEstimate(double v) {
-			motor.totalImpulse = v;
-			return this;
-		}
-		
 		public Builder setAvailablity(boolean avail) {
 			motor.available = avail;
 			return this;
@@ -165,14 +145,15 @@ public class ThrustCurveMotor implements Motor, Comparable<ThrustCurveMotor>, Se
 			if (motor.time.length < 2) {
 				throw new IllegalArgumentException("Too short thrust-curve, length=" + motor.time.length);
 			}
+			
 			for (int i = 0; i < motor.time.length - 1; i++) {
 				if (motor.time[i + 1] <= motor.time[i]) {
-					throw new IllegalArgumentException("Time stalls or goes backwards, " +
-							"time[" + i + "]=" + motor.time[i] + " " +
-							"time[" + (i + 1) + "]=" + motor.time[i + 1] +
-													   ", thrust=(" + motor.thrust[i] + ", " + motor.thrust[i+1] + ")");
+					throw new IllegalArgumentException("Two thrust values for single time point, " +
+													   "time[" + i + "]=" + motor.time[i] + ", thrust=" + motor.thrust[i] +
+													   "; time[" + (i + 1) + "]=" + motor.time[i + 1] + ", thrust=" + motor.thrust[i+1]);
 				}
 			}
+
 			if (!MathUtil.equals(motor.time[0], 0)) {
 				throw new IllegalArgumentException("Curve starts at time " + motor.time[0]);
 			}

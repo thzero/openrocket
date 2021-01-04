@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.sf.openrocket.aerodynamics.AerodynamicCalculator;
 import net.sf.openrocket.aerodynamics.FlightConditions;
 import net.sf.openrocket.aerodynamics.WarningSet;
@@ -30,6 +33,7 @@ import net.sf.openrocket.util.WorldCoordinate;
  */
 
 public class SimulationStatus implements Monitorable {
+	private static final Logger log = LoggerFactory.getLogger(SimulationStatus.class);
 	
 	private SimulationConditions simulationConditions;
 	private FlightConfiguration configuration;
@@ -70,6 +74,9 @@ public class SimulationStatus implements Monitorable {
 	
 	/** Set to true to indicate the rocket is tumbling. */
 	private boolean tumbling = false;
+
+	/** Set to true to indicate rocket has landed */
+	private boolean landed = false;
 	
 	/** Contains a list of deployed recovery devices. */
 	private MonitorableSet<RecoveryDevice> deployedRecoveryDevices = new MonitorableSet<RecoveryDevice>();
@@ -179,6 +186,7 @@ public class SimulationStatus implements Monitorable {
 		this.launchRodCleared = orig.launchRodCleared;
 		this.apogeeReached = orig.apogeeReached;
 		this.tumbling = orig.tumbling;
+		this.landed = orig.landed;
 		
 		this.configuration.copyStages(orig.configuration);
 		
@@ -225,7 +233,7 @@ public class SimulationStatus implements Monitorable {
 	public Collection<MotorClusterState> getActiveMotors() {
 		List<MotorClusterState> activeList = new ArrayList<MotorClusterState>();
 		for( MotorClusterState state: this.motorStateList ){
-			if(( ! state.isSpent()) && (this.configuration.isComponentActive( state.getMount()))){
+			if (this.configuration.isComponentActive( state.getMount())) {
 				activeList.add( state );
 			}
 		}
@@ -395,6 +403,15 @@ public class SimulationStatus implements Monitorable {
 	
 	public boolean isTumbling() {
 		return tumbling;
+	}
+
+	public void setLanded(boolean landed) {
+		this.landed = landed;
+		this.modID++;
+	}
+
+	public boolean isLanded() {
+		return landed;
 	}
 	
 	public double getMaxAlt() {

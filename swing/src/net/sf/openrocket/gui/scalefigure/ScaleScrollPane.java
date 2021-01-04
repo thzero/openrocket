@@ -6,19 +6,19 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.EventObject;
+import java.awt.geom.Point2D;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -27,14 +27,12 @@ import net.sf.openrocket.gui.components.UnitSelector;
 import net.sf.openrocket.unit.Tick;
 import net.sf.openrocket.unit.Unit;
 import net.sf.openrocket.unit.UnitGroup;
-import net.sf.openrocket.util.BugException;
 import net.sf.openrocket.util.MathUtil;
-import net.sf.openrocket.util.StateChangeListener;
 
 
 
 /**
- * A scroll pane that holds a {@link ScaleFigure} and includes rulers that show
+ * A scroll pane that holds a {@link AbstractScaleFigure} and includes rulers that show
  * natural units.  The figure can be moved by dragging on the figure.
  * <p>
  * This class implements both <code>MouseListener</code> and 
@@ -46,7 +44,7 @@ import net.sf.openrocket.util.StateChangeListener;
  */
 @SuppressWarnings("serial")
 public class ScaleScrollPane extends JScrollPane
-		implements MouseListener, MouseMotionListener {
+		implements ComponentListener, MouseListener, MouseMotionListener {
 	
 	public static final int RULER_SIZE = 20;
 	public static final int MINOR_TICKS = 3;
@@ -60,15 +58,20 @@ public class ScaleScrollPane extends JScrollPane
 	private DoubleModel rulerUnit;
 	private Ruler horizontalRuler;
 	private Ruler verticalRuler;
-	
+
 	// is the subject *currently* being fitting
-	private boolean fit = false;
-	
+	protected boolean fit = false;
+
+	// magic number.  I don't know why this number works, but this nudges the figures to zoom correctly.
+    // n.b. it is slightly large than the ruler.width + scrollbar.width
+	final protected Dimension viewportMarginPx = new Dimension( 40, 40);
+
+	private Point2D.Double viewCenter_frac = new Point2D.Double(0.5f, 0.5f);
+
 	/**
 	 * Create a scale scroll pane.
 	 * 
 	 * @param component		the component to contain (must implement ScaleFigure)
-	 * @param allowFit		whether automatic fitting of the figure is allowed
 	 */
 	public ScaleScrollPane(final JComponent component) {
 		super(component);
@@ -98,36 +101,27 @@ public class ScaleScrollPane extends JScrollPane
 		
 		this.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 		
-		setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        
+		setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		getHorizontalScrollBar().setUnitIncrement(50);
+		//getHorizontalScrollBar().setBlockIncrement(viewport.getWidth());  // the default value is good
+
+		setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		getVerticalScrollBar().setUnitIncrement(50);
+		//getVerticalScrollBar().setBlockIncrement(viewport.getHeight());  // the default value is good
+
+		figure.addChangeListener( e -> {
+			horizontalRuler.updateSize();
+			verticalRuler.updateSize();
+			if(fit) {
+				final java.awt.Dimension calculatedViewSize = new java.awt.Dimension(getWidth() - viewportMarginPx.width, getHeight() - viewportMarginPx.height);
+				figure.scaleTo(calculatedViewSize);
+			}
+		});
+		figure.addComponentListener(this);
+
 		viewport.addMouseListener(this);
 		viewport.addMouseMotionListener(this);
-		
-		figure.addChangeListener(new StateChangeListener() {
-			@Override
-			public void stateChanged(EventObject e) {
-			    horizontalRuler.updateSize();
-				verticalRuler.updateSize();
-				if(fit) { 
-                    figure.scaleTo(viewport.getExtentSize());
-			    }
-			}
-		});
-		
-		viewport.addComponentListener(new ComponentAdapter() {
-			@Override
-			public void componentResized(ComponentEvent e) {
-			    if(fit) {
-                    figure.scaleTo(viewport.getExtentSize());
-			    }
-                figure.updateFigure();
-			    
-			    horizontalRuler.updateSize();
-                verticalRuler.updateSize();
-			}
-		});
-		
+		viewport.addComponentListener(this);
 	}
 	
 	public AbstractScaleFigure getFigure() {
@@ -146,33 +140,35 @@ public class ScaleScrollPane extends JScrollPane
 	 */
 	public void setFitting(final boolean shouldFit) {
 		this.fit = shouldFit;
-		if (shouldFit) {
-			validate();
-			
-	        Dimension view = viewport.getExtentSize();
-            figure.scaleTo(view);
-            this.firePropertyChange( USER_SCALE_PROPERTY, 1.0, figure.getUserScale());
 
-            revalidate();
+		if (shouldFit) {
+			final Dimension calculatedViewSize = new Dimension(getWidth() - viewportMarginPx.width, getHeight() - viewportMarginPx.height);
+			figure.scaleTo(calculatedViewSize);
+
+			revalidate();
 		}
 	}
-	
+
 	public double getUserScale() {
 		return figure.getUserScale();
 	}
 	
 	public void setScaling(final double newScale) {
-        // match if closer than 1%:
-        if( MathUtil.equals(newScale, figure.getUserScale(), 0.01)){ 
-            return;
-        }
-        
-        // if explicitly setting a zoom level, turn off fitting
-		this.fit = false;	
+		// match if closer than 1%:
+		if( MathUtil.equals(newScale, figure.getUserScale(), 0.01)){
+			return;
+		}
+
+		final Rectangle viewRect = viewport.getViewRect();
+		viewCenter_frac = new Point2D.Double( (viewRect.getX() + viewRect.getWidth()/2) / figure.getWidth(),
+											 (viewRect.getY() + viewRect.getHeight()/2) / figure.getHeight() );
+
+		// if explicitly setting a zoom level, turn off fitting
+		this.fit = false;
 		Dimension view = viewport.getExtentSize();
-        figure.scaleTo(newScale, view);
-             
-        revalidate();    
+		figure.scaleTo(newScale, view);
+
+		revalidate();
 	}
 	
 	
@@ -233,7 +229,7 @@ public class ScaleScrollPane extends JScrollPane
 		
 		dragStartX = e.getX();
 		dragStartY = e.getY();
-		
+
 		viewport.scrollRectToVisible(dragRectangle);
 	}
 	
@@ -252,13 +248,50 @@ public class ScaleScrollPane extends JScrollPane
 	@Override
 	public void mouseMoved(MouseEvent e) {
 	}
-	
-	
-	
+
+	@Override
+	public void componentResized(ComponentEvent e) {
+		if(fit) {
+			final Dimension calculatedViewSize = new Dimension(getWidth() - viewportMarginPx.width, getHeight() - viewportMarginPx.height);
+			figure.scaleTo(calculatedViewSize);
+
+			final Point zoomPoint = figure.getAutoZoomPoint();
+			final Rectangle zoomRectangle = new Rectangle(zoomPoint.x, zoomPoint.y, viewport.getWidth(), viewport.getHeight() );
+			figure.scrollRectToVisible(zoomRectangle);
+		}else{
+			final Rectangle scrollRectangle = viewport.getViewRect();
+			scrollRectangle.x = (int)(viewCenter_frac.x * figure.getWidth()) - (scrollRectangle.width/2);
+			scrollRectangle.y = (int)(viewCenter_frac.y * figure.getHeight()) - (scrollRectangle.height/2);
+
+			figure.scrollRectToVisible(scrollRectangle);
+		}
+
+
+		revalidate();
+		horizontalRuler.updateSize();
+		verticalRuler.updateSize();
+	}
+
+	@Override
+	public void componentMoved(ComponentEvent e) {
+
+	}
+
+	@Override
+	public void componentShown(ComponentEvent e) {
+
+	}
+
+	@Override
+	public void componentHidden(ComponentEvent e) {
+
+	}
+
+
 	////////////////  The view port rulers  ////////////////
 	
 	
-	private class Ruler extends JComponent {
+	private class Ruler extends JComponent implements ChangeListener {
 		public static final int HORIZONTAL = 0;
 		public static final int VERTICAL = 1;
 		
@@ -266,46 +299,43 @@ public class ScaleScrollPane extends JScrollPane
 		
 		public Ruler(int orientation) {
 			this.orientation = orientation;
-			
-			rulerUnit.addChangeListener(new ChangeListener() {
-				@Override
-				public void stateChanged(ChangeEvent e) {
-				    updateSize();
-					Ruler.this.repaint();
-				}
-			});
+			rulerUnit.addChangeListener(this);
+		}
+		
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			updateSize();
+			repaint();
 		}
 		
 		private void updateSize() {
 			if (orientation == HORIZONTAL) {
-			    Ruler.this.setMinimumSize(new Dimension(component.getWidth() + 10, RULER_SIZE));
-			    Ruler.this.setPreferredSize(new Dimension(component.getWidth() + 10, RULER_SIZE));
+			    setMinimumSize(new Dimension(component.getWidth() + 10, RULER_SIZE));
+			    setPreferredSize(new Dimension(component.getWidth() + 10, RULER_SIZE));
 			} else {
-			    Ruler.this.setMinimumSize(new Dimension(RULER_SIZE, component.getHeight() + 10));
-			    Ruler.this.setPreferredSize(new Dimension(RULER_SIZE, component.getHeight() + 10));
+			    setMinimumSize(new Dimension(RULER_SIZE, component.getHeight() + 10));
+			    setPreferredSize(new Dimension(RULER_SIZE, component.getHeight() + 10));
 			}
-			revalidate();
-			repaint();
 		}
 		
         private double fromPx(final int px) {
-            Dimension origin = figure.getSubjectOrigin();
+            final Point origin = figure.getSubjectOrigin();
             double realValue = Double.NaN;
             if (orientation == HORIZONTAL) {
-                realValue = px - origin.width;
+                realValue = px - origin.x;
             } else {
-                realValue = origin.height - px;
+                realValue = origin.y - px;
             }
             return realValue / figure.getAbsoluteScale();
 		}
 		
 		private int toPx(final double value) {
-			final Dimension origin = figure.getSubjectOrigin();
+			final Point origin = figure.getSubjectOrigin();
 			final int px = (int) (value * figure.getAbsoluteScale() + 0.5);
 			if (orientation == HORIZONTAL) {
-				return (px + origin.width);
+				return (px + origin.x);
 			} else {
-				return (origin.height - px);
+				return (origin.y - px);
 			}
 		}
 		
@@ -319,9 +349,8 @@ public class ScaleScrollPane extends JScrollPane
 			
 			// this function doesn't reliably update all the time, so we'll draw everything for the entire canvas, 
 			// and let the JVM drawing algorithms figure out what should be drawn.
-			//
-			Rectangle area = ScaleScrollPane.this.getViewport().getViewRect();
-			 
+			Rectangle area = viewport.getViewRect();
+
 			// Fill area with background color
 			g2.setColor(getBackground());
 			g2.fillRect(area.x, area.y, area.width, area.height + 100);

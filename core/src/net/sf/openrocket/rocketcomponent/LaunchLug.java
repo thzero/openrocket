@@ -8,25 +8,24 @@ import net.sf.openrocket.preset.ComponentPreset;
 import net.sf.openrocket.preset.ComponentPreset.Type;
 import net.sf.openrocket.rocketcomponent.position.*;
 import net.sf.openrocket.startup.Application;
+import net.sf.openrocket.util.BoundingBox;
 import net.sf.openrocket.util.Coordinate;
 import net.sf.openrocket.util.MathUtil;
 
 
 
-public class LaunchLug extends ExternalComponent implements AnglePositionable, Coaxial, LineInstanceable {
+public class LaunchLug extends ExternalComponent implements AnglePositionable, BoxBounded, Coaxial, LineInstanceable {
 	
 	private static final Translator trans = Application.getTranslator();
 	
 	private double radius;
 	private double thickness;
 	
-	private double radialDirection = 0;
-	private double radialDistance = 0;
+	private double angleOffsetRadians = 0;
+	private double radialOffset = 0;
 	
 	private int instanceCount = 1;
 	private double instanceSeparation = 0; // front-front along the positive rocket axis. i.e. [1,0,0];
-	
-	private double angle_rad = 0;
 	
 	public LaunchLug() {
 		super(AxialMethod.MIDDLE);
@@ -74,15 +73,17 @@ public class LaunchLug extends ExternalComponent implements AnglePositionable, C
 		fireComponentChangeEvent(ComponentChangeEvent.BOTH_CHANGE);
 	}
 	
-	public double getAngularOffset() {
-		return this.radialDirection;
+	@Override
+	public double getAngleOffset() {
+		return this.angleOffsetRadians;
 	}
-
-	public void setAngularOffset(final double newAngle_rad){
-		double clamped_rad = MathUtil.clamp( newAngle_rad, -Math.PI, Math.PI);
-		if (MathUtil.equals(this.radialDirection, clamped_rad))
+	
+	@Override
+	public void setAngleOffset(double newAngleRadians) {
+		double clamped_rad = MathUtil.clamp( newAngleRadians, -Math.PI, Math.PI);
+		if (MathUtil.equals(this.angleOffsetRadians, clamped_rad))
 			return;
-		this.radialDirection = clamped_rad;
+		this.angleOffsetRadians = clamped_rad;
 		fireComponentChangeEvent(ComponentChangeEvent.BOTH_CHANGE);
 	}
 	
@@ -92,7 +93,6 @@ public class LaunchLug extends ExternalComponent implements AnglePositionable, C
 		this.length = length;
 		fireComponentChangeEvent(ComponentChangeEvent.BOTH_CHANGE);
 	}
-	
 	
 	@Override
 	public boolean isAfter() {
@@ -125,8 +125,8 @@ public class LaunchLug extends ExternalComponent implements AnglePositionable, C
 	public Coordinate[] getInstanceOffsets(){
 		Coordinate[] toReturn = new Coordinate[this.getInstanceCount()];
 		
-		final double yOffset = Math.cos(radialDirection) * (radialDistance);
-		final double zOffset = Math.sin(radialDirection) * (radialDistance);
+		final double yOffset = Math.cos(angleOffsetRadians) * (radialOffset);
+		final double zOffset = Math.sin(angleOffsetRadians) * (radialOffset);
 		
 		for ( int index=0; index < this.getInstanceCount(); index++){
 			toReturn[index] = new Coordinate(index*this.instanceSeparation, yOffset, zOffset);
@@ -176,11 +176,8 @@ public class LaunchLug extends ExternalComponent implements AnglePositionable, C
 			parentRadius = Math.max(s.getRadius(x1), s.getRadius(x2));
 		}
 		
-		this.radialDistance = parentRadius + radius;
+		this.radialOffset = parentRadius + radius;
 	}
-	
-	
-	
 	
 	@Override
 	public double getComponentVolume() {
@@ -252,22 +249,23 @@ public class LaunchLug extends ExternalComponent implements AnglePositionable, C
 	public int getInstanceCount(){
 		return this.instanceCount;
 	}
-
+	
+	@Override
+	public BoundingBox getInstanceBoundingBox() {
+		BoundingBox instanceBounds = new BoundingBox();
+		
+		instanceBounds.update(new Coordinate(this.getLength(), 0,0));
+		
+		final double r = getOuterRadius();
+		instanceBounds.update(new Coordinate(0,r,r));
+		instanceBounds.update(new Coordinate(0,-r,-r));
+		
+		return instanceBounds;
+	}
+	
 	@Override
 	public String getPatternName(){
 		return (this.getInstanceCount() + "-Line");
-	}
-
-
-	@Override
-	public double getAngleOffset() {
-		return this.angle_rad;
-	}
-
-
-	@Override
-	public void setAngleOffset(double newAngle) {
-		this.angle_rad = newAngle;
 	}
 
 
@@ -281,5 +279,4 @@ public class LaunchLug extends ExternalComponent implements AnglePositionable, C
 	public void setAngleMethod(AngleMethod newMethod) {
 		// no-op
 	}
-
 }

@@ -1,11 +1,11 @@
 package net.sf.openrocket.gui.figure3d.geometry;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.fixedfunc.GLMatrixFunc;
-import javax.media.opengl.glu.GLU;
-import javax.media.opengl.glu.GLUquadric;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
+import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.glu.GLUquadric;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -317,15 +317,8 @@ public class ComponentRenderer {
 	private void renderTubeFins(GL2 gl, TubeFinSet fs, Surface which) {
 		gl.glPushMatrix();
 		gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
-		System.out.println(fs.getBaseRotation());
-		gl.glRotated(fs.getBaseRotation() * (180.0 / Math.PI), 1, 0, 0);
-		for( int i = 0; i< fs.getFinCount(); i++ ) {
-			gl.glPushMatrix();
-			gl.glTranslated(0, fs.getOuterRadius() + fs.getBodyRadius(), 0);
-			renderTube(gl, which, fs.getOuterRadius(), fs.getInnerRadius(), fs.getLength());
-			gl.glPopMatrix();
-			gl.glRotated(360.0 / fs.getFinCount(), 1, 0, 0);
-		}
+		gl.glTranslated(0, fs.getOuterRadius(), 0);
+		renderTube(gl, which, fs.getOuterRadius(), fs.getInnerRadius(), fs.getLength());
 		gl.glPopMatrix();
 	}
 
