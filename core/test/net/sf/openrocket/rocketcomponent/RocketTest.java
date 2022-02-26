@@ -17,7 +17,7 @@ import net.sf.openrocket.util.BoundingBox;
 import net.sf.openrocket.util.Coordinate;
 import net.sf.openrocket.util.MathUtil;
 import net.sf.openrocket.util.TestRockets;
-import net.sf.openrocket.util.BaseTestCase.BaseTestCase;
+import net.sf.openrocket.util.BaseTestCase;
 
 public class RocketTest extends BaseTestCase {
 	final double EPSILON = MathUtil.EPSILON;

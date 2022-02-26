@@ -19,7 +19,7 @@ import net.sf.openrocket.rocketcomponent.AxialStage;
 import net.sf.openrocket.rocketcomponent.BodyTube;
 import net.sf.openrocket.rocketcomponent.LaunchLug;
 import net.sf.openrocket.rocketcomponent.Rocket;
-import net.sf.openrocket.util.BaseTestCase.BaseTestCase;
+import net.sf.openrocket.util.BaseTestCase;
 
 /**
  * RocksimLoader Tester.

@@ -6,7 +6,7 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import net.sf.openrocket.util.BaseTestCase.BaseTestCase;
+import net.sf.openrocket.util.BaseTestCase;
 
 public class SearchResponseParserTest extends BaseTestCase {
 	

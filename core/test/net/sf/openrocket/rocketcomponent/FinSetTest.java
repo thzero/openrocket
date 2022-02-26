@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import net.sf.openrocket.rocketcomponent.position.*;
 import net.sf.openrocket.util.Coordinate;
-import net.sf.openrocket.util.BaseTestCase.BaseTestCase;
+import net.sf.openrocket.util.BaseTestCase;
 
 public class FinSetTest extends BaseTestCase {
 
