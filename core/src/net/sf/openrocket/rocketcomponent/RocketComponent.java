@@ -1588,7 +1588,11 @@ public abstract class RocketComponent implements ChangeSource, Cloneable, Iterab
 		this.checkComponentStructure();
 		return children.get(n);
 	}
-	
+
+	/**
+	 * Returns all the direct children of this component. The result is a clone of the children list and may be edited.
+	 * @return direct children of this component.
+	 */
 	public final List<RocketComponent> getChildren() {
 		checkState();
 		this.checkComponentStructure();
@@ -1618,6 +1622,23 @@ public abstract class RocketComponent implements ChangeSource, Cloneable, Iterab
 	public final RocketComponent getParent() {
 		checkState();
 		return parent;
+	}
+
+	/**
+	 * Get all the parent and super-parent components of this component.
+	 * @return parent and super-parents of this component
+	 */
+	public final List<RocketComponent> getParents() {
+		checkState();
+		List<RocketComponent> result = new LinkedList<>();
+		RocketComponent currComp = this;
+
+		while (currComp.parent != null) {
+			currComp = currComp.parent;
+			result.add(currComp);
+		}
+
+		return result;
 	}
 	
 	/**
@@ -1683,9 +1704,48 @@ public abstract class RocketComponent implements ChangeSource, Cloneable, Iterab
 		while ( null != curComponent ) {
 			if( ComponentAssembly.class.isAssignableFrom( curComponent.getClass()))
 				return (ComponentAssembly) curComponent;
-			curComponent = curComponent.parent;
 		}
 		throw new IllegalStateException("getAssembly() called on hierarchy without a ComponentAssembly.");
+	}
+
+	/**
+	 * Return all the component assemblies that are a child of this component
+	 * @return list of ComponentAssembly components that are a child of this component
+	 */
+	public final List<RocketComponent> getChildAssemblies() {
+		checkState();
+
+		Iterator<RocketComponent> children = iterator(false);
+
+		List<RocketComponent> result = new ArrayList<>();
+
+		while (children.hasNext()) {
+			RocketComponent child = children.next();
+			if (child instanceof ComponentAssembly) {
+				result.add(child);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Return all the component assemblies that are a parent or super-parent of this component
+	 * @return list of ComponentAssembly components that are a parent or super-parent of this component
+	 */
+	public final List<RocketComponent> getParentAssemblies() {
+		checkState();
+
+		List<RocketComponent> result = new LinkedList<>();
+		RocketComponent currComp = this;
+
+		while (currComp.parent != null) {
+			currComp = currComp.parent;
+			if (currComp instanceof ComponentAssembly) {
+				result.add(currComp);
+			}
+		}
+
+		return result;
 	}
 	
 	
