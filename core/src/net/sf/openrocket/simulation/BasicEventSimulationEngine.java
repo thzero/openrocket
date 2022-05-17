@@ -173,7 +173,7 @@ public class BasicEventSimulationEngine implements SimulationEngine {
 				} else {
 					
 					// Check ground hit after liftoff
-					if ((currentStatus.getRocketPosition().z < 0) && !currentStatus.isLanded()) {
+					if ((currentStatus.getRocketPosition().z < MathUtil.EPSILON) && !currentStatus.isLanded()) {
 						addEvent(new FlightEvent(FlightEvent.Type.GROUND_HIT, currentStatus.getSimulationTime()));
 						
 						// addEvent(new FlightEvent(FlightEvent.Type.SIMULATION_END, currentStatus.getSimulationTime()));
@@ -425,24 +425,28 @@ public class BasicEventSimulationEngine implements SimulationEngine {
 			}
 			
 			case STAGE_SEPARATION: {
-				// Record the event.
-				currentStatus.getFlightData().addEvent(event);
-				
 				RocketComponent boosterStage = event.getSource();
 				final int stageNumber = boosterStage.getStageNumber();
-	
-				// Mark the status as having dropped the booster
-				currentStatus.getConfiguration().clearStage( stageNumber);
-						  
-				// Prepare the simulation branch
-				SimulationStatus boosterStatus = new SimulationStatus(currentStatus);
-				boosterStatus.setFlightData(new FlightDataBranch(boosterStage.getName(), FlightDataType.TYPE_TIME));
-				// Mark the booster status as only having the booster.
-				boosterStatus.getConfiguration().setOnlyStage(stageNumber);
-				toSimulate.push(boosterStatus);
-				log.info(String.format("==>> @ %g; from Branch: %s ---- Branching: %s ---- \n",
-						currentStatus.getSimulationTime(), 
-						currentStatus.getFlightData().getBranchName(), boosterStatus.getFlightData().getBranchName()));
+
+				if (currentStatus.getConfiguration().isStageActive(stageNumber-1)) {
+					// Record the event.
+					currentStatus.getFlightData().addEvent(event);
+
+					// Mark the status as having dropped the booster
+					currentStatus.getConfiguration().clearStage( stageNumber);
+					
+					// Prepare the simulation branch
+					SimulationStatus boosterStatus = new SimulationStatus(currentStatus);
+					boosterStatus.setFlightData(new FlightDataBranch(boosterStage.getName(), FlightDataType.TYPE_TIME));
+					// Mark the booster status as only having the booster.
+					boosterStatus.getConfiguration().setOnlyStage(stageNumber);
+					toSimulate.push(boosterStatus);
+					log.info(String.format("==>> @ %g; from Branch: %s ---- Branching: %s ---- \n",
+										   currentStatus.getSimulationTime(), 
+										   currentStatus.getFlightData().getBranchName(), boosterStatus.getFlightData().getBranchName()));
+				} else {
+					log.debug("upper stage is not active; not performing separation");
+				}
 				
 				break;
 			}
