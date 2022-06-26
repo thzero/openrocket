@@ -1,4 +1,4 @@
-package net.sf.openrocket.file;
+package net.sf.openrocket.file.rocksim.export;
 
 import net.sf.openrocket.rocketcomponent.FinSet;
 

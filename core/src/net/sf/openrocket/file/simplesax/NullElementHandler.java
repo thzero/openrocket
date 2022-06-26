@@ -25,16 +25,14 @@ public class NullElementHandler extends AbstractElementHandler {
 	}
 
 	@Override
-	public ElementHandler openElement(String element, HashMap<String, String> attributes,
-			WarningSet warnings) {
+	public ElementHandler openElement(String element, HashMap<String, String> attributes, WarningSet warnings) {
 		warnings.add(Warning.fromString("Unknown element " + element + ", ignoring."));
 		return null;
 	}
 
 	@Override
-	public void closeElement(String element, HashMap<String, String> attributes,
-			String content, WarningSet warnings) throws SAXException {
+	public void closeElement(String element, HashMap<String, String> attributes, String content, WarningSet warnings)
+			throws SAXException {
 		super.closeElement(element, EMPTY_MAP, content, warnings);
 	}
-
 }

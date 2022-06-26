@@ -5,9 +5,10 @@ import java.io.InputStream;
 import net.sf.openrocket.aerodynamics.WarningSet;
 
 public interface RocketLoader {
-	
-	public void load(DocumentLoadingContext context, InputStream source) throws RocketLoadException;
-	
-	public WarningSet getWarnings();
-	
+	/**
+	 * Loads a rocket from the specified InputStream.
+	 */
+	void load(DocumentLoadingContext context, InputStream source) throws RocketLoadException;
+
+	WarningSet getWarnings();
 }

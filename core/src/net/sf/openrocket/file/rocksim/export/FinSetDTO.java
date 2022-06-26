@@ -1,6 +1,5 @@
 package net.sf.openrocket.file.rocksim.export;
 
-import net.sf.openrocket.file.TipShapeCode;
 import net.sf.openrocket.file.rocksim.RocksimCommonConstants;
 import net.sf.openrocket.rocketcomponent.EllipticalFinSet;
 import net.sf.openrocket.rocketcomponent.FinSet;

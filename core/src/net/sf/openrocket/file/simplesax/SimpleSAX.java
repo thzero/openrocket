@@ -41,18 +41,20 @@ public class SimpleSAX {
 	 */
 	public static void readXML(InputSource source, ElementHandler initialHandler, WarningSet warnings)
 			throws IOException, SAXException {
-
 		DelegatorHandler xmlhandler = new DelegatorHandler(initialHandler, warnings);
 
-		XMLReader reader = cache.createXMLReader();
-		reader.setContentHandler(xmlhandler);
-		reader.setErrorHandler(xmlhandler);
+		XMLReader reader = null;
 		try {
+			reader = cache.createXMLReader();
+			reader.setContentHandler(xmlhandler);
+			reader.setErrorHandler(xmlhandler);
 			reader.parse(source);
 		} finally {
-			reader.setContentHandler(null);
-			reader.setErrorHandler(null);
-			cache.releaseXMLReader(reader);
+			if (reader != null) {
+				reader.setContentHandler(null);
+				reader.setErrorHandler(null);
+				cache.releaseXMLReader(reader);
+			}
 		}
 	}
 
@@ -86,7 +88,7 @@ public class SimpleSAX {
 			// force references to null to encourage garbage collection.
 			reader.setContentHandler(null);
 			reader.setErrorHandler(null);
-			queue.offer( reader );
+			queue.offer(reader);
 		}
 	}
 }

@@ -9,7 +9,6 @@ import net.sf.openrocket.motor.Motor;
  * @author Sampo Niskanen <sampo.niskanen@iki.fi>
  */
 public interface MotorFinder {
-	
 	/**
 	 * Return the motor to inject to the rocket design when loading a file.
 	 * This may also return dysfunctional motor placeholders that will later be
@@ -21,8 +20,6 @@ public interface MotorFinder {
 	 * 
 	 * @return	the motor to use in the design, or <code>null</code> for no motor.
 	 */
-	public Motor findMotor(Motor.Type type, String manufacturer, String designation, double diameter,
+	Motor findMotor(Motor.Type type, String manufacturer, String designation, double diameter,
 			double length, String digest, WarningSet warnings);
-	
-	
 }

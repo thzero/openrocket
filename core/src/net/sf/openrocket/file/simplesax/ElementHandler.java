@@ -6,7 +6,6 @@ import net.sf.openrocket.aerodynamics.WarningSet;
 
 import org.xml.sax.SAXException;
 
-
 /**
  * A "simple XML" element handler.  An object of this class handles a single element of
  * an XML file.  If the input file is:
@@ -29,7 +28,6 @@ import org.xml.sax.SAXException;
  * @author Sampo Niskanen <sampo.niskanen@iki.fi>
  */
 public interface ElementHandler {
-	
 	/**
 	 * Called when an opening tag of a contained element is encountered.  Returns the handler
 	 * that will handle the elements within that element, or <code>null</code> if the element
@@ -44,7 +42,7 @@ public interface ElementHandler {
 	 * @return				the handler that handles elements encountered within this element,
 	 * 						or <code>null</code> if the element is to be ignored.
 	 */
-	public ElementHandler openElement(String element, HashMap<String, String> attributes,
+	ElementHandler openElement(String element, HashMap<String, String> attributes,
 			WarningSet warnings) throws SAXException;
 	
 	/**
@@ -58,7 +56,7 @@ public interface ElementHandler {
 	 * @param content		the textual content of the element.
 	 * @param warnings		the warning set to store warnings in.
 	 */
-	public abstract void closeElement(String element, HashMap<String, String> attributes,
+	void closeElement(String element, HashMap<String, String> attributes,
 			String content, WarningSet warnings) throws SAXException;
 	
 	/**
@@ -66,7 +64,6 @@ public interface ElementHandler {
 	 * 
 	 * @param warnings		the warning set to store warnings in.
 	 */
-	public abstract void endHandler(String element, HashMap<String, String> attributes,
+	void endHandler(String element, HashMap<String, String> attributes,
 			String content, WarningSet warnings) throws SAXException;
-	
 }

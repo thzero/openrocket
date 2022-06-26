@@ -6,7 +6,6 @@ import net.sf.openrocket.document.Attachment;
 import net.sf.openrocket.document.attachments.FileSystemAttachment;
 
 public class FileSystemAttachmentFactory implements AttachmentFactory {
-	
 	private final File baseDirectory;
 	
 	public FileSystemAttachmentFactory() {
@@ -16,7 +15,7 @@ public class FileSystemAttachmentFactory implements AttachmentFactory {
 	
 	public FileSystemAttachmentFactory(File baseDirectory) {
 		super();
-		if (baseDirectory != null && baseDirectory.isDirectory() == false) {
+		if (baseDirectory != null && !baseDirectory.isDirectory()) {
 			throw new IllegalArgumentException("Base file for FileSystemAttachmentFactory is not a directory");
 		}
 		this.baseDirectory = baseDirectory;
@@ -30,16 +29,9 @@ public class FileSystemAttachmentFactory implements AttachmentFactory {
 	public Attachment getAttachment(String name) {
 		
 		File file = new File(name);
-		
-		if (file.isAbsolute()) {
-			return new FileSystemAttachment(name, file);
-		}
-		
-		else {
+		if (!file.isAbsolute()) {
 			file = new File(baseDirectory, name);
-			return new FileSystemAttachment(name, file);
 		}
-		
+		return new FileSystemAttachment(name, file);
 	}
-	
 }

@@ -7,7 +7,6 @@ import net.sf.openrocket.aerodynamics.WarningSet;
 
 import org.xml.sax.SAXException;
 
-
 /**
  * An abstract base class for creating an ElementHandler.  This implements the close
  * methods so that warnings are generated for spurious content.
@@ -15,10 +14,9 @@ import org.xml.sax.SAXException;
  * @author Sampo Niskanen <sampo.niskanen@iki.fi>
  */
 public abstract class AbstractElementHandler implements ElementHandler {
-	
 	@Override
-	public abstract ElementHandler openElement(String element,
-			HashMap<String, String> attributes, WarningSet warnings) throws SAXException;
+	public abstract ElementHandler openElement(String element, HashMap<String, String> attributes, WarningSet warnings)
+			throws SAXException;
 	
 	/**
 	 * {@inheritDoc}
@@ -27,16 +25,13 @@ public abstract class AbstractElementHandler implements ElementHandler {
 	 * This is useful for generating warnings for unknown XML attributes.
 	 */
 	@Override
-	public void closeElement(String element, HashMap<String, String> attributes,
-			String content, WarningSet warnings) throws SAXException {
-		
+	public void closeElement(String element, HashMap<String, String> attributes, String content, WarningSet warnings)
+			throws SAXException {
 		if (!content.trim().equals("")) {
-			warnings.add(Warning.fromString("Unknown text in element '" + element
-					+ "', ignoring."));
+			warnings.add(Warning.fromString("Unknown text in element '" + element + "', ignoring."));
 		}
 		if (!attributes.isEmpty()) {
-			warnings.add(Warning.fromString("Unknown attributes in element '" + element
-					+ "', ignoring."));
+			warnings.add(Warning.fromString("Unknown attributes in element '" + element + "', ignoring."));
 		}
 	}
 	
@@ -46,11 +41,10 @@ public abstract class AbstractElementHandler implements ElementHandler {
 	 * The default implementation is a no-op.
 	 */
 	@Override
-	public void endHandler(String element, HashMap<String, String> attributes,
-			String content, WarningSet warnings) throws SAXException {
+	public void endHandler(String element, HashMap<String, String> attributes, String content, WarningSet warnings)
+			throws SAXException {
 		// No-op
 	}
-	
 	
 	/**
 	 * Helper method for parsing a double value safely.
@@ -63,7 +57,7 @@ public abstract class AbstractElementHandler implements ElementHandler {
 	protected double parseDouble(String str, WarningSet warnings, Warning warn) {
 		try {
 			return Double.parseDouble(str);
-		} catch (NumberFormatException e) {
+		} catch (NumberFormatException ignore) {
 			warnings.add(warn);
 			return Double.NaN;
 		}

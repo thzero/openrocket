@@ -15,7 +15,7 @@ import net.sf.openrocket.aerodynamics.Warning;
 import net.sf.openrocket.document.OpenRocketDocument;
 import net.sf.openrocket.document.Simulation;
 import net.sf.openrocket.document.StorageOptions;
-import net.sf.openrocket.file.RocketSaver;
+import net.sf.openrocket.file.AbstractRocketSaver;
 import net.sf.openrocket.rocketcomponent.Rocket;
 import net.sf.openrocket.rocketcomponent.RocketComponent;
 import net.sf.openrocket.simulation.FlightData;
@@ -31,7 +31,7 @@ import net.sf.openrocket.util.Config;
 import net.sf.openrocket.util.Reflection;
 import net.sf.openrocket.util.TextUtil;
 
-public class OpenRocketSaver extends RocketSaver {
+public class OpenRocketSaver extends AbstractRocketSaver {
 	private static final Logger log = LoggerFactory.getLogger(OpenRocketSaver.class);
 	
 	/**

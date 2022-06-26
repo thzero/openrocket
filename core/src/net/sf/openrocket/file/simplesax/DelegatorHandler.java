@@ -23,21 +23,18 @@ class DelegatorHandler extends DefaultHandler {
 	
 	// Ignore all elements as long as ignore > 0
 	private int ignore = 0;
-	
-	
+
 	public DelegatorHandler(ElementHandler initialHandler, WarningSet warnings) {
 		this.warnings = warnings;
 		handlerStack.add(initialHandler);
 		elementData.add(new StringBuilder()); // Just in case
 	}
-	
-	
+
 	/////////  SAX handlers
 	
 	@Override
-	public void startElement(String uri, String localName, String name,
-			Attributes attributes) throws SAXException {
-		
+	public void startElement(String uri, String localName, String name, Attributes attributes)
+			throws SAXException {
 		// Check for ignore
 		if (ignore > 0) {
 			ignore++;
@@ -49,17 +46,23 @@ class DelegatorHandler extends DefaultHandler {
 		elementAttributes.push(copyAttributes(attributes));
 		
 		// Call the handler
-		ElementHandler h = handlerStack.peek();
-		h = h.openElement(localName, elementAttributes.peek(), warnings);
-		if (h != null) {
-			handlerStack.push(h);
-		} else {
+		ElementHandler elementHandler = handlerStack.peek();
+		// TODO: peek may throw a null pointer exception
+		if (elementHandler != null) {
+			elementHandler = elementHandler.openElement(localName, elementAttributes.peek(), warnings);
+			if (elementHandler != null) {
+				handlerStack.push(elementHandler);
+			} else {
+				// Start ignoring elements
+				ignore++;
+			}
+		}
+		else {
 			// Start ignoring elements
 			ignore++;
 		}
 	}
-	
-	
+
 	/**
 	 * Stores encountered characters in the elementData stack.
 	 */
@@ -70,16 +73,16 @@ class DelegatorHandler extends DefaultHandler {
 			return;
 		
 		StringBuilder sb = elementData.peek();
-		sb.append(chars, start, length);
+		if (sb != null) {
+			sb.append(chars, start, length);
+		}
 	}
-	
-	
+
 	/**
 	 * Removes the last layer from the stack.
 	 */
 	@Override
 	public void endElement(String uri, String localName, String name) throws SAXException {
-		
 		// Check for ignore
 		if (ignore > 0) {
 			ignore--;
@@ -91,21 +94,18 @@ class DelegatorHandler extends DefaultHandler {
 		HashMap<String, String> attr = elementAttributes.pop();
 		
 		// Remove last handler and call the next one
-		ElementHandler h;
-		
-		h = handlerStack.pop();
-		h.endHandler(localName, attr, data, warnings);
-		
-		h = handlerStack.peek();
-		h.closeElement(localName, attr, data, warnings);
+		ElementHandler elementHandler = handlerStack.pop();
+		elementHandler.endHandler(localName, attr, data, warnings);
+
+		elementHandler = handlerStack.peek();
+		elementHandler.closeElement(localName, attr, data, warnings);
 	}
-	
-	
-	private static HashMap<String, String> copyAttributes(Attributes atts) {
-		HashMap<String, String> ret = new HashMap<String, String>();
-		for (int i = 0; i < atts.getLength(); i++) {
-			ret.put(atts.getLocalName(i), atts.getValue(i));
+
+	private static HashMap<String, String> copyAttributes(Attributes attributes) {
+		HashMap<String, String> results = new HashMap<>();
+		for (int i = 0; i < attributes.getLength(); i++) {
+			results.put(attributes.getLocalName(i), attributes.getValue(i));
 		}
-		return ret;
+		return results;
 	}
 }

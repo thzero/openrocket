@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import net.sf.openrocket.document.OpenRocketDocument;
 import net.sf.openrocket.document.StorageOptions;
-import net.sf.openrocket.file.RocketSaver;
+import net.sf.openrocket.file.AbstractRocketSaver;
 import net.sf.openrocket.file.rocksim.RocksimCommonConstants;
 import net.sf.openrocket.masscalc.MassCalculator;
 import net.sf.openrocket.masscalc.RigidBody;
@@ -26,7 +26,7 @@ import net.sf.openrocket.rocketcomponent.Rocket;
 /**
  * This class is responsible for converting an OpenRocket design to a Rocksim design.
  */
-public class RocksimSaver extends RocketSaver {
+public class RocksimSaver extends AbstractRocketSaver {
 	
 	/**
 	 * The logger.

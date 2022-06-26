@@ -16,15 +16,13 @@ public class PlainTextHandler extends AbstractElementHandler {
 	}
 
 	@Override
-	public ElementHandler openElement(String element, HashMap<String, String> attributes,
-			WarningSet warnings) {
+	public ElementHandler openElement(String element, HashMap<String, String> attributes, WarningSet warnings) {
 		warnings.add(Warning.fromString("Unknown element " + element + ", ignoring."));
 		return null;
 	}
 
 	@Override
-	public void closeElement(String element, HashMap<String, String> attributes,
-			String content, WarningSet warnings) {
+	public void closeElement(String element, HashMap<String, String> attributes, String content, WarningSet warnings) {
 		// Warning from openElement is sufficient.
 	}
 }

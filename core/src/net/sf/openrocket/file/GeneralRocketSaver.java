@@ -25,26 +25,11 @@ import net.sf.openrocket.rocketcomponent.RocketComponent;
 import net.sf.openrocket.util.DecalNotFoundException;
 import net.sf.openrocket.util.MathUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class GeneralRocketSaver {
-	
-	/**
-	 * Interface which can be implemented by the caller to receive progress information.
-	 * 
-	 */
-	public interface SavingProgress {
-		
-		/**
-		 * Inform the callback of the current progress.
-		 * It is guaranteed that the value will be an integer between 0 and 100 representing
-		 * percent complete.  The SavingProgress object might not be notified the through
-		 * setProgress when the save is complete.  When called with the value 100, the saving process
-		 * may not be complete, do not use this as an indication of completion.
-		 * 
-		 * @param progress  int value between 0 and 100 representing percent complete.
-		 */
-		public void setProgress(int progress);
-		
-	}
+	private static final Logger log = LoggerFactory.getLogger(GeneralRocketLoader.class);
 	
 	/**
 	 * Save the document to the specified file using the default storage options.
@@ -91,40 +76,46 @@ public class GeneralRocketSaver {
 	 * @throws IOException	in case of an I/O error.
 	 */
 	public final void save(File dest, OpenRocketDocument doc, StorageOptions opts, SavingProgress progress) throws IOException, DecalNotFoundException {
-		
 		// This method is the core operational method.  It saves the document into a new (hopefully unique)
 		// file, then if the save is successful, it will copy the file over the old one.
 		
 		// Write to a temporary file in the same directory as the specified file.
 		File temporaryNewFile = File.createTempFile("ORSave", ".tmp", dest.getParentFile());
 		
-		OutputStream s = new BufferedOutputStream(new FileOutputStream(temporaryNewFile));
-		
-		if (progress != null) {
-			long estimatedSize = this.estimateFileSize(doc, opts);
-			s = new ProgressOutputStream(s, estimatedSize, progress);
-		}
+		OutputStream stream = null;
 		try {
-			save(dest.getName(), s, doc, opts);
-		} catch (DecalNotFoundException decex) {
-			temporaryNewFile.delete();
-			throw decex;
+			stream = new BufferedOutputStream(new FileOutputStream(temporaryNewFile));
+			if (progress != null) {
+				long estimatedSize = this.estimateFileSize(doc, opts);
+				stream = new ProgressOutputStream(stream, estimatedSize, progress);
+			}
+
+			try {
+				save(dest.getName(), stream, doc, opts);
+			} catch (DecalNotFoundException ex) {
+				temporaryNewFile.delete();
+				throw ex;
+			}
 		} finally {
-			s.close();
+			try {
+				if (stream != null) {
+					stream.close();
+				}
+			} catch (IOException ex) {
+				log.error("Exception saving the file", ex);
+			}
 		}
 		
 		// Move the temporary new file over the specified file.
-		
 		boolean destExists = dest.exists();
 		File oldBackupFile = new File(dest.getParentFile(), dest.getName() + "-bak");
-		
 		if (destExists) {
 			dest.renameTo(oldBackupFile);
 		}
+
 		// since we created the temporary new file in the same directory as the dest file,
 		// it is on the same filesystem, so File.renameTo will work just fine.
 		boolean success = temporaryNewFile.renameTo(dest);
-		
 		if (success) {
 			if (destExists) {
 				oldBackupFile.delete();
@@ -144,15 +135,13 @@ public class GeneralRocketSaver {
 	public long estimateFileSize(OpenRocketDocument doc, StorageOptions options) {
 		if (options.getFileType() == StorageOptions.FileType.ROCKSIM) {
 			return new RocksimSaver().estimateFileSize(doc, options);
-		} else {
-			return new OpenRocketSaver().estimateFileSize(doc, options);
 		}
+
+		return new OpenRocketSaver().estimateFileSize(doc, options);
 	}
 	
 	private void save(String fileName, OutputStream output, OpenRocketDocument document, StorageOptions options) throws IOException, DecalNotFoundException {
-		
-		// For now, we don't save decal information in ROCKSIM files, so don't do anything
-		// which follows.
+		// For now, we don't save decal information in ROCKSIM files, so don't do anything which follows.
 		// TODO - add support for decals in ROCKSIM files?
 		if (options.getFileType() == FileType.ROCKSIM) {
 			saveInternal(output, document, options);
@@ -163,13 +152,19 @@ public class GeneralRocketSaver {
 		Set<DecalImage> usedDecals = new TreeSet<DecalImage>();
 		
 		// Look for all decals used in the rocket.
-		for (RocketComponent c : document.getRocket()) {
-			Appearance ap = c.getAppearance();
-			Appearance ap_in = null;
-			if (c instanceof InsideColorComponent)
-				ap_in = ((InsideColorComponent)c).getInsideColorComponentHandler().getInsideAppearance();
+		Appearance ap;
+		Appearance ap_in;
+		for (RocketComponent component : document.getRocket()) {
+			ap = component.getAppearance();
+			ap_in = null;
+			if (component instanceof InsideColorComponent) {
+				ap_in = ((InsideColorComponent) component).getInsideColorComponentHandler().getInsideAppearance();
+			}
 
-			if ((ap == null) && (ap_in == null)) continue;
+			if ((ap == null) && (ap_in == null)) {
+				continue;
+			}
+
 			if (ap != null) {
 				Decal decal = ap.getTexture();
 				if (decal != null)
@@ -186,33 +181,35 @@ public class GeneralRocketSaver {
 	}
 	
 	public void saveAllPartsZipFile(OutputStream output, OpenRocketDocument document, StorageOptions options, Set<DecalImage> decals) throws IOException, DecalNotFoundException {
-
-		// Open a zip stream to write to.
-		ZipOutputStream zos = new ZipOutputStream(output);
-		zos.setLevel(9);
-		// big try block to close the zos.
+		ZipOutputStream zos = null;
 		try {
-			
-			
+			zos = new ZipOutputStream(output);
+			zos.setLevel(9);
+
 			ZipEntry mainFile = new ZipEntry("rocket.ork");
 			zos.putNextEntry(mainFile);
 			saveInternal(zos, document, options);
 			zos.closeEntry();
 			
 			// Now we write out all the decal images files.
+			String name;
+			ZipEntry decal;
+			InputStream is;
+			int bytesRead;
+			byte[] buffer;
 			for (DecalImage image : decals) {
 				if (image.isIgnored()) {
 					image.setIgnored(false);
 					continue;
 				}
 
-				String name = image.getName();
-				ZipEntry decal = new ZipEntry(name);
+				name = image.getName();
+				decal = new ZipEntry(name);
 				zos.putNextEntry(decal);
 				
-				InputStream is = image.getBytes();
-				int bytesRead = 0;
-				byte[] buffer = new byte[2048];
+				is = image.getBytes();
+				bytesRead = 0;
+				buffer = new byte[2048];
 				while ((bytesRead = is.read(buffer)) > 0) {
 					zos.write(buffer, 0, bytesRead);
 				}
@@ -221,32 +218,52 @@ public class GeneralRocketSaver {
 			
 			zos.flush();
 		} finally {
-			zos.close();
+			try {
+				if (zos != null) {
+					zos.close();
+				}
+			} catch (IOException ex) {
+				log.error("Exception saving the file", ex);
+			}
 		}
-		
-		
 	}
-	
+
 	// package scope for testing.
 	
 	private void saveInternal(OutputStream output, OpenRocketDocument document, StorageOptions options)
 			throws IOException {
-		
 		if (options.getFileType() == StorageOptions.FileType.ROCKSIM) {
 			new RocksimSaver().save(output, document, options);
-		} else {
-			new OpenRocketSaver().save(output, document, options);
+			return;
 		}
+
+		new OpenRocketSaver().save(output, document, options);
+	}
+
+	/**
+	 * Interface which can be implemented by the caller to receive progress information.
+	 *
+	 */
+	public interface SavingProgress {
+		/**
+		 * Inform the callback of the current progress.
+		 * It is guaranteed that the value will be an integer between 0 and 100 representing
+		 * percent complete.  The SavingProgress object might not be notified the through
+		 * setProgress when the save is complete.  When called with the value 100, the saving process
+		 * may not be complete, do not use this as an indication of completion.
+		 *
+		 * @param progress  int value between 0 and 100 representing percent complete.
+		 */
+		public void setProgress(int progress);
 	}
 	
 	private static class ProgressOutputStream extends FilterOutputStream {
-		
 		private final long estimatedSize;
 		private long bytesWritten = 0;
 		private final SavingProgress progressCallback;
 		
-		ProgressOutputStream(OutputStream ostream, long estimatedSize, SavingProgress progressCallback) {
-			super(ostream);
+		ProgressOutputStream(OutputStream stream, long estimatedSize, SavingProgress progressCallback) {
+			super(stream);
 			this.estimatedSize = estimatedSize;
 			this.progressCallback = progressCallback;
 		}
@@ -282,6 +299,5 @@ public class GeneralRocketSaver {
 				progressCallback.setProgress(p);
 			}
 		}
-		
 	}
 }

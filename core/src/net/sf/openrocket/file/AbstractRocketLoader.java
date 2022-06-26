@@ -5,11 +5,9 @@ import java.io.InputStream;
 
 import net.sf.openrocket.aerodynamics.WarningSet;
 
-
 public abstract class AbstractRocketLoader implements RocketLoader {
 	protected final WarningSet warnings = new WarningSet();
-	
-	
+
 	/**
 	 * Loads a rocket from the specified InputStream.
 	 */
@@ -19,15 +17,16 @@ public abstract class AbstractRocketLoader implements RocketLoader {
 		
 		try {
 			loadFromStream(context, source);
-		} catch (RocketLoadException e) {
-			throw e;
-		} catch (IOException e) {
-			throw new RocketLoadException("I/O error: " + e.getMessage(), e);
+		} catch (IOException ex) {
+			throw new RocketLoadException("I/O error: " + ex.getMessage(), ex);
 		}
 	}
-	
-	
-	
+
+	@Override
+	public final WarningSet getWarnings() {
+		return warnings;
+	}
+
 	/**
 	 * This method is called by the default implementations of #load(File) 
 	 * and load(InputStream) to load the rocket.
@@ -35,11 +34,4 @@ public abstract class AbstractRocketLoader implements RocketLoader {
 	 * @throws RocketLoadException	if an error occurs during loading.
 	 */
 	protected abstract void loadFromStream(DocumentLoadingContext context, InputStream source) throws IOException, RocketLoadException;
-	
-	
-	
-	@Override
-	public final WarningSet getWarnings() {
-		return warnings;
-	}
 }

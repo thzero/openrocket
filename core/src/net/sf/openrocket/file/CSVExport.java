@@ -17,8 +17,11 @@ import net.sf.openrocket.simulation.FlightDataType;
 import net.sf.openrocket.simulation.FlightEvent;
 import net.sf.openrocket.unit.Unit;
 import net.sf.openrocket.util.TextUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CSVExport {
+	private static final Logger log = LoggerFactory.getLogger(GeneralRocketLoader.class);
 
 	/**
 	 * Exports the specified flight data branch into a CSV file.
@@ -44,14 +47,12 @@ public class CSVExport {
 			boolean eventComments) throws IOException {
 
 		if (fields.length != units.length) {
-			throw new IllegalArgumentException("fields and units lengths must be equal " +
-					"(" + fields.length + " vs " + units.length + ")");
+			throw new IllegalArgumentException("fields and units lengths must be equal (" +
+					fields.length + " vs " + units.length + ")");
 		}
-
 
 		PrintWriter writer = null;
 		try {
-
 			writer = new PrintWriter(stream, false, StandardCharsets.UTF_8);
 
 			// Write the initial comments
@@ -74,16 +75,14 @@ public class CSVExport {
 				writer.println();
 			}
 
-			writeData(writer, branch, fields, units, fieldSeparator, decimalPlaces, isExponentialNotation,
-					eventComments, commentStarter);
-
+			writeData(writer, branch, fields, units, fieldSeparator, decimalPlaces, isExponentialNotation, eventComments, commentStarter);
 
 		} finally {
 			if (writer != null) {
 				try {
 					writer.close();
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.error("Exception writing the csv file", e);
 				}
 			}
 		}
@@ -92,7 +91,6 @@ public class CSVExport {
 	private static void writeData(PrintWriter writer, FlightDataBranch branch,
 			FlightDataType[] fields, Unit[] units, String fieldSeparator, int decimalPlaces, boolean isExponentialNotation,
 			boolean eventComments, String commentStarter) {
-
 		// Number of data points
 		int n = branch.getLength();
 
@@ -103,30 +101,28 @@ public class CSVExport {
 
 		// List of field values
 		List<List<Double>> fieldValues = new ArrayList<List<Double>>();
-		for (FlightDataType t : fields) {
-			fieldValues.add(branch.get(t));
+		for (FlightDataType type : fields) {
+			fieldValues.add(branch.get(type));
 		}
 
 		// Time variable
 		List<Double> time = branch.get(FlightDataType.TYPE_TIME);
 		if (eventComments && time == null) {
 			// If time information is not available, print events at beginning of file
-			for (FlightEvent e : events) {
-				printEvent(writer, e, commentStarter);
+			for (FlightEvent event : events) {
+				printEvent(writer, event, commentStarter);
 			}
 			eventPosition = events.size();
 		}
 
-
+		double currentTime;
+		double value;
 		// Loop over all data points
 		for (int pos = 0; pos < n; pos++) {
-
 			// Check for events to store
 			if (eventComments && time != null) {
-				double t = time.get(pos);
-
-				while ((eventPosition < events.size()) &&
-						(events.get(eventPosition).getTime() <= t)) {
+				currentTime = time.get(pos);
+				while ((eventPosition < events.size()) && (events.get(eventPosition).getTime() <= currentTime)) {
 					printEvent(writer, events.get(eventPosition), commentStarter);
 					eventPosition++;
 				}
@@ -134,7 +130,7 @@ public class CSVExport {
 
 			// Store CSV line
 			for (int i = 0; i < fields.length; i++) {
-				double value = fieldValues.get(i).get(pos);
+				value = fieldValues.get(i).get(pos);
 				writer.print(TextUtil.doubleToString(units[i].toUnit(value), decimalPlaces, isExponentialNotation));
 
 				if (i < fields.length - 1) {
@@ -142,7 +138,6 @@ public class CSVExport {
 				}
 			}
 			writer.println();
-
 		}
 
 		// Store any remaining events
@@ -152,67 +147,50 @@ public class CSVExport {
 				eventPosition++;
 			}
 		}
-
 	}
 
-
-	private static void printEvent(PrintWriter writer, FlightEvent e,
-			String commentStarter) {
-		writer.println(commentStarter + " Event " + e.getType().name() +
-				" occurred at t=" + TextUtil.doubleToString(e.getTime()) + " seconds");
+	private static void printEvent(PrintWriter writer, FlightEvent event, String commentStarter) {
+		writer.println(commentStarter + " Event " + event.getType().name() +
+				" occurred at t=" + TextUtil.doubleToString(event.getTime()) + " seconds");
 	}
 
-	private static void writeSimulationComments(PrintWriter writer,
-			Simulation simulation, FlightDataBranch branch, FlightDataType[] fields,
-			String commentStarter) {
-
-		String line;
-
-		line = simulation.getName();
-
+	private static void writeSimulationComments(PrintWriter writer, Simulation simulation, FlightDataBranch branch, FlightDataType[] fields, String commentStarter) {
+		String line = simulation.getName();
 		FlightData data = simulation.getSimulatedData();
 
 		switch (simulation.getStatus()) {
-		case UPTODATE:
-			line += " (Up to date)";
-			break;
-
-		case LOADED:
-			line += " (Data loaded from a file)";
-			break;
-
-		case OUTDATED:
-			line += " (Data is out of date)";
-			break;
-
-		case EXTERNAL:
-			line += " (Imported data)";
-			break;
-
-		case NOT_SIMULATED:
-			line += " (Not simulated yet)";
-			break;
+			case UPTODATE:
+				line += " (Up to date)";
+				break;
+			case LOADED:
+				line += " (Data loaded from a file)";
+				break;
+			case OUTDATED:
+				line += " (Data is out of date)";
+				break;
+			case EXTERNAL:
+				line += " (Imported data)";
+				break;
+			case NOT_SIMULATED:
+				line += " (Not simulated yet)";
+				break;
 		}
 
 		writer.println(commentStarter + " " + line);
-
-
 		writer.println(commentStarter + " " + branch.getLength() + " data points written for "
 				+ fields.length + " variables.");
-
 
 		if (data == null) {
 			writer.println(commentStarter + " No simulation data available.");
 			return;
 		}
-		WarningSet warnings = data.getWarningSet();
 
+		WarningSet warnings = data.getWarningSet();
 		if (!warnings.isEmpty()) {
 			writer.println(commentStarter + " Simulation warnings:");
-			for (Warning w : warnings) {
-				writer.println(commentStarter + "   " + w.toString());
+			for (Warning warning : warnings) {
+				writer.println(commentStarter + "   " + warning.toString());
 			}
 		}
 	}
-
 }

@@ -3,7 +3,6 @@ package net.sf.openrocket.file;
 import net.sf.openrocket.document.OpenRocketDocument;
 
 public class DocumentLoadingContext {
-	
 	private int fileVersion;
 	private MotorFinder motorFinder;
 	private AttachmentFactory attachmentFactory = new FileSystemAttachmentFactory();
@@ -40,5 +39,4 @@ public class DocumentLoadingContext {
 	public void setAttachmentFactory(AttachmentFactory attachmentFactory) {
 		this.attachmentFactory = attachmentFactory;
 	}
-	
 }
