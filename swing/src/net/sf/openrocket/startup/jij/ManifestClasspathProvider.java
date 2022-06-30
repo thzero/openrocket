@@ -13,7 +13,6 @@ import java.util.jar.Manifest;
 import net.sf.openrocket.util.BugException;
 
 public class ManifestClasspathProvider implements ClasspathProvider {
-	
 	private static final String MANIFEST_ATTRIBUTE = "Classpath-Jars";
 	
 	@Override
@@ -21,7 +20,7 @@ public class ManifestClasspathProvider implements ClasspathProvider {
 		try {
 			List<String> manifest = readManifestLine(MANIFEST_ATTRIBUTE);
 			
-			List<URL> urls = new ArrayList<URL>();
+			List<URL> urls = new ArrayList<>();
 			for (String s : manifest) {
 				parseManifestLine(urls, s);
 			}
@@ -31,10 +30,9 @@ public class ManifestClasspathProvider implements ClasspathProvider {
 			throw new BugException(e);
 		}
 	}
-	
-	
+
 	private List<String> readManifestLine(String name) throws IOException {
-		List<String> lines = new ArrayList<String>();
+		List<String> lines = new ArrayList<>();
 
 		URL url;
 		InputStream stream = null;
@@ -71,9 +69,7 @@ public class ManifestClasspathProvider implements ClasspathProvider {
 		}
 		return lines;
 	}
-	
-	
-	
+
 	private void parseManifestLine(List<URL> urls, String manifest) throws MalformedURLException {
 		String[] array = manifest.split("\\s");
 		for (String s : array) {
@@ -86,5 +82,4 @@ public class ManifestClasspathProvider implements ClasspathProvider {
 			}
 		}
 	}
-	
 }
