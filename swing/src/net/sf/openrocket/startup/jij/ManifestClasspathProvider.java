@@ -35,14 +35,27 @@ public class ManifestClasspathProvider implements ClasspathProvider {
 	
 	private List<String> readManifestLine(String name) throws IOException {
 		List<String> lines = new ArrayList<String>();
-		
+
+		URL url;
+		InputStream stream = null;
+		Manifest manifest;
 		Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
-		
 		while (resources.hasMoreElements()) {
-			URL url = resources.nextElement();
-			InputStream stream = url.openStream();
-			Manifest manifest = new Manifest(stream);
-			stream.close();
+			url = resources.nextElement();
+			try {
+				stream = url.openStream();
+				manifest = new Manifest(stream);
+			}
+			finally {
+				if (stream != null) {
+					try {
+						// Moved to close, if there is an exception that the stream can be attempted to be closed
+						stream.close();
+					}
+					catch (Exception ignore) {
+					}
+				}
+			}
 			
 			Attributes attr = manifest.getMainAttributes();
 			if (attr == null) {
