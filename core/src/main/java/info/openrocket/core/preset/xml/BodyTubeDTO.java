@@ -6,24 +6,21 @@ import info.openrocket.core.preset.ComponentPresetFactory;
 import info.openrocket.core.preset.InvalidComponentPresetException;
 import info.openrocket.core.preset.TypedPropertyMap;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.util.List;
 
 /**
  * Body tube preset XML handler.
  */
-@XmlRootElement(name = "BodyTube")
-@XmlAccessorType(XmlAccessType.FIELD)
+@JacksonXmlRootElement(localName = "BodyTube")
 public class BodyTubeDTO extends BaseComponentDTO {
 
-    @XmlElement(name = "InsideDiameter")
+    @JacksonXmlProperty(localName = "InsideDiameter")
     private AnnotatedLengthDTO insideDiameter;
-    @XmlElement(name = "OutsideDiameter")
+    @JacksonXmlProperty(localName = "OutsideDiameter")
     private AnnotatedLengthDTO outsideDiameter;
-    @XmlElement(name = "Length")
+    @JacksonXmlProperty(localName = "Length")
     private AnnotatedLengthDTO length;
 
     /**

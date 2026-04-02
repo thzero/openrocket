@@ -16,10 +16,10 @@ open module info.openrocket.core {
 	requires org.graalvm.truffle;
 	requires de.javagl.obj;
 	requires com.sun.istack.runtime;
-	requires jakarta.activation;
 	requires jakarta.inject;
 	requires java.prefs;
-	requires jakarta.xml.bind;
+	requires com.fasterxml.jackson.dataformat.xml;
+	requires com.fasterxml.jackson.databind;
 	requires io.github.classgraph;
 	requires com.google.gson;
 	requires org.slf4j;

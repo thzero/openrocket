@@ -6,22 +6,19 @@ import info.openrocket.core.preset.ComponentPresetFactory;
 import info.openrocket.core.preset.InvalidComponentPresetException;
 import info.openrocket.core.preset.TypedPropertyMap;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.util.List;
 
 /**
  * Bulkhead preset XML handler.
  */
-@XmlRootElement(name = "BulkHead")
-@XmlAccessorType(XmlAccessType.FIELD)
+@JacksonXmlRootElement(localName = "BulkHead")
 public class BulkHeadDTO extends BaseComponentDTO {
 
-    @XmlElement(name = "OutsideDiameter")
+    @JacksonXmlProperty(localName = "OutsideDiameter")
     private AnnotatedLengthDTO outsideDiameter;
-    @XmlElement(name = "Length")
+    @JacksonXmlProperty(localName = "Length")
     private AnnotatedLengthDTO length;
 
     public BulkHeadDTO() {

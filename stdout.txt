@@ -1,0 +1,27 @@
+
+> Configure project :
+Project : => no module-info.java found
+Project :core => 'info.openrocket.core' Java module
+Project :swing => 'info.openrocket.swing' Java module
+Validating external components at D:\programming\java\openrocket\thzero\openrocket.unstable\core\resources-src\datafiles\openrocket-database\orc...
+Found external components
+
+> Task :processResources NO-SOURCE
+> Task :core:compileJava UP-TO-DATE
+> Task :core:copyReadmeMain UP-TO-DATE
+> Task :core:externalComponentsValidate UP-TO-DATE
+> Task :core:externalComponentsCopy UP-TO-DATE
+> Task :swing:processResources UP-TO-DATE
+> Task :core:processResources UP-TO-DATE
+> Task :core:classes UP-TO-DATE
+> Task :core:jar UP-TO-DATE
+> Task :swing:compileJava UP-TO-DATE
+> Task :swing:classes UP-TO-DATE
+> Task :swing:jar UP-TO-DATE
+> Task :compileJava NO-SOURCE
+> Task :classes UP-TO-DATE
+> Task :jar UP-TO-DATE
+> Task :run
+
+BUILD SUCCESSFUL in 58s
+10 actionable tasks: 1 executed, 9 up-to-date

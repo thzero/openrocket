@@ -6,40 +6,37 @@ import info.openrocket.core.preset.ComponentPresetFactory;
 import info.openrocket.core.preset.InvalidComponentPresetException;
 import info.openrocket.core.preset.TypedPropertyMap;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.util.List;
 
 /**
  * Transition preset XML handler.
  */
-@XmlRootElement(name = "Transition")
-@XmlAccessorType(XmlAccessType.FIELD)
+@JacksonXmlRootElement(localName = "Transition")
 public class TransitionDTO extends BaseComponentDTO {
 
-    @XmlElement(name = "Shape")
+    @JacksonXmlProperty(localName = "Shape")
     private ShapeDTO shape;
 
-    @XmlElement(name = "ForeOutsideDiameter")
+    @JacksonXmlProperty(localName = "ForeOutsideDiameter")
     private AnnotatedLengthDTO foreOutsideDiameter;
-    @XmlElement(name = "ForeShoulderDiameter")
+    @JacksonXmlProperty(localName = "ForeShoulderDiameter")
     private AnnotatedLengthDTO foreShoulderDiameter;
-    @XmlElement(name = "ForeShoulderLength")
+    @JacksonXmlProperty(localName = "ForeShoulderLength")
     private AnnotatedLengthDTO foreShoulderLength;
 
-    @XmlElement(name = "AftOutsideDiameter")
+    @JacksonXmlProperty(localName = "AftOutsideDiameter")
     private AnnotatedLengthDTO aftOutsideDiameter;
-    @XmlElement(name = "AftShoulderDiameter")
+    @JacksonXmlProperty(localName = "AftShoulderDiameter")
     private AnnotatedLengthDTO aftShoulderDiameter;
-    @XmlElement(name = "AftShoulderLength")
+    @JacksonXmlProperty(localName = "AftShoulderLength")
     private AnnotatedLengthDTO aftShoulderLength;
 
-    @XmlElement(name = "Length")
+    @JacksonXmlProperty(localName = "Length")
     private AnnotatedLengthDTO length;
 
-    @XmlElement(name = "Thickness")
+    @JacksonXmlProperty(localName = "Thickness")
     private AnnotatedLengthDTO thickness;
 
     /**

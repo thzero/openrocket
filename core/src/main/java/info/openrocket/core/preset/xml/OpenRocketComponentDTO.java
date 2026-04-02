@@ -3,13 +3,9 @@ package info.openrocket.core.preset.xml;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlElementRef;
-import jakarta.xml.bind.annotation.XmlElementRefs;
-import jakarta.xml.bind.annotation.XmlElementWrapper;
-import jakarta.xml.bind.annotation.XmlRootElement;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 import info.openrocket.core.material.Material;
 import info.openrocket.core.preset.ComponentPreset;
@@ -18,33 +14,21 @@ import info.openrocket.core.preset.InvalidComponentPresetException;
 /**
  * The real 'root' element in an XML document.
  */
-@XmlRootElement(name = "OpenRocketComponent")
-@XmlAccessorType(XmlAccessType.FIELD)
+@JacksonXmlRootElement(localName = "OpenRocketComponent")
 public class OpenRocketComponentDTO {
 
-    @XmlElement(name = "Version")
+    @JacksonXmlProperty(localName = "Version")
     private final String version = "0.1";
 
-    @XmlElement(name = "Legacy", required = false)
+    @JacksonXmlProperty(localName = "Legacy")
     private String legacy;
 
-    @XmlElementWrapper(name = "Materials")
-    @XmlElement(name = "Material")
+    @JacksonXmlElementWrapper(localName = "Materials")
+    @JacksonXmlProperty(localName = "Material")
     List<MaterialDTO> materials = new ArrayList<>();
 
-    @XmlElementWrapper(name = "Components")
-    @XmlElementRefs({
-            @XmlElementRef(name = "BodyTubes", type = BodyTubeDTO.class),
-            @XmlElementRef(name = "TubeCouplers", type = TubeCouplerDTO.class),
-            @XmlElementRef(name = "NoseCones", type = NoseConeDTO.class),
-            @XmlElementRef(name = "Transitions", type = TransitionDTO.class),
-            @XmlElementRef(name = "BulkHeads", type = BulkHeadDTO.class),
-            @XmlElementRef(name = "CenteringRings", type = CenteringRingDTO.class),
-            @XmlElementRef(name = "EngineBlocks", type = EngineBlockDTO.class),
-            @XmlElementRef(name = "LaunchLugs", type = LaunchLugDTO.class),
-            @XmlElementRef(name = "RailButtons", type = RailButtonDTO.class),
-            @XmlElementRef(name = "Streamers", type = StreamerDTO.class),
-            @XmlElementRef(name = "Parachutes", type = ParachuteDTO.class) })
+    @JacksonXmlElementWrapper(localName = "Components")
+    @JacksonXmlProperty(localName = "Component")
     private List<BaseComponentDTO> components = new ArrayList<>();
 
     public OpenRocketComponentDTO() {

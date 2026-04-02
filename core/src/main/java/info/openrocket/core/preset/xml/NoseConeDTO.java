@@ -2,10 +2,8 @@ package info.openrocket.core.preset.xml;
 
 import java.util.List;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 import info.openrocket.core.preset.ComponentPreset;
 import info.openrocket.core.preset.ComponentPresetFactory;
@@ -15,22 +13,21 @@ import info.openrocket.core.preset.TypedPropertyMap;
 /**
  * A NoseCone preset XML handler.
  */
-@XmlRootElement(name = "NoseCone")
-@XmlAccessorType(XmlAccessType.FIELD)
+@JacksonXmlRootElement(localName = "NoseCone")
 public class NoseConeDTO extends BaseComponentDTO {
 
-    @XmlElement(name = "Shape")
+    @JacksonXmlProperty(localName = "Shape")
     private ShapeDTO shape;
-    @XmlElement(name = "OutsideDiameter")
+    @JacksonXmlProperty(localName = "OutsideDiameter")
     private AnnotatedLengthDTO outsideDiameter;
-    @XmlElement(name = "ShoulderDiameter")
+    @JacksonXmlProperty(localName = "ShoulderDiameter")
     private AnnotatedLengthDTO shoulderDiameter;
-    @XmlElement(name = "ShoulderLength")
+    @JacksonXmlProperty(localName = "ShoulderLength")
     private AnnotatedLengthDTO shoulderLength;
-    @XmlElement(name = "Length")
+    @JacksonXmlProperty(localName = "Length")
     private AnnotatedLengthDTO length;
 
-    @XmlElement(name = "Thickness")
+    @JacksonXmlProperty(localName = "Thickness")
     private AnnotatedLengthDTO thickness;
 
     /**

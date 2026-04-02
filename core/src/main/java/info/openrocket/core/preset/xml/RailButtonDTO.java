@@ -6,34 +6,31 @@ import info.openrocket.core.preset.ComponentPresetFactory;
 import info.openrocket.core.preset.InvalidComponentPresetException;
 import info.openrocket.core.preset.TypedPropertyMap;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.util.List;
 
 /**
  * Body tube preset XML handler.
  */
-@XmlRootElement(name = "RailButton")
-@XmlAccessorType(XmlAccessType.FIELD)
+@JacksonXmlRootElement(localName = "RailButton")
 public class RailButtonDTO extends BaseComponentDTO {
 
-    @XmlElement(name = "InnerDiameter")
+    @JacksonXmlProperty(localName = "InnerDiameter")
     private AnnotatedLengthDTO innerDiameter;
-    @XmlElement(name = "OuterDiameter")
+    @JacksonXmlProperty(localName = "OuterDiameter")
     private AnnotatedLengthDTO outerDiameter;
-    @XmlElement(name = "Height")
+    @JacksonXmlProperty(localName = "Height")
     private AnnotatedLengthDTO height;
-    @XmlElement(name = "BaseHeight")
+    @JacksonXmlProperty(localName = "BaseHeight")
     private AnnotatedLengthDTO baseHeight;
-    @XmlElement(name = "FlangeHeight")
+    @JacksonXmlProperty(localName = "FlangeHeight")
     private AnnotatedLengthDTO flangeHeight;
-    @XmlElement(name = "ScrewHeight")
+    @JacksonXmlProperty(localName = "ScrewHeight")
     private AnnotatedLengthDTO screwHeight;
-    @XmlElement(name = "ScrewMass")
+    @JacksonXmlProperty(localName = "ScrewMass")
     private AnnotatedMassDTO screwMass;
-    @XmlElement(name = "NutMass")
+    @JacksonXmlProperty(localName = "NutMass")
     private AnnotatedMassDTO nutMass;
 
     /**
