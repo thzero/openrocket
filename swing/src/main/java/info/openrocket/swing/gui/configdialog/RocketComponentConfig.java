@@ -25,6 +25,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import info.openrocket.swing.gui.dialogs.MessageDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -366,10 +367,8 @@ public class RocketComponentConfig extends JPanel implements Invalidatable, Inva
 				// Yes/No dialog: Are you sure you want to discard your changes?
 				SwingUtilities.invokeLater(() -> {
 					JPanel msg = createCancelOperationContent();
-					int resultYesNo = JOptionPane.showConfirmDialog(RocketComponentConfig.this, msg,
-							trans.get("RocketCompCfg.CancelOperation.title"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-
-					if (resultYesNo == JOptionPane.YES_OPTION) {
+					if (MessageDialog.confirmYesNoWarning(RocketComponentConfig.this, msg,
+							trans.get("RocketCompCfg.CancelOperation.title"))) {
 						ComponentConfigDialog.clearConfigListeners = false;
 
 						// Need to execute after delay, otherwise the dialog will not be disposed

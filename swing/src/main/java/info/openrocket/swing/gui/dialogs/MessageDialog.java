@@ -24,4 +24,30 @@ public abstract class MessageDialog {
 	public static void showError(Component parent, String message, String title) {
 		JOptionPane.showMessageDialog(parent, message, title, JOptionPane.ERROR_MESSAGE);
 	}
+
+	// --- Confirmation dialogs ---
+
+	/** YES/NO buttons, question icon. Returns true if user clicked Yes. */
+	public static boolean confirmYesNo(Component parent, Object message, String title) {
+		return JOptionPane.showConfirmDialog(parent, message, title,
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
+	}
+
+	/** YES/NO buttons, warning icon. Returns true if user clicked Yes. Use for destructive actions. */
+	public static boolean confirmYesNoWarning(Component parent, Object message, String title) {
+		return JOptionPane.showConfirmDialog(parent, message, title,
+				JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION;
+	}
+
+	/** OK/Cancel buttons, question icon. Returns true if user clicked OK. */
+	public static boolean confirmOkCancel(Component parent, Object message, String title) {
+		return JOptionPane.showConfirmDialog(parent, message, title,
+				JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.OK_OPTION;
+	}
+
+	/** OK/Cancel buttons, warning icon. Returns true if user clicked OK. Use for destructive actions. */
+	public static boolean confirmOkCancelWarning(Component parent, Object message, String title) {
+		return JOptionPane.showConfirmDialog(parent, message, title,
+				JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION;
+	}
 }

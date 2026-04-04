@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import info.openrocket.swing.gui.dialogs.MessageDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -126,9 +127,8 @@ public class PreferencesDialog extends JDialog {
 
 				// Yes/No dialog: Are you sure you want to discard your changes?
 				JPanel msg = createCancelOperationContent();
-				int resultYesNo = JOptionPane.showConfirmDialog(PreferencesDialog.this, msg,
-						trans.get("PreferencesDialog.CancelOperation.title"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-				if (resultYesNo == JOptionPane.YES_OPTION) {
+				if (MessageDialog.confirmYesNoWarning(PreferencesDialog.this, msg,
+						trans.get("PreferencesDialog.CancelOperation.title"))) {
 					closeDialog(false);
 				}
 			}

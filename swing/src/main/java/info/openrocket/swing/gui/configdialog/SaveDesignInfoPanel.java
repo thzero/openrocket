@@ -13,6 +13,7 @@ import info.openrocket.swing.gui.components.StyledLabel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
+import info.openrocket.swing.gui.dialogs.MessageDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.event.ActionEvent;
@@ -60,9 +61,8 @@ public class SaveDesignInfoPanel extends RocketConfig {
             public void actionPerformed(ActionEvent arg0) {
                 // Yes/No dialog: Are you sure you want to discard your changes?
                 JPanel msg = createCancelOperationContent();
-                int resultYesNo = JOptionPane.showConfirmDialog(SaveDesignInfoPanel.this, msg,
-                        trans.get("RocketCompCfg.CancelOperation.title"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-                if (resultYesNo == JOptionPane.YES_OPTION) {
+                if (MessageDialog.confirmYesNoWarning(SaveDesignInfoPanel.this, msg,
+                        trans.get("RocketCompCfg.CancelOperation.title"))) {
                     ComponentConfigDialog.clearConfigListeners = false;		// Undo action => config listeners of new component will be cleared
                     disposeDialog();
                 }

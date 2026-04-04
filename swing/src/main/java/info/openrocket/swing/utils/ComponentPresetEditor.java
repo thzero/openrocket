@@ -114,10 +114,9 @@ public class ComponentPresetEditor extends JPanel implements PresetResultListene
 				if (targetSelectedRow > -1 && targetSelectedRow < model.getRowCount()) {
 					int selectedRow = table.getRowSorter().convertRowIndexToModel(targetSelectedRow);
 					if (selectedColumn == 4) {
-						if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(ComponentPresetEditor.this,
+						if (MessageDialog.confirmYesNo(ComponentPresetEditor.this,
 								"Do you want to delete this preset?",
-								"Confirm Delete", JOptionPane.YES_OPTION,
-								JOptionPane.QUESTION_MESSAGE)) {
+								"Confirm Delete")) {
 							model.removeRow(selectedRow);
 						}
 					}
