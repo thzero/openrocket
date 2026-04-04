@@ -366,9 +366,12 @@ public class RocketComponentConfig extends JPanel implements Invalidatable, Inva
 
 				// Yes/No dialog: Are you sure you want to discard your changes?
 				SwingUtilities.invokeLater(() -> {
-					JPanel msg = createCancelOperationContent();
-					if (MessageDialog.confirmYesNoWarning(RocketComponentConfig.this, msg,
-							trans.get("RocketCompCfg.CancelOperation.title"))) {
+					String msg = isNewComponent ? trans.get("RocketCompCfg.CancelOperation.msg.undoAdd") :
+							trans.get("RocketCompCfg.CancelOperation.msg.discardChanges");
+					if (MessageDialog.confirmYesNoWarningWithDontAsk(RocketComponentConfig.this, msg,
+							trans.get("RocketCompCfg.CancelOperation.title"),
+							trans.get("RocketCompCfg.CancelOperation.checkbox.dontAskAgain"),
+							() -> preferences.setShowDiscardConfirmation(false))) {
 						ComponentConfigDialog.clearConfigListeners = false;
 
 						// Need to execute after delay, otherwise the dialog will not be disposed
@@ -409,30 +412,6 @@ public class RocketComponentConfig extends JPanel implements Invalidatable, Inva
 		}
 	}
 
-	protected JPanel createCancelOperationContent() {
-		JPanel panel = new JPanel(new MigLayout());
-		String msg = isNewComponent ? trans.get("RocketCompCfg.CancelOperation.msg.undoAdd") :
-				trans.get("RocketCompCfg.CancelOperation.msg.discardChanges");
-		JLabel msgLabel = new JLabel(msg);
-		JCheckBox dontAskAgain = new JCheckBox(trans.get("RocketCompCfg.CancelOperation.checkbox.dontAskAgain"));
-		dontAskAgain.setSelected(false);
-		dontAskAgain.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.SELECTED) {
-					preferences.setShowDiscardConfirmation(false);
-				}
-				// Unselected state should be not be possible and thus not be handled
-			}
-		});
-
-		panel.add(msgLabel, "left, wrap");
-		panel.add(dontAskAgain, "left, gaptop para");
-
-		return panel;
-	}
-	
-	
 	/**
 	 * Called when a change occurs, so that the fields can be updated if necessary.
 	 * When overriding this method, the supermethod must always be called.

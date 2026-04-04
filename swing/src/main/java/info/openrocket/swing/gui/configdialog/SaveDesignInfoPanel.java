@@ -60,9 +60,12 @@ public class SaveDesignInfoPanel extends RocketConfig {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 // Yes/No dialog: Are you sure you want to discard your changes?
-                JPanel msg = createCancelOperationContent();
-                if (MessageDialog.confirmYesNoWarning(SaveDesignInfoPanel.this, msg,
-                        trans.get("RocketCompCfg.CancelOperation.title"))) {
+                String msg = isNewComponent ? trans.get("RocketCompCfg.CancelOperation.msg.undoAdd") :
+                        trans.get("RocketCompCfg.CancelOperation.msg.discardChanges");
+                if (MessageDialog.confirmYesNoWarningWithDontAsk(SaveDesignInfoPanel.this, msg,
+                        trans.get("RocketCompCfg.CancelOperation.title"),
+                        trans.get("RocketCompCfg.CancelOperation.checkbox.dontAskAgain"),
+                        () -> preferences.setShowDiscardConfirmation(false))) {
                     ComponentConfigDialog.clearConfigListeners = false;		// Undo action => config listeners of new component will be cleared
                     disposeDialog();
                 }

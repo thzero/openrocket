@@ -126,9 +126,11 @@ public class PreferencesDialog extends JDialog {
 				}
 
 				// Yes/No dialog: Are you sure you want to discard your changes?
-				JPanel msg = createCancelOperationContent();
-				if (MessageDialog.confirmYesNoWarning(PreferencesDialog.this, msg,
-						trans.get("PreferencesDialog.CancelOperation.title"))) {
+				if (MessageDialog.confirmYesNoWarningWithDontAsk(PreferencesDialog.this,
+						trans.get("PreferencesDialog.CancelOperation.msg.discardChanges"),
+						trans.get("PreferencesDialog.CancelOperation.title"),
+						trans.get("SimulationConfigDialog.CancelOperation.checkbox.dontAskAgain"),
+						() -> preferences.setShowDiscardPreferencesConfirmation(false))) {
 					closeDialog(false);
 				}
 			}
@@ -232,28 +234,6 @@ public class PreferencesDialog extends JDialog {
 			return;
 		}
 		PreferencesImporter.importPreferences(initPrefsFile);
-	}
-
-	private JPanel createCancelOperationContent() {
-		JPanel panel = new JPanel(new MigLayout());
-		String msg = trans.get("PreferencesDialog.CancelOperation.msg.discardChanges");
-		JLabel msgLabel = new JLabel(msg);
-		JCheckBox dontAskAgain = new JCheckBox(trans.get("SimulationConfigDialog.CancelOperation.checkbox.dontAskAgain"));
-		dontAskAgain.setSelected(false);
-		dontAskAgain.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.SELECTED) {
-					preferences.setShowDiscardPreferencesConfirmation(false);
-				}
-				// Unselected state should be not be possible and thus not be handled
-			}
-		});
-
-		panel.add(msgLabel, "left, wrap");
-		panel.add(dontAskAgain, "left, gaptop para");
-
-		return panel;
 	}
 
 	// ////// Singleton implementation ////////

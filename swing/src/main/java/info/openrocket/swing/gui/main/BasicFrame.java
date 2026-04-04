@@ -1788,28 +1788,14 @@ private static final Translator trans = Application.getTranslator();
 	 * @return true if the file was written
 	 */
 	private boolean saveAsRASAero(File file) {
-		if (prefs.getShowRASAeroFormatWarning())  {
+		if (prefs.getShowRASAeroFormatWarning()) {
 			// Show RASAero format warning
 			JPanel panel = new JPanel(new MigLayout());
 			panel.add(new StyledLabel(trans.get("SaveRASAeroWarningDialog.txt1")), "wrap");
 			final JCheckBox check = new JCheckBox(trans.get("SaveRASAeroWarningDialog.donotshow"));
-			check.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					prefs.setShowRASAeroFormatWarning(!check.isSelected());
-				}
-			});
+			check.addActionListener(e -> prefs.setShowRASAeroFormatWarning(!check.isSelected()));
 			panel.add(check);
-			int sel = JOptionPane.showOptionDialog(BasicFrame.this,
-					panel,
-					"", // title
-					JOptionPane.OK_CANCEL_OPTION,
-					JOptionPane.WARNING_MESSAGE,
-					null, // icon
-					null, // options
-					null // default option
-			);
-			if (sel == 1) {
+			if (!MessageDialog.confirmOkCancelWarning(BasicFrame.this, panel, "")) {
 				return false;
 			}
 		}
@@ -1906,28 +1892,14 @@ private static final Translator trans = Application.getTranslator();
 	 * @return true if the file was written
 	 */
 	private boolean saveAsRockSim(File file) {
-		if ( prefs.getShowRockSimFormatWarning() ) {
+		if (prefs.getShowRockSimFormatWarning()) {
 			// Show RockSim format warning
 			JPanel panel = new JPanel(new MigLayout());
 			panel.add(new StyledLabel(trans.get("SaveRktWarningDialog.txt1")), "wrap");
 			final JCheckBox check = new JCheckBox(trans.get("SaveRktWarningDialog.donotshow"));
-			check.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					prefs.setShowRockSimFormatWarning(!check.isSelected());
-				}
-			});
+			check.addActionListener(e -> prefs.setShowRockSimFormatWarning(!check.isSelected()));
 			panel.add(check);
-			int sel = JOptionPane.showOptionDialog(BasicFrame.this,
-					panel,
-					"", // title
-					JOptionPane.OK_CANCEL_OPTION,
-					JOptionPane.WARNING_MESSAGE,
-					null, // icon
-					null, // options
-					null // default option
-					);
-			if ( sel == 1  ) {
+			if (!MessageDialog.confirmOkCancelWarning(BasicFrame.this, panel, "")) {
 				return false;
 			}
 		}

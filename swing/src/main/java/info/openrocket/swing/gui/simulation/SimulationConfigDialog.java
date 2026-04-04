@@ -470,29 +470,6 @@ public class SimulationConfigDialog extends JDialog {
 		});
 	}
 
-	private JPanel createCancelOperationContent() {
-		JPanel panel = new JPanel(new MigLayout());
-		String msg = isNewSimulation ? trans.get("SimulationConfigDialog.CancelOperation.msg.undoAdd") :
-				trans.get("SimulationConfigDialog.CancelOperation.msg.discardChanges");
-		JLabel msgLabel = new JLabel(msg);
-		JCheckBox dontAskAgain = new JCheckBox(trans.get("SimulationConfigDialog.CancelOperation.checkbox.dontAskAgain"));
-		dontAskAgain.setSelected(false);
-		dontAskAgain.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.SELECTED) {
-					preferences.setShowDiscardSimulationConfirmation(false);
-				}
-				// Unselected state should be not be possible and thus not be handled
-			}
-		});
-
-		panel.add(msgLabel, "left, wrap");
-		panel.add(dontAskAgain, "left, gaptop para");
-
-		return panel;
-	}
-
 	private void cancelSimEdit() {
 		// Don't do anything on cancel if you are editing an existing simulation, and it is not modified
 		if (!isNewSimulation && !isModified) {
@@ -507,9 +484,12 @@ public class SimulationConfigDialog extends JDialog {
 		}
 
 		// Yes/No dialog: Are you sure you want to discard your changes?
-		JPanel msg = createCancelOperationContent();
-		if (MessageDialog.confirmYesNoWarning(SimulationConfigDialog.this, msg,
-				trans.get("SimulationConfigDialog.CancelOperation.title"))) {
+		String msg = isNewSimulation ? trans.get("SimulationConfigDialog.CancelOperation.msg.undoAdd") :
+				trans.get("SimulationConfigDialog.CancelOperation.msg.discardChanges");
+		if (MessageDialog.confirmYesNoWarningWithDontAsk(SimulationConfigDialog.this, msg,
+				trans.get("SimulationConfigDialog.CancelOperation.title"),
+				trans.get("SimulationConfigDialog.CancelOperation.checkbox.dontAskAgain"),
+				() -> preferences.setShowDiscardSimulationConfirmation(false))) {
 			discardChanges();
 		}
 	}

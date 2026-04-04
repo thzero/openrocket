@@ -2,7 +2,13 @@ package info.openrocket.swing.gui.dialogs;
 
 import java.awt.Component;
 
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import java.awt.event.ItemEvent;
+
+import net.miginfocom.swing.MigLayout;
 
 /**
  * Utility class for showing simple single-message dialogs consistently.
@@ -49,5 +55,28 @@ public abstract class MessageDialog {
 	public static boolean confirmOkCancelWarning(Component parent, Object message, String title) {
 		return JOptionPane.showConfirmDialog(parent, message, title,
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION;
+	}
+
+	// --- Confirmation dialogs with "Don't ask again" checkbox ---
+
+	/**
+	 * YES/NO warning dialog with an inline "Don't ask me again" checkbox.
+	 * When the checkbox is selected, {@code onDontAsk} is invoked immediately (before the dialog closes).
+	 * Returns true if the user clicked Yes.
+	 */
+	public static boolean confirmYesNoWarningWithDontAsk(Component parent, String message, String title,
+			String checkboxLabel, Runnable onDontAsk) {
+		JPanel panel = new JPanel(new MigLayout());
+		panel.add(new JLabel(message), "left, wrap");
+		JCheckBox check = new JCheckBox(checkboxLabel);
+		check.addItemListener(e -> {
+			if (e.getStateChange() == ItemEvent.SELECTED) {
+				onDontAsk.run();
+			}
+			// Unselected state is not handled: preference is a one-way latch
+		});
+		panel.add(check, "left, gaptop para");
+		return JOptionPane.showConfirmDialog(parent, panel, title,
+				JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION;
 	}
 }
