@@ -120,6 +120,7 @@ import info.openrocket.swing.gui.dialogs.DetailDialog;
 import info.openrocket.swing.gui.dialogs.LicenseDialog;
 import info.openrocket.swing.gui.dialogs.PrintDialog;
 import info.openrocket.swing.gui.dialogs.SwingWorkerDialog;
+import info.openrocket.swing.gui.dialogs.MessageDialog;
 import info.openrocket.swing.gui.dialogs.WarningDialog;
 import info.openrocket.swing.gui.dialogs.optimization.GeneralOptimizationDialog;
 import info.openrocket.swing.gui.dialogs.preferences.PreferencesDialog;
@@ -1855,10 +1856,9 @@ private static final Translator trans = Application.getTranslator();
 			}
 			// Do not update the save state of the document.
 			if (errors.isEmpty()) {
-				JOptionPane.showMessageDialog(BasicFrame.this,
+				MessageDialog.showInfo(BasicFrame.this,
 						trans.get("BasicFrame.ExportCompleteDialog.rasaero.msg"),
-						trans.get("BasicFrame.ExportCompleteDialog.rasaero.title"),
-						JOptionPane.INFORMATION_MESSAGE);
+						trans.get("BasicFrame.ExportCompleteDialog.rasaero.title"));
 			}
 			return errors.isEmpty();
 		} catch (IOException e) {
@@ -1967,10 +1967,9 @@ private static final Translator trans = Application.getTranslator();
 						},
 						trans.get("BasicFrame.ErrorWarningDialog.saving.title"), errors, warnings);
 			} else {
-				JOptionPane.showMessageDialog(BasicFrame.this,
+				MessageDialog.showInfo(BasicFrame.this,
 						trans.get("BasicFrame.ExportCompleteDialog.rocksim.msg"),
-						trans.get("BasicFrame.ExportCompleteDialog.rocksim.title"),
-						JOptionPane.INFORMATION_MESSAGE);
+						trans.get("BasicFrame.ExportCompleteDialog.rocksim.title"));
 			}
 			// Do not update the save state of the document.
 			return errors.isEmpty();

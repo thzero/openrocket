@@ -23,6 +23,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+
+import info.openrocket.swing.gui.dialogs.MessageDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -376,8 +378,9 @@ public class ComponentPresetEditor extends JPanel implements PresetResultListene
 			}
 		} catch (Exception e) {
 			String fileName = (file == null) ? "(file is null, can't get name)" : file.getName();
-			JOptionPane.showMessageDialog(ComponentPresetEditor.this, "Unable to open OpenRocket component file: " +
-					fileName + " Invalid format. " + e.getMessage());
+			MessageDialog.showError(ComponentPresetEditor.this,
+					"Unable to open OpenRocket component file: " + fileName + " Invalid format. " + e.getMessage(),
+					"Error opening file");
 			editContext.setOpenedFile(null);
 			editContext.setEditingSelected(false);
 			return false;
@@ -389,8 +392,7 @@ public class ComponentPresetEditor extends JPanel implements PresetResultListene
 		try {
 			return saveAsORC();
 		} catch (Exception e1) {
-			JOptionPane.showMessageDialog(ComponentPresetEditor.this, e1.getLocalizedMessage(),
-					"Error saving ORC file.", JOptionPane.ERROR_MESSAGE);
+			MessageDialog.showError(ComponentPresetEditor.this, e1.getLocalizedMessage(), "Error saving ORC file");
 			return false;
 		}
 	}
