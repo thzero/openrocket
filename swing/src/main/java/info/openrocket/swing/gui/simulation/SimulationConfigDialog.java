@@ -378,7 +378,7 @@ public class SimulationConfigDialog extends JDialog {
 				cancelClose();
 			}
 		});
-		bottomPanel.add(this.cancelButton, "split 2, tag ok, pushx, align right");
+		bottomPanel.add(this.cancelButton, "split 2, tag cancel, pushx, align right");
 
 		//// Ok button
 		this.okButton = new JButton(trans.get("dlg.but.ok"));

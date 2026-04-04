@@ -70,7 +70,7 @@ public class ComponentAnalysisDialog extends JDialog {
 		// OK button
 		this.okButton = plotExportTab.getOkButton();
 		this.okButton.setVisible(false);
-		panel.add(okButton, "tag cancel, wrap");
+		panel.add(okButton, "tag ok, wrap");
 
 		tabbedPane.addChangeListener(new ChangeListener() {
 			@Override
