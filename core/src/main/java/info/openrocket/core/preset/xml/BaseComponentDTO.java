@@ -9,6 +9,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import info.openrocket.core.material.MaterialGroup;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -35,6 +36,7 @@ import info.openrocket.core.unit.UnitGroup;
  * Base class for the external representation of all component presets.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
 @JsonSubTypes({
 		@JsonSubTypes.Type(value = BodyTubeDTO.class, name = "BodyTube"),
@@ -142,6 +144,7 @@ public abstract class BaseComponentDTO {
 		mass = theMass;
 	}
 
+	@com.fasterxml.jackson.annotation.JsonIgnore
 	public void setMass(final double theMass) {
 		mass = new AnnotatedMassDTO(theMass);
 	}
@@ -255,6 +258,16 @@ public abstract class BaseComponentDTO {
 			materialGroup = theMaterial.getGroup().getDatabaseString();
 		}
 
+		@JacksonXmlProperty(isAttribute = true, localName = "Type")
+		public void setType(String type) {
+			this.type = type;
+		}
+
+		@JacksonXmlProperty(isAttribute = true, localName = "Group")
+		public void setGroup(String materialGroup) {
+			this.materialGroup = materialGroup;
+		}
+
 		@com.fasterxml.jackson.annotation.JsonIgnore
 		public Material.Type getORMaterialType() {
 			if ("BULK".equals(type)) {
@@ -283,6 +296,11 @@ public abstract class BaseComponentDTO {
 			this.length = length;
 		}
 
+		@JacksonXmlProperty(isAttribute = true, localName = "Unit")
+		public void setUnit(String unitName) {
+			this.unitName = unitName;
+		}
+
 		public double getValue() {
 			return UnitGroup.UNITS_LENGTH.getUnit(unitName).fromUnit(length);
 		}
@@ -301,6 +319,11 @@ public abstract class BaseComponentDTO {
 		AnnotatedMassDTO(double mass) {
 			unitName = "kg";
 			this.mass = mass;
+		}
+
+		@JacksonXmlProperty(isAttribute = true, localName = "Unit")
+		public void setUnit(String unitName) {
+			this.unitName = unitName;
 		}
 
 		public double getValue() {

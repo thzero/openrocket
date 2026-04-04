@@ -6,6 +6,7 @@ import info.openrocket.core.preset.ComponentPresetFactory;
 import info.openrocket.core.preset.InvalidComponentPresetException;
 import info.openrocket.core.preset.TypedPropertyMap;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.util.List;
@@ -85,6 +86,7 @@ public class TransitionDTO extends BaseComponentDTO {
         foreOutsideDiameter = theForeOutsideDiameter;
     }
 
+    @JsonIgnore
     public void setForeOutsideDiameter(final double theForeOutsideDiameter) {
         foreOutsideDiameter = new AnnotatedLengthDTO(theForeOutsideDiameter);
     }
@@ -97,6 +99,7 @@ public class TransitionDTO extends BaseComponentDTO {
         foreShoulderDiameter = theForeShoulderDiameter;
     }
 
+    @JsonIgnore
     public void setForeShoulderDiameter(final double theForeShoulderDiameter) {
         foreShoulderDiameter = new AnnotatedLengthDTO(theForeShoulderDiameter);
     }
@@ -109,6 +112,7 @@ public class TransitionDTO extends BaseComponentDTO {
         foreShoulderLength = theForeShoulderLength;
     }
 
+    @JsonIgnore
     public void setForeShoulderLength(final double theForeShoulderLength) {
         foreShoulderLength = new AnnotatedLengthDTO(theForeShoulderLength);
     }
@@ -121,6 +125,7 @@ public class TransitionDTO extends BaseComponentDTO {
         aftOutsideDiameter = theAftOutsideDiameter;
     }
 
+    @JsonIgnore
     public void setAftOutsideDiameter(final double theAftOutsideDiameter) {
         aftOutsideDiameter = new AnnotatedLengthDTO(theAftOutsideDiameter);
     }
@@ -133,6 +138,7 @@ public class TransitionDTO extends BaseComponentDTO {
         aftShoulderDiameter = theAftShoulderDiameter;
     }
 
+    @JsonIgnore
     public void setAftShoulderDiameter(final double theAftShoulderDiameter) {
         aftShoulderDiameter = new AnnotatedLengthDTO(theAftShoulderDiameter);
     }
@@ -145,6 +151,7 @@ public class TransitionDTO extends BaseComponentDTO {
         aftShoulderLength = theAftShoulderLength;
     }
 
+    @JsonIgnore
     public void setAftShoulderLength(final double theAftShoulderLength) {
         aftShoulderLength = new AnnotatedLengthDTO(theAftShoulderLength);
     }
@@ -157,6 +164,7 @@ public class TransitionDTO extends BaseComponentDTO {
         length = theLength;
     }
 
+    @JsonIgnore
     public void setLength(final double theLength) {
         length = new AnnotatedLengthDTO(theLength);
     }
@@ -169,6 +177,7 @@ public class TransitionDTO extends BaseComponentDTO {
         this.thickness = thickness;
     }
 
+    @JsonIgnore
     public void setThickness(double thickness) {
         this.thickness = new AnnotatedLengthDTO(thickness);
     }

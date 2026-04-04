@@ -27,12 +27,25 @@ import info.openrocket.core.file.rasaero.export.RASAeroSaver.RASAeroExportExcept
 
 @SuppressWarnings("unused")
 public class RocketDesignDTO {
-    @JacksonXmlElementWrapper(useWrapping = false)
-    @JacksonXmlProperty
-    private final List<BasePartDTO> externalPart = new ArrayList<>();
+    // Separate typed fields replace the former polymorphic List<BasePartDTO>,
+    // ensuring each component serializes with its correct XML element name
+    // (NoseCone, BodyTube, Transition, BoatTail) — mirroring JAXB @XmlElementRefs.
+    @JacksonXmlProperty(localName = RASAeroCommonConstants.NOSE_CONE)
+    private NoseConeDTO noseCone = null;
 
     @JacksonXmlElementWrapper(useWrapping = false)
-    @JacksonXmlProperty
+    @JacksonXmlProperty(localName = RASAeroCommonConstants.BODY_TUBE)
+    private final List<BodyTubeDTO> bodyTubes = new ArrayList<>();
+
+    @JacksonXmlElementWrapper(useWrapping = false)
+    @JacksonXmlProperty(localName = RASAeroCommonConstants.TRANSITION)
+    private final List<TransitionDTO> transitions = new ArrayList<>();
+
+    @JacksonXmlProperty(localName = RASAeroCommonConstants.BOATTAIL)
+    private BoattailDTO boattail = null;
+
+    @JacksonXmlElementWrapper(useWrapping = false)
+    @JacksonXmlProperty(localName = RASAeroCommonConstants.BOOSTER)
     private final List<BoosterDTO> boosters = new ArrayList<>();
 
     @JacksonXmlProperty(localName = RASAeroCommonConstants.SURFACE_FINISH)
@@ -209,11 +222,24 @@ public class RocketDesignDTO {
     }
 
     public List<BasePartDTO> getExternalPart() {
-        return externalPart;
+        List<BasePartDTO> result = new ArrayList<>();
+        if (noseCone != null) result.add(noseCone);
+        result.addAll(bodyTubes);
+        result.addAll(transitions);
+        if (boattail != null) result.add(boattail);
+        return result;
     }
 
     public void addExternalPart(BasePartDTO theExternalPartDTO) {
-        externalPart.add(theExternalPartDTO);
+        if (theExternalPartDTO instanceof BoattailDTO) {
+            boattail = (BoattailDTO) theExternalPartDTO;
+        } else if (theExternalPartDTO instanceof NoseConeDTO) {
+            noseCone = (NoseConeDTO) theExternalPartDTO;
+        } else if (theExternalPartDTO instanceof BodyTubeDTO) {
+            bodyTubes.add((BodyTubeDTO) theExternalPartDTO);
+        } else if (theExternalPartDTO instanceof TransitionDTO) {
+            transitions.add((TransitionDTO) theExternalPartDTO);
+        }
     }
 
     public List<BoosterDTO> getBoosters() {

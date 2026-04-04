@@ -2,6 +2,7 @@ package info.openrocket.core.preset.xml;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
@@ -15,6 +16,7 @@ import info.openrocket.core.util.Chars;
  * XML handler for materials.
  */
 @JacksonXmlRootElement(localName = "Material")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MaterialDTO {
 
 	@JacksonXmlProperty(localName = "Name")

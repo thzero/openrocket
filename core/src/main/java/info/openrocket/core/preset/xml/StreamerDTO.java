@@ -6,6 +6,7 @@ import info.openrocket.core.preset.ComponentPresetFactory;
 import info.openrocket.core.preset.InvalidComponentPresetException;
 import info.openrocket.core.preset.TypedPropertyMap;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.util.List;
@@ -53,6 +54,7 @@ public class StreamerDTO extends BaseComponentDTO {
         width = theWidth;
     }
 
+    @JsonIgnore
     public void setWidth(final double theId) {
         width = new AnnotatedLengthDTO(theId);
     }
@@ -65,6 +67,7 @@ public class StreamerDTO extends BaseComponentDTO {
         thickness = theThickness;
     }
 
+    @JsonIgnore
     public void setThickness(final double theThickness) {
         thickness = new AnnotatedLengthDTO(theThickness);
     }
@@ -77,6 +80,7 @@ public class StreamerDTO extends BaseComponentDTO {
         length = theLength;
     }
 
+    @JsonIgnore
     public void setLength(final double theLength) {
         length = new AnnotatedLengthDTO(theLength);
     }

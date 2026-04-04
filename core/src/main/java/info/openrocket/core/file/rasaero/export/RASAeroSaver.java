@@ -9,6 +9,7 @@ import info.openrocket.core.rocketcomponent.Rocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.io.BufferedWriter;
@@ -31,7 +32,8 @@ public class RASAeroSaver extends RocketSaver {
     private static final Logger log = LoggerFactory.getLogger(RASAeroSaver.class);
 
     private static final XmlMapper XML_MAPPER = (XmlMapper) new XmlMapper()
-            .enable(SerializationFeature.INDENT_OUTPUT);
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
     public static class RASAeroExportException extends Exception {
         public RASAeroExportException(String errorMessage) {

@@ -6,6 +6,7 @@ import info.openrocket.core.preset.ComponentPresetFactory;
 import info.openrocket.core.preset.InvalidComponentPresetException;
 import info.openrocket.core.preset.TypedPropertyMap;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.util.List;
@@ -47,6 +48,7 @@ public class BulkHeadDTO extends BaseComponentDTO {
         outsideDiameter = theOutsideDiameter;
     }
 
+    @JsonIgnore
     public void setOutsideDiameter(final double theOutsideDiameter) {
         outsideDiameter = new AnnotatedLengthDTO(theOutsideDiameter);
     }
@@ -59,6 +61,7 @@ public class BulkHeadDTO extends BaseComponentDTO {
         length = theLength;
     }
 
+    @JsonIgnore
     public void setLength(final double theLength) {
         length = new AnnotatedLengthDTO(theLength);
     }

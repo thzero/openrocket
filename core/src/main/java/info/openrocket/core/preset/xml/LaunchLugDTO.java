@@ -6,6 +6,7 @@ import info.openrocket.core.preset.ComponentPresetFactory;
 import info.openrocket.core.preset.InvalidComponentPresetException;
 import info.openrocket.core.preset.TypedPropertyMap;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.util.List;
@@ -53,6 +54,7 @@ public class LaunchLugDTO extends BaseComponentDTO {
         insideDiameter = theLength;
     }
 
+    @JsonIgnore
     public void setInsideDiameter(final double theId) {
         insideDiameter = new AnnotatedLengthDTO(theId);
     }
@@ -65,6 +67,7 @@ public class LaunchLugDTO extends BaseComponentDTO {
         outsideDiameter = theOd;
     }
 
+    @JsonIgnore
     public void setOutsideDiameter(final double theOd) {
         outsideDiameter = new AnnotatedLengthDTO(theOd);
     }
@@ -77,6 +80,7 @@ public class LaunchLugDTO extends BaseComponentDTO {
         length = theLength;
     }
 
+    @JsonIgnore
     public void setLength(final double theLength) {
         length = new AnnotatedLengthDTO(theLength);
     }

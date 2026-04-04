@@ -2,6 +2,7 @@ package info.openrocket.core.preset.xml;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
@@ -29,6 +30,9 @@ public class NoseConeDTO extends BaseComponentDTO {
 
     @JacksonXmlProperty(localName = "Thickness")
     private AnnotatedLengthDTO thickness;
+
+    @JacksonXmlProperty(localName = "InsideDiameter")
+    private AnnotatedLengthDTO insideDiameter;
 
     /**
      * Default constructor.
@@ -77,6 +81,7 @@ public class NoseConeDTO extends BaseComponentDTO {
         outsideDiameter = theOutsideDiameter;
     }
 
+    @JsonIgnore
     public void setOutsideDiameter(final double theOutsideDiameter) {
         outsideDiameter = new AnnotatedLengthDTO(theOutsideDiameter);
     }
@@ -89,6 +94,7 @@ public class NoseConeDTO extends BaseComponentDTO {
         shoulderDiameter = theShoulderDiameter;
     }
 
+    @JsonIgnore
     public void setShoulderDiameter(final double theShoulderDiameter) {
         shoulderDiameter = new AnnotatedLengthDTO(theShoulderDiameter);
     }
@@ -101,6 +107,7 @@ public class NoseConeDTO extends BaseComponentDTO {
         shoulderLength = theShoulderLength;
     }
 
+    @JsonIgnore
     public void setShoulderLength(final double theShoulderLength) {
         shoulderLength = new AnnotatedLengthDTO(theShoulderLength);
     }
@@ -113,6 +120,7 @@ public class NoseConeDTO extends BaseComponentDTO {
         length = theLength;
     }
 
+    @JsonIgnore
     public void setLength(final double theLength) {
         length = new AnnotatedLengthDTO(theLength);
     }
@@ -125,8 +133,22 @@ public class NoseConeDTO extends BaseComponentDTO {
         this.thickness = thickness;
     }
 
+    @JsonIgnore
     public void setThickness(double thickness) {
         this.thickness = new AnnotatedLengthDTO(thickness);
+    }
+
+    public double getInsideDiameter() {
+        return insideDiameter == null ? 0.0 : insideDiameter.getValue();
+    }
+
+    public void setInsideDiameter(AnnotatedLengthDTO insideDiameter) {
+        this.insideDiameter = insideDiameter;
+    }
+
+    @JsonIgnore
+    public void setInsideDiameter(double insideDiameter) {
+        this.insideDiameter = new AnnotatedLengthDTO(insideDiameter);
     }
 
     @Override

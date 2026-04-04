@@ -5,7 +5,9 @@ import info.openrocket.core.preset.ComponentPreset;
 import info.openrocket.core.preset.ComponentPresetFactory;
 import info.openrocket.core.preset.InvalidComponentPresetException;
 import info.openrocket.core.preset.TypedPropertyMap;
+import info.openrocket.core.rocketcomponent.ExternalComponent;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.util.List;
@@ -32,6 +34,10 @@ public class RailButtonDTO extends BaseComponentDTO {
     private AnnotatedMassDTO screwMass;
     @JacksonXmlProperty(localName = "NutMass")
     private AnnotatedMassDTO nutMass;
+    @JacksonXmlProperty(localName = "DragCoefficient")
+    private String dragCoefficient;
+    @JacksonXmlProperty(localName = "Finish")
+    private String finish;
 
     /**
      * Default constructor.
@@ -92,6 +98,7 @@ public class RailButtonDTO extends BaseComponentDTO {
         height = theHeight;
     }
 
+    @JsonIgnore
     public void setHeight(final double theHeight) {
         height = new AnnotatedLengthDTO(theHeight);
     }
@@ -112,6 +119,7 @@ public class RailButtonDTO extends BaseComponentDTO {
         flangeHeight = theFlangeHeight;
     }
 
+    @JsonIgnore
     public void setFlangeHeight(final double theFlangeHeight) {
         flangeHeight = new AnnotatedLengthDTO(theFlangeHeight);
     }
@@ -140,6 +148,22 @@ public class RailButtonDTO extends BaseComponentDTO {
         this.nutMass = new AnnotatedMassDTO(nutMass);
     }
 
+    public String getDragCoefficient() {
+        return dragCoefficient;
+    }
+
+    public void setDragCoefficient(String dragCoefficient) {
+        this.dragCoefficient = dragCoefficient;
+    }
+
+    public String getFinish() {
+        return finish;
+    }
+
+    public void setFinish(String finish) {
+        this.finish = finish;
+    }
+
     @Override
     public ComponentPreset asComponentPreset(Boolean legacy, java.util.List<MaterialDTO> materials)
             throws InvalidComponentPresetException {
@@ -159,6 +183,20 @@ public class RailButtonDTO extends BaseComponentDTO {
         props.put(ComponentPreset.SCREW_HEIGHT, this.getScrewHeight());
         props.put(ComponentPreset.SCREW_MASS, this.getScrewMass());
         props.put(ComponentPreset.NUT_MASS, this.getNutMass());
+        if (dragCoefficient != null && !dragCoefficient.trim().isEmpty()) {
+            try {
+                props.put(ComponentPreset.CD, Double.parseDouble(dragCoefficient.trim()));
+            } catch (NumberFormatException ignored) {
+                // skip invalid CD value
+            }
+        }
+        if (finish != null && !finish.trim().isEmpty()) {
+            try {
+                props.put(ComponentPreset.FINISH, ExternalComponent.Finish.valueOf(finish.trim().toUpperCase()));
+            } catch (IllegalArgumentException ignored) {
+                // skip unknown finish value
+            }
+        }
         props.put(ComponentPreset.TYPE, type);
 
         return ComponentPresetFactory.create(props);
