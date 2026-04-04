@@ -1854,6 +1854,12 @@ private static final Translator trans = Application.getTranslator();
 						trans.get("BasicFrame.ErrorWarningDialog.saving.title"), errors, warnings);
 			}
 			// Do not update the save state of the document.
+			if (errors.isEmpty()) {
+				JOptionPane.showMessageDialog(BasicFrame.this,
+						trans.get("BasicFrame.ExportCompleteDialog.rasaero.msg"),
+						trans.get("BasicFrame.ExportCompleteDialog.rasaero.title"),
+						JOptionPane.INFORMATION_MESSAGE);
+			}
 			return errors.isEmpty();
 		} catch (IOException e) {
 			return false;
@@ -1941,8 +1947,33 @@ private static final Translator trans = Application.getTranslator();
 	private boolean saveRockSimFile(File file, StorageOptions options) {
 		try {
 			ROCKET_SAVER.save(file, document, options);
+
+			WarningSet warnings = ROCKET_SAVER.getWarnings();
+			ErrorSet errors = ROCKET_SAVER.getErrors();
+
+			if (!warnings.isEmpty() && errors.isEmpty()) {
+				WarningDialog.showWarnings(BasicFrame.this,
+						new Object[]{
+								trans.get("BasicFrame.WarningDialog.saving.txt1") + " '" + file.getName() + "'.",
+								trans.get("BasicFrame.WarningDialog.saving.txt2")
+						},
+						trans.get("BasicFrame.WarningDialog.saving.title"),
+						warnings);
+			} else if (!errors.isEmpty()) {
+				ErrorWarningDialog.showErrorsAndWarnings(BasicFrame.this,
+						new Object[]{
+								trans.get("BasicFrame.WarningDialog.saving.txt1") + " '" + file.getName() + "'.",
+								trans.get("BasicFrame.ErrorWarningDialog.txt1")
+						},
+						trans.get("BasicFrame.ErrorWarningDialog.saving.title"), errors, warnings);
+			} else {
+				JOptionPane.showMessageDialog(BasicFrame.this,
+						trans.get("BasicFrame.ExportCompleteDialog.rocksim.msg"),
+						trans.get("BasicFrame.ExportCompleteDialog.rocksim.title"),
+						JOptionPane.INFORMATION_MESSAGE);
+			}
 			// Do not update the save state of the document.
-			return true;
+			return errors.isEmpty();
 		} catch (IOException e) {
 			return false;
 		} catch (DecalNotFoundException decex) {
