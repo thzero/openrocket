@@ -65,7 +65,7 @@ public class ComponentAnalysisDialog extends JDialog {
 				ComponentAnalysisDialog.this.dispose();
 			}
 		});
-		panel.add(closeBtn, "span, gapbefore push, split 2, right, tag cancel");
+		panel.add(closeBtn, "span, split 2, gapbefore push, gapright rel, tag cancel");
 
 		// OK button
 		this.okButton = plotExportTab.getOkButton();

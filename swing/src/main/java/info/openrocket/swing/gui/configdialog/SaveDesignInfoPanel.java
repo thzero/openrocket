@@ -71,7 +71,7 @@ public class SaveDesignInfoPanel extends RocketConfig {
                 }
             }
         });
-        buttonPanel.add(cancelButton, "split 2, right, gapleft 30lp");
+        buttonPanel.add(cancelButton, "split 2, gapleft 30lp, gapright rel, tag cancel");
 
         //// Ok button
         this.okButton = new JButton(trans.get("dlg.but.ok"));
@@ -82,7 +82,7 @@ public class SaveDesignInfoPanel extends RocketConfig {
                 disposeDialog();
             }
         });
-        buttonPanel.add(okButton);
+        buttonPanel.add(okButton, "tag ok");
 
         this.add(buttonPanel, "newline, spanx, growx");
     }

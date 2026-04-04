@@ -135,7 +135,7 @@ public class PreferencesDialog extends JDialog {
 				}
 			}
 		});
-		panel.add(cancelButton, "span, split 2, right, tag cancel");
+		panel.add(cancelButton, "span, split 2, gapbefore push, gapright rel, tag cancel");
 
 		//// Ok button
 		JButton okButton = new JButton(trans.get("dlg.but.ok"));
