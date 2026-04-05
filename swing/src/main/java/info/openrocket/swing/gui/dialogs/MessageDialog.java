@@ -1,6 +1,7 @@
 package info.openrocket.swing.gui.dialogs;
 
 import java.awt.Component;
+import java.util.function.BooleanSupplier;
 
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -78,5 +79,19 @@ public abstract class MessageDialog {
 		panel.add(check, "left, gaptop para");
 		return JOptionPane.showConfirmDialog(parent, panel, title,
 				JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION;
+	}
+
+	/**
+	 * YES/NO warning dialog with an inline "Don't ask me again" checkbox, guarded by a preference.
+	 * If {@code shouldAsk} returns false the dialog is skipped and the action proceeds.
+	 * When the checkbox is selected, {@code onDontAsk} is invoked (disabling future prompts).
+	 * Returns true if the action should proceed.
+	 */
+	public static boolean confirmYesNoWarningWithDontAsk(Component parent, String message, String title,
+			String checkboxLabel, BooleanSupplier shouldAsk, Runnable onDontAsk) {
+		if (!shouldAsk.getAsBoolean()) {
+			return true;
+		}
+		return confirmYesNoWarningWithDontAsk(parent, message, title, checkboxLabel, onDontAsk);
 	}
 }

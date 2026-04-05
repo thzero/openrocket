@@ -141,6 +141,8 @@ public abstract class ApplicationPreferences implements ChangeSource, ORPreferen
 
 	// Preferences Related to Simulations
 	public static final String CONFIRM_DELETE_SIMULATION = "ConfirmDeleteSimulation";
+	public static final String CONFIRM_DELETE_COMPONENT = "ConfirmDeleteComponent";
+	public static final String CONFIRM_DELETE_CONFIGURATION = "ConfirmDeleteConfiguration";
 	public static final String AUTO_RUN_SIMULATIONS = "AutoRunSimulations";
 	public static final String LAUNCH_ROD_LENGTH = "LaunchRodLength";
 	public static final String LAUNCH_INTO_WIND = "LaunchIntoWind";
@@ -376,6 +378,22 @@ public abstract class ApplicationPreferences implements ChangeSource, ORPreferen
 	
 	public final void setConfirmSimDeletion(boolean check) {
 		this.putBoolean(CONFIRM_DELETE_SIMULATION, check);
+	}
+
+	public final boolean getConfirmComponentDeletion() {
+		return this.getBoolean(CONFIRM_DELETE_COMPONENT, true);
+	}
+
+	public final void setConfirmComponentDeletion(boolean check) {
+		this.putBoolean(CONFIRM_DELETE_COMPONENT, check);
+	}
+
+	public final boolean getConfirmConfigurationDeletion() {
+		return this.getBoolean(CONFIRM_DELETE_CONFIGURATION, true);
+	}
+
+	public final void setConfirmConfigurationDeletion(boolean check) {
+		this.putBoolean(CONFIRM_DELETE_CONFIGURATION, check);
 	}
 	
 	public final boolean getAutoRunSimulations() {
