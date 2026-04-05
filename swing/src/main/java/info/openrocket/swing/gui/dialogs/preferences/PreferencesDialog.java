@@ -135,8 +135,6 @@ public class PreferencesDialog extends JDialog {
 				}
 			}
 		});
-		panel.add(cancelButton, "span, split 2, gapbefore push, gapright rel, tag cancel");
-
 		//// Ok button
 		JButton okButton = new JButton(trans.get("dlg.but.ok"));
 		okButton.setToolTipText(trans.get("SimulationConfigDialog.btn.OK.ttip"));
@@ -146,7 +144,11 @@ public class PreferencesDialog extends JDialog {
 				closeDialog(true);
 			}
 		});
-		panel.add(okButton, "tag ok");
+
+		JPanel buttonBar = new JPanel(new MigLayout("ins 0"));
+		buttonBar.add(cancelButton, "gapright rel, tag cancel");
+		buttonBar.add(okButton, "tag ok");
+		panel.add(buttonBar, "span, right");
 
 
 

@@ -383,8 +383,6 @@ public class RocketComponentConfig extends JPanel implements Invalidatable, Inva
 				});
 			}
 		});
-		buttonPanel.add(cancelButton, "split 2, gapleft 30lp, gapright rel, tag cancel");
-
 		//// Ok button
 		this.okButton = new JButton(trans.get("dlg.but.ok"));
 		this.okButton.setToolTipText(trans.get("RocketCompCfg.btn.OK.ttip"));
@@ -394,7 +392,11 @@ public class RocketComponentConfig extends JPanel implements Invalidatable, Inva
 				disposeDialog();
 			}
 		});
-		buttonPanel.add(okButton, "tag ok");
+
+		JPanel buttonBar = new JPanel(new MigLayout("ins 0"));
+		buttonBar.add(cancelButton, "gapright rel, tag cancel");
+		buttonBar.add(okButton, "tag ok");
+		buttonPanel.add(buttonBar, "right");
 
 		updateFields();
 
