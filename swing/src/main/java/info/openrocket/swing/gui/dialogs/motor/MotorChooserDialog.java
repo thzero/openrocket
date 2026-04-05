@@ -1,8 +1,10 @@
 package info.openrocket.swing.gui.dialogs.motor;
 
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Dialog;
+import java.awt.FlowLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,15 +44,15 @@ public class MotorChooserDialog extends JDialog implements CloseableDialog {
 		
 		// We're going to reuse this dialog so only hide it when it's closed.
 		this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-		
-		JPanel panel = new JPanel(new MigLayout("fill, ins 0"));
+
+		// Use BorderLayout so the button bar is always anchored to the bottom,
+		// regardless of window size.
+		JPanel panel = new JPanel(new BorderLayout());
 
 		selectionPanel = new ThrustCurveMotorSelectionPanel();
 		selectionPanel.setMinimumSize(new Dimension(0, 0));
-		panel.add(selectionPanel, "grow, pushx, pushy, wrap");
-		
-		
-		// OK / Cancel buttons
+		panel.add(selectionPanel, BorderLayout.CENTER);
+		// OK / Cancel buttons in a dedicated bottom bar
 		JButton okButton = new JButton(trans.get("dlg.but.ok"));
 		okButton.addActionListener(new ActionListener() {
 			@Override
@@ -58,9 +60,7 @@ public class MotorChooserDialog extends JDialog implements CloseableDialog {
 				close(true);
 			}
 		});
-		panel.add(okButton, "split 2, gapbefore push, gapright rel, tag ok");
-		
-		//// Cancel button
+
 		JButton cancelButton = new JButton(trans.get("dlg.but.cancel"));
 		cancelButton.addActionListener(new ActionListener() {
 			@Override
@@ -68,13 +68,21 @@ public class MotorChooserDialog extends JDialog implements CloseableDialog {
 				close(false);
 			}
 		});
-		panel.add(cancelButton, "tag cancel");
-		
+
+		JPanel buttonBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 6));
+		buttonBar.add(okButton);
+		buttonBar.add(cancelButton);
+		panel.add(buttonBar, BorderLayout.SOUTH);
+
 		this.add(panel);
-		
+
 		this.setModal(true);
-		this.pack();
-		this.setLocationByPlatform(true);
+		this.setMinimumSize(new Dimension(900, 600));
+		this.setSize(1100, 750);
+		GUIUtil.rememberWindowSize(this);
+		GUIUtil.rememberWindowPosition(this);
+		// Enforce minimum after any stored size is restored
+		this.setSize(Math.max(getWidth(), 900), Math.max(getHeight(), 600));
 		Action closeAction = new AbstractAction() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
