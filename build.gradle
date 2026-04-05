@@ -199,6 +199,14 @@ tasks.named('check') {
     dependsOn(subprojects.collect { it.tasks.named('check') })
 }
 
+// Build everything without running any tests.
+// Usage: .\gradlew buildNoTest
+tasks.register('buildNoTest') {
+    group = 'build'
+    description = 'Compiles all subprojects and produces the shadow (fat) JAR without running tests.'
+    dependsOn ':core:classes', ':swing:classes', 'shadowJar'
+}
+
 //tasks.register('serializeEngines') {
 //    dependsOn ':core:serializeEngines'
 //}
