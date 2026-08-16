@@ -135,7 +135,7 @@ class SimulationOptionsPanel extends JPanel {
 		// // Simulator options
 		sub.setBorder(BorderFactory.createTitledBorder(trans
 				.get("simedtdlg.border.Simopt")));
-		this.add(sub, "growx, growy, aligny 0");
+		this.add(sub, "growx, aligny 0");
 
 		// Separate panel for computation methods, as they use a different
 		// layout
@@ -189,7 +189,7 @@ class SimulationOptionsPanel extends JPanel {
 		configureImmediateTooltipDelay(aerodynamicLookupSummaryIconLabel);
 		subsub.add(aerodynamicLookupSummaryIconLabel, "gapleft rel, wrap para");
 
-		sub.add(subsub, "spanx, growx, wmin 0, wrap para");
+		sub.add(subsub, "spanx, growx, wmin 0, wrap");
 
 		/*label = new JLabel("6-DOF Runge-Kutta 4");
 		label.setToolTipText(tip);
@@ -287,7 +287,7 @@ class SimulationOptionsPanel extends JPanel {
 				.toStringUnit(RK4SimulationStepper.RECOMMENDED_TIME_STEP)
 				+ ".";
 		label.setToolTipText(tip);
-		subsub.add(label, "gaptop para, gapright para");
+		subsub.add(label, "gapright para");
 
 		m = new DoubleModel(conditions, "TimeStep", UnitGroup.UNITS_TIME_STEP,
 				0.01, 1);
@@ -327,7 +327,7 @@ class SimulationOptionsPanel extends JPanel {
 		fixedRandomSeedCheckBox = new JCheckBox(trans.get("simedtdlg.checkbox.FixedRandomSeed"),
 				conditions.isRandomSeedFixed());
 		fixedRandomSeedCheckBox.setToolTipText(tip);
-		subsub.add(fixedRandomSeedCheckBox, "gaptop para, gapright para");
+		subsub.add(fixedRandomSeedCheckBox, "gapright para");
 
 		randomSeedField = new JTextField(12);
 		randomSeedField.setToolTipText(trans.get("simedtdlg.lbl.ttip.RandomSeed"));
@@ -450,8 +450,8 @@ class SimulationOptionsPanel extends JPanel {
 		JTabbedPane recoveryTabs = new JTabbedPane();
 
 		// --- Single deployment tab ---
-		JPanel singleTab = new JPanel(new MigLayout("insets n, fillx", "[][min!][min!][grow]"));
-		singleTab.add(createWrappingInfoText(trans.get("simedtdlg.lbl.RecoveryWarnings.desc"), Style.ITALIC), "spanx, growx, wmin 0, wrap para");
+		JPanel singleTab = new JPanel(new MigLayout("insets 0, fillx", "[][min!][min!][grow]"));
+		singleTab.add(createWrappingInfoText(trans.get("simedtdlg.lbl.RecoveryWarnings.desc"), Style.ITALIC), "spanx, growx, wmin 0, wrap");
 		label = new JLabel(trans.get("simedtdlg.lbl.HighSpeedWarning"));
 		label.setToolTipText(trans.get("simedtdlg.lbl.ttip.HighSpeedWarning"));
 		singleTab.add(label, "gapright para");
@@ -464,10 +464,10 @@ class SimulationOptionsPanel extends JPanel {
 		recoveryTabs.addTab(trans.get("simedtdlg.border.SingleDeployment"), singleTab);
 
 		// --- Dual deployment tab ---
-		JPanel dualTab = new JPanel(new MigLayout("insets n, fillx", "[][min!][min!][grow]"));
-		dualTab.add(createWrappingInfoText(trans.get("simedtdlg.lbl.RecoveryWarnings.desc"), Style.ITALIC), "spanx, growx, wmin 0, wrap para");
+		JPanel dualTab = new JPanel(new MigLayout("insets 0, fillx", "[][min!][min!][grow]"));
+		dualTab.add(createWrappingInfoText(trans.get("simedtdlg.lbl.RecoveryWarnings.desc"), Style.ITALIC), "spanx, growx, wmin 0, wrap");
 
-		dualTab.add(createWrappingInfoText(trans.get("simedtdlg.lbl.DualDeployment.HowTo"), Style.PLAIN), "spanx, growx, wmin 0, wrap para");
+		dualTab.add(createWrappingInfoText(trans.get("simedtdlg.lbl.DualDeployment.HowTo"), Style.PLAIN), "spanx, growx, wmin 0, wrap");
 
 		label = new JLabel(trans.get("simedtdlg.lbl.LowSpeedWarning"));
 		label.setToolTipText(trans.get("simedtdlg.lbl.ttip.LowSpeedWarning"));
@@ -490,7 +490,7 @@ class SimulationOptionsPanel extends JPanel {
 		dualTab.add(new UnitSelector(m), "wrap");
 
 		recoveryTabs.addTab(trans.get("simedtdlg.border.DualDeployment"), dualTab);
-		subsub.add(recoveryTabs, "spanx, gaptop para, growx, wmin 0, wrap");
+		subsub.add(recoveryTabs, "spanx, growx");
 
 		sub.add(resetBtn, "align left, split 2");
 		sub.add(saveBtn, "wrap");
@@ -500,7 +500,7 @@ class SimulationOptionsPanel extends JPanel {
 		//// Simulation extensions
 		sub = new JPanel(new MigLayout("fillx, gap 0 0"));
 		sub.setBorder(BorderFactory.createTitledBorder(trans.get("simedtdlg.border.SimExt")));
-		this.add(sub, "wmin 300lp, growx, growy");
+		this.add(sub, "wmin 300lp, growx, aligny 0");
 		
 		
 		DescriptionArea desc = new DescriptionArea(EXTENSION_DESCRIPTION_ROWS);

@@ -27,7 +27,6 @@ import info.openrocket.swing.gui.components.StyledLabel;
 import info.openrocket.swing.gui.components.StyledLabel.Style;
 import info.openrocket.swing.gui.components.UnitSelector;
 import info.openrocket.swing.gui.util.FlatLafOutlines;
-import info.openrocket.swing.gui.util.GUIUtil;
 import info.openrocket.swing.gui.theme.UITheme;
 import info.openrocket.core.simulation.RK4SimulationStepper;
 import info.openrocket.core.models.gravity.GravityModelType;
@@ -93,15 +92,20 @@ public class SimulationPreferencesPanel extends PreferencesPanel {
 		BasicSlider slider;
 
 		// // Simulation options
-		sub = new JPanel(new MigLayout("fill"));
+		sub = new JPanel(new MigLayout("fillx"));
 		// // Simulator options
 		sub.setBorder(BorderFactory.createTitledBorder(trans
 				.get("simedtdlg.border.Simopt")));
-		this.add(sub, "grow, aligny 0, gaptop 40lp");
+		this.add(sub, "growx, aligny top, gaptop unrel, wrap");
+		// Invisible spacer that absorbs the extra vertical height the preferences dialog gives this
+		// tab (it is sized to the tallest tab), so the box above stays compact at the top.
+		JPanel bottomSpacer = new JPanel();
+		bottomSpacer.setOpaque(false);
+		this.add(bottomSpacer, "growy, pushy");
 
 		// Separate panel for computation methods, as they use a different
 		// layout
-		subsub = new JPanel(new MigLayout("insets 0, fill", "[grow][min!][min!][]"));
+		subsub = new JPanel(new MigLayout("insets 0, fillx", "[grow][min!][min!][]"));
 
 		// // Warning
 		StyledLabel warning = new StyledLabel(String.format(
@@ -260,61 +264,12 @@ public class SimulationPreferencesPanel extends PreferencesPanel {
 		unit.setToolTipText(tip);
 		subsub.add(unit, "wrap");
 
-		// Recovery speed warnings - tabbed by deployment type
-		JTabbedPane recoveryTabs = new JTabbedPane();
-
-		// --- Single deployment tab ---
-		JPanel singleTab = new JPanel(new MigLayout("insets n, fillx", "[][min!][min!][grow]"));
-		singleTab.add(new StyledLabel(trans.get("simedtdlg.lbl.RecoveryWarnings.desc"), -1, Style.ITALIC), "spanx, wrap para");
-		label = new JLabel(trans.get("simedtdlg.lbl.HighSpeedWarning"));
-		tip = trans.get("simedtdlg.lbl.ttip.HighSpeedWarning");
-		label.setToolTipText(tip);
-		singleTab.add(label, "gapright para");
-		DoubleModel m_rsw = new DoubleModel(preferences, "RecoverySpeedWarning", UnitGroup.UNITS_VELOCITY, 0);
-		spin = new JSpinner(m_rsw.getSpinnerModel());
-		spin.setEditor(new SpinnerEditor(spin));
-		spin.setToolTipText(tip);
-		singleTab.add(spin, "");
-		singleTab.add(new UnitSelector(m_rsw), "wrap");
-		recoveryTabs.addTab(trans.get("simedtdlg.border.SingleDeployment"), singleTab);
-
-		// --- Dual deployment tab ---
-		JPanel dualTab = new JPanel(new MigLayout("insets n, fillx", "[][min!][min!][grow]"));
-
-		dualTab.add(new StyledLabel(trans.get("simedtdlg.lbl.RecoveryWarnings.desc"), -1, Style.ITALIC), "spanx, wrap para");
-
-		dualTab.add(new StyledLabel(trans.get("simedtdlg.lbl.DualDeployment.HowTo"), -1, Style.PLAIN), "spanx, wrap para");
-
-		label = new JLabel(trans.get("simedtdlg.lbl.LowSpeedWarning"));
-		tip = trans.get("simedtdlg.lbl.ttip.LowSpeedWarning");
-		label.setToolTipText(tip);
-		dualTab.add(label, "gapright para");
-		DoubleModel m_mlsw = new DoubleModel(preferences, "RecoveryDrogueMainLowSpeedWarning", UnitGroup.UNITS_VELOCITY, 0);
-		spin = new JSpinner(m_mlsw.getSpinnerModel());
-		spin.setEditor(new SpinnerEditor(spin));
-		spin.setToolTipText(tip);
-		dualTab.add(spin, "");
-		dualTab.add(new UnitSelector(m_mlsw), "wrap");
-
-		label = new JLabel(trans.get("simedtdlg.lbl.HighSpeedWarning"));
-		tip = trans.get("simedtdlg.lbl.ttip.HighSpeedWarning");
-		label.setToolTipText(tip);
-		dualTab.add(label, "gapright para");
-		DoubleModel m_mhsw = new DoubleModel(preferences, "RecoveryDrogueMainHighSpeedWarning", UnitGroup.UNITS_VELOCITY, 0);
-		spin = new JSpinner(m_mhsw.getSpinnerModel());
-		spin.setEditor(new SpinnerEditor(spin));
-		spin.setToolTipText(tip);
-		dualTab.add(spin, "");
-		dualTab.add(new UnitSelector(m_mhsw), "wrap");
-
-		recoveryTabs.addTab(trans.get("simedtdlg.border.DualDeployment"), dualTab);
-		subsub.add(recoveryTabs, "spanx, gaptop para, growx, wrap");
-		// // Default fixed random seed:
+		// Use fixed random seed:
 		tip = trans.get("simedtdlg.checkbox.ttip.FixedRandomSeed");
 		fixedRandomSeedCheckBox = new JCheckBox(trans.get("simedtdlg.checkbox.FixedRandomSeed"),
 				preferences.isRandomSeedFixed());
 		fixedRandomSeedCheckBox.setToolTipText(tip);
-		subsub.add(fixedRandomSeedCheckBox, "gaptop para, gapright para");
+		subsub.add(fixedRandomSeedCheckBox, "gapright para");
 
 		randomSeedField = new JTextField(12);
 		randomSeedField.setToolTipText(trans.get("simedtdlg.lbl.ttip.RandomSeed"));
@@ -371,6 +326,56 @@ public class SimulationPreferencesPanel extends PreferencesPanel {
 				}
 			}
 		});
+
+		// Recovery speed warnings - tabbed by deployment type.
+		JTabbedPane recoveryTabs = new JTabbedPane();
+
+		// --- Single deployment tab ---
+		JPanel singleTab = new JPanel(new MigLayout("fillx", "[][min!][min!][grow]"));
+		singleTab.add(new StyledLabel(trans.get("simedtdlg.lbl.RecoveryWarnings.desc"), -1, Style.ITALIC), "spanx, growx,wrap");
+
+		label = new JLabel(trans.get("simedtdlg.lbl.HighSpeedWarning"));
+		tip = trans.get("simedtdlg.lbl.ttip.HighSpeedWarning");
+		label.setToolTipText(tip);
+		singleTab.add(label, "gapright para");
+		DoubleModel m_rsw = new DoubleModel(preferences, "RecoverySpeedWarning", UnitGroup.UNITS_VELOCITY, 0);
+		spin = new JSpinner(m_rsw.getSpinnerModel());
+		spin.setEditor(new SpinnerEditor(spin));
+		spin.setToolTipText(tip);
+		singleTab.add(spin, "");
+		singleTab.add(new UnitSelector(m_rsw), "wrap");
+		
+		recoveryTabs.addTab(trans.get("simedtdlg.border.SingleDeployment"), singleTab);
+
+		// --- Dual deployment tab ---
+		JPanel dualTab = new JPanel(new MigLayout("fillx", "[][min!][min!][grow]"));
+		dualTab.add(new StyledLabel(trans.get("simedtdlg.lbl.RecoveryWarnings.desc"), -1, Style.ITALIC), "spanx, growx, wrap");
+		dualTab.add(new StyledLabel(trans.get("simedtdlg.lbl.DualDeployment.HowTo"), -1, Style.PLAIN), "spanx, growx, wrap");
+
+		label = new JLabel(trans.get("simedtdlg.lbl.LowSpeedWarning"));
+		tip = trans.get("simedtdlg.lbl.ttip.LowSpeedWarning");
+		label.setToolTipText(tip);
+		dualTab.add(label, "gapright para");
+		DoubleModel m_mlsw = new DoubleModel(preferences, "RecoveryDrogueMainLowSpeedWarning", UnitGroup.UNITS_VELOCITY, 0);
+		spin = new JSpinner(m_mlsw.getSpinnerModel());
+		spin.setEditor(new SpinnerEditor(spin));
+		spin.setToolTipText(tip);
+		dualTab.add(spin, "");
+		dualTab.add(new UnitSelector(m_mlsw), "wrap");
+
+		label = new JLabel(trans.get("simedtdlg.lbl.HighSpeedWarning"));
+		tip = trans.get("simedtdlg.lbl.ttip.HighSpeedWarning");
+		label.setToolTipText(tip);
+		dualTab.add(label, "gapright para");
+		DoubleModel m_mhsw = new DoubleModel(preferences, "RecoveryDrogueMainHighSpeedWarning", UnitGroup.UNITS_VELOCITY, 0);
+		spin = new JSpinner(m_mhsw.getSpinnerModel());
+		spin.setEditor(new SpinnerEditor(spin));
+		spin.setToolTipText(tip);
+		dualTab.add(spin, "");
+		dualTab.add(new UnitSelector(m_mhsw), "wrap");
+
+		recoveryTabs.addTab(trans.get("simedtdlg.border.DualDeployment"), dualTab);
+		subsub.add(recoveryTabs, "spanx, growx");
 
 		sub.add(subsub, "spanx, wrap para");
 
