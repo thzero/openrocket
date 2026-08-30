@@ -66,10 +66,6 @@ public class SimulationResultsDTO {
 	private double launchGuideAzimuth;
 	@XmlElement(name = RockSimCommonConstants.LAUNCH_BAROMETER)
 	private double launchBarometer;
-	@XmlElement(name = RockSimCommonConstants.LAUNCH_LATITUDE)
-	private double launchLatitude;
-	@XmlElement(name = RockSimCommonConstants.LAUNCH_LONGITUDE)
-	private double launchLongitude;
 	@XmlElement(name = RockSimCommonConstants.LAUNCH_HUMIDITY)
 	private double launchHumidity;
 	@XmlElement(name = RockSimCommonConstants.LAUNCH_TEMPERATURE)
@@ -154,8 +150,6 @@ public class SimulationResultsDTO {
 		// RockSim-written RKT files store compass azimuths in degrees.
 		launchGuideAzimuth = Math.toDegrees(options.getLaunchRodDirection());
 		launchBarometer = options.getLaunchPressure() / PASCALS_PER_MMHG;
-		launchLatitude = options.getLaunchLatitude();
-		launchLongitude = options.getLaunchLongitude();
 		launchHumidity = options.getLaunchRelativeHumidity() * 100.0;
 		launchTemperature = options.getLaunchTemperature() - STANDARD_TEMPERATURE_OFFSET;
 		launchAltitude = options.getLaunchAltitude();
@@ -392,14 +386,6 @@ public class SimulationResultsDTO {
 
 	public double getLaunchBarometer() {
 		return launchBarometer;
-	}
-
-	public double getLaunchLatitude() {
-		return launchLatitude;
-	}
-
-	public double getLaunchLongitude() {
-		return launchLongitude;
 	}
 
 	public double getLaunchHumidity() {

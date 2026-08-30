@@ -1,6 +1,9 @@
 package info.openrocket.core.file.openrocket.importt;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import info.openrocket.core.logging.Message;
@@ -36,21 +39,42 @@ class FlightDataBranchHandler extends AbstractElementHandler {
 	private final SingleSimulationHandler simHandler;
 	private static final Translator trans = Application.getTranslator();
 
+	/**
+	 * ITAR: the rocket's geographic latitude/longitude position is no longer exposed as flight data.
+	 * Columns in legacy .ork files matching these saved identifiers (the language-independent save
+	 * keys, plus the historical English display names used before save keys existed) are dropped on
+	 * load, so the data is neither displayed, exported, nor written back out on the next save.
+	 */
+	private static final Set<String> BLOCKED_TYPE_NAMES = Set.of(
+			"latitude", "longitude",
+			"Latitude", "Longitude");
+
 	public FlightDataBranchHandler(String name, String typeList, SingleSimulationHandler simHandler,
 			DocumentLoadingContext context) {
 		this.simHandler = simHandler;
 		this.context = context;
 		String[] split = typeList.split(",");
+		// types[] is kept full-width (one entry per saved column, null for dropped columns) so that
+		// the per-datapoint comma count still validates; dropped columns are simply not stored.
 		types = new FlightDataType[split.length];
+		List<FlightDataType> branchTypes = new ArrayList<>();
 		for (int i = 0; i < split.length; i++) {
 			String typeName = split[i];
+			if (isBlockedType(typeName)) {
+				types[i] = null;
+				continue;
+			}
 			FlightDataType matching = findFlightDataType(typeName);
 			types[i] = matching;
-			//types[i] = FlightDataType.getShapeType(typeName, matching.getSymbol(), matching.getUnitGroup());
+			branchTypes.add(matching);
 		}
-		
+
 		// TODO: LOW: May throw an IllegalArgumentException
-		branch = new FlightDataBranch(name, types);
+		branch = new FlightDataBranch(name, branchTypes.toArray(new FlightDataType[0]));
+	}
+
+	private static boolean isBlockedType(String typeName) {
+		return typeName != null && BLOCKED_TYPE_NAMES.contains(typeName.trim());
 	}
 	
 	/**
@@ -237,7 +261,9 @@ class FlightDataBranchHandler extends AbstractElementHandler {
 		// Add point to branch
 		branch.addPoint();
 		for (int i = 0; i < types.length; i++) {
-			branch.setValue(types[i], values[i]);
+			if (types[i] != null) {
+				branch.setValue(types[i], values[i]);
+			}
 		}
 	}
 }

@@ -362,8 +362,6 @@ public class RockSimSimulationExportTest extends RockSimTestBase {
 		assertEquals(Math.toRadians(5.0), simulation.getLaunchAngle(), EPSILON);
 		assertEquals(123.0, simulation.getLaunchGuideAzimuth(), EPSILON);
 		assertEquals(95000.0 / (101325.0 / 760.0), simulation.getLaunchBarometer(), EPSILON);
-		assertEquals(50.9, simulation.getLaunchLatitude(), EPSILON);
-		assertEquals(4.4, simulation.getLaunchLongitude(), EPSILON);
 		assertEquals(65.0, simulation.getLaunchHumidity(), EPSILON);
 		assertEquals(12.0, simulation.getLaunchTemperature(), EPSILON);
 		assertEquals(350.0, simulation.getLaunchAltitude(), EPSILON);

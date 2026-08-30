@@ -119,8 +119,6 @@ public class RockSimCommonConstants {
     public static final String LAUNCH_ANGLE = "LaunchAngle";
     public static final String LAUNCH_GUIDE_AZIMUTH = "LaunchGuideAzimuth";
     public static final String LAUNCH_BAROMETER = "LaunchBarometer";
-    public static final String LAUNCH_LATITUDE = "LaunchLatitude";
-    public static final String LAUNCH_LONGITUDE = "LaunchLongitude";
     public static final String LAUNCH_HUMIDITY = "LaunchHumidity";
     public static final String LAUNCH_TEMPERATURE = "LaunchTemperature";
     public static final String LAUNCH_ALTITUDE = "LaunchAltitude";

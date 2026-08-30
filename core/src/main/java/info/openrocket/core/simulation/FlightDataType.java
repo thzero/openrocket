@@ -137,16 +137,6 @@ public class FlightDataType implements Comparable<FlightDataType>, Groupable<Fli
 			trans.get("FlightDataType.TYPE_ACCELERATION_XY"),
 			"Al", UnitGroup.UNITS_ACCELERATION,
 			FlightDataTypeGroup.POSITION_AND_MOTION, 16);
-	//// Latitude
-	public static final FlightDataType TYPE_LATITUDE = newType("latitude",
-			trans.get("FlightDataType.TYPE_LATITUDE"), "\u03c6",
-			UnitGroup.UNITS_LATITUDE,
-			FlightDataTypeGroup.POSITION_AND_MOTION, 17);
-	//// Longitude
-	public static final FlightDataType TYPE_LONGITUDE = newType("longitude",
-			trans.get("FlightDataType.TYPE_LONGITUDE"), "\u03bb",
-			UnitGroup.UNITS_LONGITUDE,
-			FlightDataTypeGroup.POSITION_AND_MOTION, 18);
 
 	// Orientation
 	//// Angle of attack
@@ -416,8 +406,6 @@ public class FlightDataType implements Comparable<FlightDataType>, Groupable<Fli
 			TYPE_POSITION_DIRECTION,
 			TYPE_VELOCITY_XY,
 			TYPE_ACCELERATION_XY,
-			TYPE_LATITUDE,
-			TYPE_LONGITUDE,
 			TYPE_GRAVITY,
 			TYPE_AOA,
 			TYPE_ROLL_RATE,

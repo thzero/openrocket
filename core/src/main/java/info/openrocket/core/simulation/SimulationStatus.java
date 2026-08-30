@@ -636,10 +636,7 @@ public class SimulationStatus implements Cloneable, Monitorable {
 		flightDataBranch.setValue(FlightDataType.TYPE_ALTITUDE_ABOVE_SEA, getRocketWorldPosition().getAltitude());
 		flightDataBranch.setValue(FlightDataType.TYPE_POSITION_X, getRocketPosition().getX());
 		flightDataBranch.setValue(FlightDataType.TYPE_POSITION_Y, getRocketPosition().getY());
-		
-		flightDataBranch.setValue(FlightDataType.TYPE_LATITUDE, getRocketWorldPosition().getLatitudeDeg());
-		flightDataBranch.setValue(FlightDataType.TYPE_LONGITUDE, getRocketWorldPosition().getLongitudeDeg());
-		
+
 		flightDataBranch.setValue(FlightDataType.TYPE_POSITION_XY,
 					  MathUtil.hypot(getRocketPosition().getX(), getRocketPosition().getY()));
 		// (x, y) instead of (y, x) because 0 is north
