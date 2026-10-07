@@ -195,10 +195,11 @@ public abstract class AbstractRKSimulationStepper extends AbstractSimulationStep
      * @param store                     the simulation calculation DataStore (contains acceleration, atmosphere)
      * @return                          the average thrust during the time step.
      */
-    protected double calculateThrust(SimulationStatus status,
-                                     DataStore store) throws SimulationException {
+    protected double calculateThrust(SimulationStatus status) throws SimulationException {
         double thrust;
 
+		store.thrustCorrection = 0;
+		
         // Pre-listeners
         thrust = SimulationListenerHelper.firePreThrustCalculation(status);
         if (!Double.isNaN(thrust)) {
@@ -211,6 +212,23 @@ public abstract class AbstractRKSimulationStepper extends AbstractSimulationStep
             thrust += currentMotorState.getThrust( status.getSimulationTime() );
         }
 
+		/**
+		 * Standard thrust curves provide motor thrust at standard pressure (101.325 kPa).  According to the rocket
+		 * thrust equation, total thrust is given by F0 + (P0 - Pa)A where F0 is the thrust at standard pressure,
+		 * P0 is the standard pressure, Pa is the current atmospheric pressure, and A is the area of the motor nozzle.
+		 * (see https://openrocket.readthedocs.io/en/latest/user_guide/thrust_curves.html for further explanation)
+		 * This altitude correction is applied here.
+		 */
+		if (thrust > 0)  {
+			double area = store.flightConditions.getThrustingNozzleExitArea();
+			if (area > 0) {
+				// Correct motor thrust for air pressure
+				store.thrustCorrection = area * (store.flightConditions.getAtmosphericConditions().STANDARD_PRESSURE -
+												 store.flightConditions.getAtmosphericConditions().getPressure());
+				thrust += store.thrustCorrection;
+			}
+		}
+		
         // Post-listeners
         thrust = SimulationListenerHelper.firePostThrustCalculation(status, thrust);
 
@@ -255,7 +273,7 @@ public abstract class AbstractRKSimulationStepper extends AbstractSimulationStep
         double fN = store.forces.getCN() * dynP * refArea;
         double fSide = store.forces.getCside() * dynP * refArea;
 
-        store.thrustForce = calculateThrust(status, store);
+        store.thrustForce = calculateThrust(status);
         double forceZ =  store.thrustForce - store.dragForce;
 
         linearAcceleration = new MutableCoordinate(-fN / store.rocketMass.getMass(),
